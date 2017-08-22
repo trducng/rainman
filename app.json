@@ -8,13 +8,13 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "primaryColor": "#cccccc",
-    "icon": "./assets/icons/app-icon.png",
+    "icon": "./lib/assets/icons/app-icon.png",
     "notification": {
-      "icon": "./assets/icons/notification-icon.png",
+      "icon": "./lib/assets/icons/notification-icon.png",
       "color": "#000000"
     },
     "loading": {
-      "icon": "./assets/icons/loading-icon.png",
+      "icon": "./lib/assets/icons/loading-icon.png",
       "hideExponentText": false
     },
     "packagerOpts": {
