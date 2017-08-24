@@ -1,13 +1,23 @@
-import React from 'react';
-import { Platform, StatusBar, StyleSheet, View } from 'react-native';
 import { AppLoading, Asset, Font } from 'expo';
 import { Ionicons } from '@expo/vector-icons';
-import RootNavigation from './lib/navigation/RootNavigation';
+
+import React from 'react';
+import { Platform, StatusBar, StyleSheet, View } from 'react-native';
+import { Provider } from 'react-redux';
+import { createStore } from 'redux';
+
+import AppReducer from './src/reducers';
+import RootNavigation from './src/navigation/RootNavigation';
+
 
 export default class App extends React.Component {
+
   state = {
     assetsAreLoaded: false,
   };
+
+  store = createStore(AppReducer);
+
 
   componentWillMount() {
     this._loadAssetsAsync();
@@ -17,13 +27,18 @@ export default class App extends React.Component {
     if (!this.state.assetsAreLoaded && !this.props.skipLoadingScreen) {
       return <AppLoading />;
     } else {
+      // return (
+      //   <View style={styles.container}>
+      //     {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
+      //     {Platform.OS === 'android' &&
+      //       <View style={styles.statusBarUnderlay} />}
+      //     <RootNavigation />
+      //   </View>
+      // );
       return (
-        <View style={styles.container}>
-          {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
-          {Platform.OS === 'android' &&
-            <View style={styles.statusBarUnderlay} />}
+        <Provider store={this.store}>
           <RootNavigation />
-        </View>
+        </Provider>
       );
     }
   }
