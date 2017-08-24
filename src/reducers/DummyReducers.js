@@ -25,21 +25,35 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @flow
+ * This file contains many dummy reducers for the dummy navigators
  */
 
-import React from 'react';
-import { View, Text } from 'react-native';
+import { combineReducers } from 'redux';
+import { NavigationActions } from 'react-navigation';
 
-import style from '../styles/components/ListItem';
+import {
+  AddScreenNavigator,
+  WordScreenNavigator,
+  QuizScreenNavigator } from '../navigation/DummyNavigators';
 
 
-export default class ListItem extends React.Component {
- render() {
-   return (
-     <View style={style.item_whole}>
-      <Text style={style.word}>{this.props.word}</Text>
-      <Text style={style.def}>{this.props.def}</Text>
-     </View>
-   );
- }
+const aAction = AddScreenNavigator.router.getActionForPathAndParams('DummyAdd');
+const aState = AddScreenNavigator.router.getStateForAction(aAction);
+export const navAdd = (state = aState, action) => {
+ let nextState = AddScreenNavigator.router.getStateForAction(action, state);
+ return nextState || state;
+}
+
+const wAction = WordScreenNavigator.router.getActionForPathAndParams('DummyDetail');
+const wState = WordScreenNavigator.router.getStateForAction(wAction);
+export const navWord = (state = wState, action) => {
+ let nextState = WordScreenNavigator.router.getStateForAction(action, state);
+ return nextState || state;
+}
+
+const qAction = QuizScreenNavigator.router.getActionForPathAndParams('DummyQuiz');
+const qState = QuizScreenNavigator.router.getStateForAction(qAction);
+export const navQuiz = (state = qState, action) => {
+ let nextState = QuizScreenNavigator.router.getStateForAction(action, state);
+ return nextState || state;
 }

@@ -28,18 +28,30 @@
  */
 
 import React from 'react';
-import { View, Text } from 'react-native';
+import { Platform, TextInput, View } from 'react-native';
 
-import style from '../styles/components/ListItem';
+import { Ionicons } from '@expo/vector-icons';
 
+import style from '../styles/components/SearchBox';
 
-export default class ListItem extends React.Component {
- render() {
-   return (
-     <View style={style.item_whole}>
-      <Text style={style.word}>{this.props.word}</Text>
-      <Text style={style.def}>{this.props.def}</Text>
-     </View>
-   );
- }
+export class SearchBox extends React.Component {
+  render() {
+    let iconName = Platform.OS === 'ios' ? 'ios-search' : 'md-search';
+
+    return (
+      <View style={style.wrapper}>
+        <View style={style.main}>
+          <Ionicons name={iconName} size={20} color={'white'} style={style.icon}/>
+          <TextInput
+            autoCorrect={false} style={style.text}
+            placeholder={"Search"} placeholderTextColor={'white'}
+            returnKeyType={'search'} selectTextOnFocus={true}
+            underlineColorAndroid={'transparent'} returnKeyType={'next'}
+          />
+        </View>
+      </View>
+    );
+  }
 }
+
+export default SearchBox;

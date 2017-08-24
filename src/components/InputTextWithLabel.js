@@ -9,9 +9,9 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of this software authors nor the names of its
- *       contributors may be used to endorse or promote products derived from
- *       this software without specific prior written permission.
+ *     * Neither the name of this software authors nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -28,18 +28,28 @@
  */
 
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, TextInput } from 'react-native';
 
-import style from '../styles/components/ListItem';
+import style from '../styles/components/InputTextWithLabel';
 
+class InputTextWithLabel extends React.Component {
+  render() {
+    let { multiline=false, defaultValue='' } = this.props;
+    let textStyle = multiline
+      ? [style.input, style.input_multi_lines]
+      : style.input;
 
-export default class ListItem extends React.Component {
- render() {
-   return (
-     <View style={style.item_whole}>
-      <Text style={style.word}>{this.props.word}</Text>
-      <Text style={style.def}>{this.props.def}</Text>
-     </View>
-   );
- }
+    return (
+      <View style={style.main}>
+        <Text style={style.label}>{this.props.label}:</Text>
+        <TextInput
+          style={textStyle} underlineColorAndroid={'transparent'}
+          multiline={multiline} numberOfLines={multiline ? 3 : 1}
+          defaultValue={defaultValue}
+        />
+      </View>
+    );
+  }
 }
+
+export default InputTextWithLabel;

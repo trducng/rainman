@@ -28,18 +28,24 @@
  */
 
 import React from 'react';
-import { View, Text } from 'react-native';
+import { Platform, View } from 'react-native';
 
-import style from '../styles/components/ListItem';
+import { Ionicons } from '@expo/vector-icons';
+
+import style from '../styles/components/StatusBarButtonHolder';
 
 
-export default class ListItem extends React.Component {
- render() {
-   return (
-     <View style={style.item_whole}>
-      <Text style={style.word}>{this.props.word}</Text>
-      <Text style={style.def}>{this.props.def}</Text>
-     </View>
-   );
- }
+export default class StatusBarButtonHolder extends React.Component {
+  render() {
+    let iconName1 = Platform.OS === 'ios' ? 'ios-trash-outline' : 'md-trash';
+
+    return (
+      <View style={style.main} >
+        <Ionicons
+          name={iconName1} size={25}
+          color={'white'} style={style.icon}
+        />
+      </View>
+    );
+  }
 }

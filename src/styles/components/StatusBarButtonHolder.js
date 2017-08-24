@@ -27,19 +27,17 @@
  * @flow
  */
 
-import React from 'react';
-import { View, Text } from 'react-native';
-
-import style from '../styles/components/ListItem';
+import { StyleSheet } from 'react-native';
 
 
-export default class ListItem extends React.Component {
- render() {
-   return (
-     <View style={style.item_whole}>
-      <Text style={style.word}>{this.props.word}</Text>
-      <Text style={style.def}>{this.props.def}</Text>
-     </View>
-   );
- }
-}
+export default StyleSheet.create({
+  main: {
+    flex: 1,
+    flexDirection: 'row',
+    paddingHorizontal: 16,
+    alignItems: 'center'
+  },
+  icon: {
+    marginLeft: 16,
+  }
+});

@@ -28,15 +28,14 @@
  */
 
 import Expo from 'expo';
-import React, { Component } from 'react';
-import { View, Platform, StyleSheet, FlatList, Text } from 'react-native';
+import React from 'react';
+import { View, StyleSheet, FlatList, Text } from 'react-native';
 
-import { appBarStyle } from '../styles'
-
+import { appBarStyle } from '../styles';
+import { screenGeneral } from '../styles/screens';
 import ListItem from '../components/ListItem';
+import SearchBox from '../components/SearchBox';
 
-
-const APPBAR_HEIGHT = Platform.OS === 'ios' ? 44 : 56;
 
 class WordListScreen extends React.Component {
 
@@ -44,6 +43,7 @@ class WordListScreen extends React.Component {
     title: 'Word List',
     headerTintColor: 'white',
     headerStyle: appBarStyle,
+    headerRight: <SearchBox />,
   }
 
   render() {
@@ -59,7 +59,7 @@ class WordListScreen extends React.Component {
     console.log("This is data length: " + data.length);
 
     return (
-      <View style={{flex: 1}}>
+      <View style={screenGeneral}>
         <FlatList
           style={{flex: 1}}
           data={data}

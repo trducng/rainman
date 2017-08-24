@@ -9,9 +9,9 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of this software authors nor the names of its
- *       contributors may be used to endorse or promote products derived from
- *       this software without specific prior written permission.
+ *     * Neither the name of this software authors nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -27,19 +27,22 @@
  * @flow
  */
 
-import React from 'react';
-import { View, Text } from 'react-native';
+import { StyleSheet } from 'react-native';
 
-import style from '../styles/components/ListItem';
-
-
-export default class ListItem extends React.Component {
- render() {
-   return (
-     <View style={style.item_whole}>
-      <Text style={style.word}>{this.props.word}</Text>
-      <Text style={style.def}>{this.props.def}</Text>
-     </View>
-   );
- }
-}
+export default StyleSheet.create({
+  main: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  word: {
+    fontSize: 30,
+    marginBottom: 25,
+    textAlign: 'center',
+  },
+  def: {
+    fontSize: 18,
+    textAlign: 'center',
+  }
+});

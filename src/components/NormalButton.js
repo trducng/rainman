@@ -28,18 +28,23 @@
  */
 
 import React from 'react';
-import { View, Text } from 'react-native';
+import { Text, TouchableNativeFeedback, View } from 'react-native';
 
-import style from '../styles/components/ListItem';
+import style from '../styles/components/NormalButton';
 
-
-export default class ListItem extends React.Component {
- render() {
-   return (
-     <View style={style.item_whole}>
-      <Text style={style.word}>{this.props.word}</Text>
-      <Text style={style.def}>{this.props.def}</Text>
-     </View>
-   );
- }
+class NormalButton extends React.Component {
+  render() {
+    return (
+      <View style={style.main}>
+        <TouchableNativeFeedback
+          background={TouchableNativeFeedback.SelectableBackground()}>
+            <View style={style.content}>
+              <Text style={style.text}>Edit</Text>
+            </View>
+        </TouchableNativeFeedback>
+      </View>
+    );
+  }
 }
+
+export default NormalButton;

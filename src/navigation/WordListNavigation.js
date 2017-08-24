@@ -9,9 +9,9 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of this software authors nor the
- *       names of its contributors may be used to endorse or promote products
- *       derived from this software without specific prior written permission.
+ *     * Neither the name of this software authors nor the names of its
+ *       contributors may be used to endorse or promote products derived from
+ *       this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -28,10 +28,7 @@
  */
 
 import React from 'react';
-import {
-  addNavigationHelpers,
-  NavigationActions,
-  StackNavigator } from 'react-navigation';
+import { addNavigationHelpers, StackNavigator } from 'react-navigation';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
@@ -53,10 +50,10 @@ class WordListTempNavigator extends React.Component {
   render() {
     return (
       <WordListNavigator
-        navigation={ addNavigationHelpers({
+        navigation={addNavigationHelpers({
           dispatch: this.props.dispatch,
           state: this.props.nav
-        }) }
+        })}
       />
     );
   }
@@ -67,7 +64,7 @@ WordListTempNavigator.propTypes = {
   nav: PropTypes.object.isRequired
 };
 
-const mapStateToProps = state => ({ nav: state.nav_word_list });
+const mapStateToProps = state => ({ nav: state.navWordList });
 const WordListStackNavigator = connect(mapStateToProps)(WordListTempNavigator);
 
 WordListStackNavigator.navigationOptions = {

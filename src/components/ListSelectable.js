@@ -30,16 +30,21 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 
-import style from '../styles/components/ListItem';
+import style from '../styles/components/ListSelectable';
 
 
-export default class ListItem extends React.Component {
+class ListSelectable extends React.Component {
  render() {
    return (
-     <View style={style.item_whole}>
-      <Text style={style.word}>{this.props.word}</Text>
-      <Text style={style.def}>{this.props.def}</Text>
+     <View style={style.main}>
+      <Text style={style.item}>Noun</Text>
+      <Text style={style.item}>Verb</Text>
+      <Text style={style.item}>Adjective</Text>
+      <Text style={style.item}>Adverb</Text>
+      <Text style={style.item}>Conjunction</Text>
      </View>
    );
  }
 }
+
+export default ListSelectable;

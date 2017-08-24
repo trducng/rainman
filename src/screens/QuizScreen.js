@@ -30,16 +30,22 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 
-import style from '../styles/components/ListItem';
 
 
-export default class ListItem extends React.Component {
- render() {
-   return (
-     <View style={style.item_whole}>
-      <Text style={style.word}>{this.props.word}</Text>
-      <Text style={style.def}>{this.props.def}</Text>
-     </View>
-   );
- }
+class QuizScreen extends React.Component {
+
+  static navigationOptions = {
+    title: 'Quiz',
+  };
+
+  render() {
+    return (
+      <View>
+        <Text>This is quiz screen</Text>
+      </View>
+    );
+  }
 }
+
+
+export default QuizScreen;
