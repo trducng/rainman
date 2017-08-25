@@ -27,34 +27,13 @@
  * @flow
  */
 
-import React from 'react';
-import { View, Text } from 'react-native';
+import { StyleSheet } from 'react-native';
 
-import { appBarStyle } from '../styles/';
-import { screenGeneral } from '../styles/screens';
-import style from '../styles/screens/QuizScreen';
-
-import StatusBarButtonHolder from '../components/StatusBarButtonHolder';
-import TestBox from '../components/TestBox';
-
-
-class QuizScreen extends React.Component {
-
-  static navigationOptions = {
-    title: 'Quiz',
-    headerTintColor: 'white',
-    headerStyle: appBarStyle,
-    headerRight: <StatusBarButtonHolder />,
-  };
-
-  render() {
-    return (
-      <View style={[screenGeneral, style.main]}>
-        <TestBox />
-      </View>
-    );
-  }
-}
-
-
-export default QuizScreen;
+export default StyleSheet.create({
+  main: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+});

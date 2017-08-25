@@ -41,7 +41,7 @@ import { navAdd, navWord, navQuiz } from './DummyReducers'
 /**
  * Main tab state
  */
-const firstAction = MainTabNavigator.router.getActionForPathAndParams('List');
+const firstAction = MainTabNavigator.router.getActionForPathAndParams('Quiz');
 const initialNavState = MainTabNavigator.router.getStateForAction(firstAction);
 
 const nav = (state = initialNavState, action) => {

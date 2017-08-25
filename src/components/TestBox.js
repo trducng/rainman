@@ -30,31 +30,21 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 
-import { appBarStyle } from '../styles/';
-import { screenGeneral } from '../styles/screens';
-import style from '../styles/screens/QuizScreen';
-
-import StatusBarButtonHolder from '../components/StatusBarButtonHolder';
-import TestBox from '../components/TestBox';
+import style from '../styles/components/TestBox';
 
 
-class QuizScreen extends React.Component {
-
-  static navigationOptions = {
-    title: 'Quiz',
-    headerTintColor: 'white',
-    headerStyle: appBarStyle,
-    headerRight: <StatusBarButtonHolder />,
-  };
-
+class TestBox extends React.Component {
   render() {
     return (
-      <View style={[screenGeneral, style.main]}>
-        <TestBox />
+      <View style={style.main}>
+        <Text style={style.question}>a learned person, especially a distinguished scientist?</Text>
+        <Text style={[style.choice]}>Martinet</Text>
+        <Text style={[style.choice]}>Savant</Text>
+        <Text style={[style.choice, style.incorrect]}>Impudence</Text>
+        <Text style={[style.choice]}>Philistine</Text>
       </View>
     );
   }
 }
 
-
-export default QuizScreen;
+export default TestBox;
