@@ -30,19 +30,43 @@
  * errors and inconsistencies)
  */
 
-import { combineReducers } from 'redux';
+import { NavigationActions } from 'react-navigation';
 
-import { nav, navWordList } from './NavigationReducers';
-import { navAdd, navWord, navQuiz } from './DummyReducers';
+import { MainTabNavigator } from '../navigation/RootNavigation';
+import { WordListNavigator } from '../navigation/WordListNavigation';
 
 
 
-const AppReducer = combineReducers({
-  nav,
-  navWordList,
-  navAdd,
-  navWord,
-  navQuiz,
-});
+/**
+* Main tab state
+*/
+const firstAction = MainTabNavigator.router.getActionForPathAndParams('List');
+const initialNavState = MainTabNavigator.router.getStateForAction(firstAction);
 
-export default AppReducer;
+export const nav = (state = initialNavState, action) => {
+ let nextState;
+ switch (action.type) {
+   case 'Links':
+     nextState = MainTabNavigator.router.getStateForAction(
+       NavigationActions.navigate({ routeName: 'Links'}),
+       state
+     );
+     break;
+   default:
+     nextState = MainTabNavigator.router.getStateForAction(action, state);
+     break;
+ }
+ return nextState || state;
+};
+
+
+/**
+* Word list state
+*/
+const firstListAction = WordListNavigator.router.getActionForPathAndParams('WordList');
+const initialListState = WordListNavigator.router.getStateForAction(firstListAction);
+
+export const navWordList = (state = initialListState, action) => {
+ let nextState = WordListNavigator.router.getStateForAction(action, state);
+ return nextState || state;
+};

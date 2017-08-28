@@ -9,9 +9,9 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of this software authors nor the
- *       names of its contributors may be used to endorse or promote products
- *       derived from this software without specific prior written permission.
+ *     * Neither the name of this software authors nor the names of its
+ *       contributors may be used to endorse or promote products derived from
+ *       this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -27,46 +27,37 @@
  * @flow
  */
 
-import Expo from 'expo';
-import React from 'react';
-import { View, StyleSheet, FlatList, Text } from 'react-native';
-
-import { appBarStyle } from '../styles';
-import { screenGeneral } from '../styles/screens';
-import ListItem from '../components/ListItem';
-import SearchBox from '../components/SearchBox';
-
-
-class WordListScreen extends React.Component {
-
-  static navigationOptions = {
-    title: 'Word List',
-    headerTintColor: 'white',
-    headerStyle: appBarStyle,
-    headerRight: <SearchBox />,
-  }
-
-  render() {
-    let data = [];
-    for (var i=0; i<100; i++) {
-      data.push({
-        key: i,
-        word: 'Key ' + i,
-        def: 'This is item' + i
-      });
-    }
-
-    return (
-      <View style={screenGeneral}>
-        <FlatList
-          style={{flex: 1}}
-          data={data}
-          renderItem={({item}) => <ListItem word={item.word} def={item.def} />}
-        />
-      </View>
-    );
+export const displayWord = (id) => {
+  return {
+    type: 'DISPLAY_WORD',
+    id,
   }
 }
 
+export const editWord = (id, word, def, kind) => {
+  return {
+    type: 'EDIT_WORD',
+    id,
+    word,
+    def,
+    kind,
+  }
+}
 
-export default WordListScreen;
+export const addWord = (word, def, kind) => {
+  return {
+    type: 'ADD_WORD',
+    word,
+    def,
+    kind,
+    score: 6
+  }
+}
+
+export const changeScore = (id, val) => {
+  return {
+    type: 'CHANGE_WORD_SCORE',
+    id,
+    val,
+  }
+}
