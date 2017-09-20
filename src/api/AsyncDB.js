@@ -27,52 +27,33 @@
  * @flow
  */
 
-import React from 'react';
-import { View, Text } from 'react-native';
-
-import { appBarStyle } from '../styles';
-import { screenGeneral } from '../styles/screens';
-import style from '../styles/screens/WordScreen';
-
-import StatusBarButtonHolder from '../components/StatusBarButtonHolder';
-import DynamicViewPager from '../components/DynamicViewPager';
-
-import { INDEX, WORD, DEFINITION } from '../constants/DB';
+import { AsyncStorage } from 'react-native';
 
 
-class WordScreen extends React.Component {
+export const retrieveAll = (callback) => {
+  AsyncStorage.getAllKeys((err, keys) => {
+    AsyncStorage.multiGet(keys, callback);
+  });
+};
 
-  static navigationOptions = ({ navigation }) => {
-    let { params } = navigation.state;
-    return {
-      title: 'Word Detail',
-      header: null,
-      headerTintColor: 'white',
-      headerStyle: appBarStyle,
-      headerRight: (<StatusBarButtonHolder
-          onDelete={() => console.log('Delete index: ' + params.data[params.index][INDEX])}
-          onEdit={() => navigation.navigate('Edit', {word: params.data[params.index]})} />
-      ),
-    }
-  }
+export const setItem = (k, v) => {
+  AsyncStorage.setItem(k, v, (err) => {
+    console.log('Item setted!');
+  });
+};
 
-  render() {
-    var { params } = this.props.navigation.state;
+export const getItem = (k, f) => {
+  AsyncStorage.getItem(k, f);
+};
 
-    if (typeof params === 'undefined') {
-      return <View><Text>Empty</Text></View>;
-    }
+export const removeItem = (k) => {
+  AsyncStorage.removeItem(k);
+};
 
-    // return (
-    //   <View style={[screenGeneral, style.main]}>
-    //     <Text style={style.word}>{params.data[params.index][WORD]}</Text>
-    //     <Text style={style.def}>{params.data[params.index][DEFINITION]}</Text>
-    //   </View>
-    // );
-    return (
-      <DynamicViewPager />
-    );
-  }
-}
+export const multiRemove = (k) => {
+  AsyncStorage.multiRemove(k);
+};
 
-export default WordScreen;
+export const mergeItem = (k, v) => {
+  AsyncStorage.mergeItem(k, JSON.stringify(v));
+};

@@ -46,4 +46,8 @@ export default StyleSheet.create({
     borderColor: 'blue',
     borderRadius: 5,
   },
+  selected: {
+    backgroundColor: 'blue',
+    color: 'white'
+  }
 });

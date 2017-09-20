@@ -37,6 +37,7 @@ class NormalButton extends React.Component {
     return (
       <View style={style.main}>
         <TouchableNativeFeedback
+          onPress={this.props.onPress}
           background={TouchableNativeFeedback.SelectableBackground()}>
             <View style={style.content}>
               <Text style={style.text}>Edit</Text>

@@ -36,6 +36,9 @@ import WordListScreen from '../screens/WordListScreen';
 import EditScreen from '../screens/EditScreen';
 import WordScreen from '../screens/WordScreen';
 
+import { searchWord } from '../api/WordListActions';
+
+
 
 export const WordListNavigator = StackNavigator({
   WordList: { screen: WordListScreen },
@@ -54,6 +57,10 @@ class WordListTempNavigator extends React.Component {
           dispatch: this.props.dispatch,
           state: this.props.nav
         })}
+        screenProps={{
+          searchTerm: this.props.searchTerm,
+          onSearch: (term) => this.props.dispatch(searchWord(term)),
+        }}
       />
     );
   }
@@ -64,7 +71,10 @@ WordListTempNavigator.propTypes = {
   nav: PropTypes.object.isRequired
 };
 
-const mapStateToProps = state => ({ nav: state.navWordList });
+const mapStateToProps = state => ({
+  nav: state.navWordList,
+  searchTerm: state.searchTerm,
+});
 const WordListStackNavigator = connect(mapStateToProps)(WordListTempNavigator);
 
 WordListStackNavigator.navigationOptions = {

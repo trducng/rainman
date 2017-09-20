@@ -25,9 +25,6 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @flow
- * This file contains many dummy navigators, intended to make use of react-
- * navigation's status bar of Stack navigator (to avoid potential implementation
- * errors and inconsistencies)
  */
 
 import { NavigationActions } from 'react-navigation';

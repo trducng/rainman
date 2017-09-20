@@ -33,9 +33,10 @@ import { searchWord, getAllWords } from '../../src/api/WordListActions';
 
 test('get all words action', () => {
   let result = {
-    type: 'GET_ALL_WORDS'
+    type: 'GET_ALL_WORDS',
+    words: [['hello', 'world'], ['goodbye', 'world']]
   };
-  expect(getAllWords()).toEqual(result);
+  expect(getAllWords([['hello', 'world'], ['goodbye', 'world']])).toEqual(result);
 });
 
 test('search term action', () => {

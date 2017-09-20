@@ -45,10 +45,10 @@ test('edit word with appropriate information', () => {
     id: 4,
     word: 'Savant',
     def: 'a learned person',
-    kind: ['n', 'adv']
+    n: true, v: false, adj: true, adv: false,
   };
   expect(editWord(id=4, word='Savant', def='a learned person',
-                  kind=['n', 'adv'])).toEqual(result);
+                  n=true, v=false, adj=true, adv=false)).toEqual(result);
 });
 
 test('add word with appropriate information', () => {
@@ -56,11 +56,11 @@ test('add word with appropriate information', () => {
     type: 'ADD_WORD',
     word: 'Savant',
     def: 'a learned person',
-    kind: ['n'],
+    n: true, v: true, adj: true, adv: true,
     score: 6,
   };
   expect(addWord(id='Savant', def='a learned person',
-                 kind=['n'])).toEqual(result);
+                 n=true, v=true, adj=true, adv=true)).toEqual(result);
 });
 
 test('changeScore', () => {

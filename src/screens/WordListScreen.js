@@ -30,38 +30,56 @@
 import Expo from 'expo';
 import React from 'react';
 import { View, StyleSheet, FlatList, Text } from 'react-native';
+import { connect } from 'react-redux';
 
 import { appBarStyle } from '../styles';
 import { screenGeneral } from '../styles/screens';
+
 import ListItem from '../components/ListItem';
 import SearchBox from '../components/SearchBox';
+
+import { searchWord } from '../api/WordListActions';
+import { INDEX, WORD, DEFINITION } from '../constants/DB';
+
+
+export const filterWordList = (wordList, searchTerm) => {
+
+  if (searchTerm === '') {
+    return wordList;
+  }
+
+  var s = searchTerm.toLowerCase();
+  return wordList.filter(wordObj => {
+    return (wordObj[WORD].toLowerCase().indexOf(s)
+          + wordObj[DEFINITION].toLowerCase().indexOf(s)) > -2;
+  });
+}
 
 
 class WordListScreen extends React.Component {
 
-  static navigationOptions = {
-    title: 'Word List',
-    headerTintColor: 'white',
-    headerStyle: appBarStyle,
-    headerRight: <SearchBox />,
+  static navigationOptions({ navigation, screenProps }) {
+    return {
+      title: 'Word List',
+      headerTintColor: 'white',
+      headerStyle: appBarStyle,
+      headerRight: <SearchBox onChangeText={screenProps.onSearch} value={screenProps.searchTerm}/>,
+    }
   }
 
   render() {
-    let data = [];
-    for (var i=0; i<100; i++) {
-      data.push({
-        key: i,
-        word: 'Key ' + i,
-        def: 'This is item' + i
-      });
-    }
-
     return (
       <View style={screenGeneral}>
         <FlatList
           style={{flex: 1}}
-          data={data}
-          renderItem={({item}) => <ListItem word={item.word} def={item.def} />}
+          data={this.props.wordList}
+          keyExtractor={(item, index) => item[INDEX]}
+          renderItem={({item, index}) => (
+            <ListItem word={item[WORD]} def={item[DEFINITION]}
+                      onPress={() => this.props.navigation.navigate('Detail',
+                                     {data: this.props.wordList, index: index})}
+            />
+          )}
         />
       </View>
     );
@@ -69,4 +87,10 @@ class WordListScreen extends React.Component {
 }
 
 
-export default WordListScreen;
+const mapStateToProps = (state, ownProps) => {
+  return {
+    wordList: filterWordList(state.wordData.ALL_WORDS, state.searchTerm),
+  }
+};
+
+export default connect(mapStateToProps)(WordListScreen);

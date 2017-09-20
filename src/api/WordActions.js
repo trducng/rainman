@@ -34,22 +34,28 @@ export const displayWord = (id) => {
   }
 }
 
-export const editWord = (id, word, def, kind) => {
+export const editWord = (id, word, def, n, v, adj, adv) => {
   return {
     type: 'EDIT_WORD',
     id,
     word,
     def,
-    kind,
+    n,
+    v,
+    adj,
+    adv
   }
 }
 
-export const addWord = (word, def, kind) => {
+export const addWord = (word, def, n, v, adj, adv) => {
   return {
     type: 'ADD_WORD',
     word,
     def,
-    kind,
+    n,
+    v,
+    adj,
+    adv,
     score: 6
   }
 }

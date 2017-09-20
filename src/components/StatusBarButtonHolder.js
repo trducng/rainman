@@ -28,7 +28,7 @@
  */
 
 import React from 'react';
-import { Platform, View } from 'react-native';
+import { Platform, TouchableHighlight, View } from 'react-native';
 
 import { Ionicons } from '@expo/vector-icons';
 
@@ -37,14 +37,29 @@ import style from '../styles/components/StatusBarButtonHolder';
 
 export default class StatusBarButtonHolder extends React.Component {
   render() {
-    let iconName1 = Platform.OS === 'ios' ? 'ios-trash-outline' : 'md-trash';
+    var buttons = [];
+
+    if (typeof this.props.onEdit !== 'undefined') {
+      let editItem = Platform.OS === 'ios' ? 'ios-create-outline' : 'ios-create';
+      buttons.push(
+        <TouchableHighlight key='edit' onPress={this.props.onEdit}>
+          <Ionicons name={editItem} size={25} color={'white'} style={style.icon} />
+        </TouchableHighlight>
+      );
+    }
+
+    if (typeof this.props.onDelete !== 'undefined') {
+      let removeItem = Platform.OS === 'ios' ? 'ios-trash-outline' : 'md-trash';
+      buttons.push(
+        <TouchableHighlight key='remove' onPress={this.props.onDelete}>
+          <Ionicons name={removeItem} size={25} color={'white'} style={style.icon} />
+        </TouchableHighlight>
+      );
+    }
 
     return (
       <View style={style.main} >
-        <Ionicons
-          name={iconName1} size={25}
-          color={'white'} style={style.icon}
-        />
+        {buttons.map((item) => item)}
       </View>
     );
   }

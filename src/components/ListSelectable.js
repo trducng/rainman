@@ -28,7 +28,7 @@
  */
 
 import React from 'react';
-import { View, Text } from 'react-native';
+import { Text, TouchableHighlight, View } from 'react-native';
 
 import style from '../styles/components/ListSelectable';
 
@@ -37,11 +37,16 @@ class ListSelectable extends React.Component {
  render() {
    return (
      <View style={style.main}>
-      <Text style={style.item}>Noun</Text>
-      <Text style={style.item}>Verb</Text>
-      <Text style={style.item}>Adjective</Text>
-      <Text style={style.item}>Adverb</Text>
-      <Text style={style.item}>Conjunction</Text>
+      {this.props.items.map(item => {
+        let s = [style.item];
+        if (item.fill) s.push(style.selected);
+
+        return (
+          <TouchableHighlight key={item.key} onPress={item.onPress}>
+            <Text style={s}>{item.key}</Text>
+          </TouchableHighlight>
+        );
+      })}
      </View>
    );
  }

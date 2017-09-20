@@ -27,29 +27,56 @@
  * @flow
  */
 
-import React from 'react';
-import { View, Text, TextInput } from 'react-native';
+import WordListScreen, { filterWordList } from '../../src/screens/WordListScreen';
+import { INDEX, WORD, DEFINITION,
+         NOUN, VERB, ADJECTIVE, ADVERB, SCORE } from '../../src/constants/DB';
 
-import style from '../styles/components/InputTextWithLabel';
+test('filter words and definition with search term', () => {
+  let original = [
+    {"idx":0,
+     "word":"savant",
+     "def":"a learned person, especially a distinguished scientist",
+     "n":true,
+     "v":false,
+     "adj":true,
+     "adv":false,
+     "score":4},
+    {"idx":1,
+     "word":"martinet",
+     "def":"a strict disciplinarian, especially in the armed forces.",
+     "n":true,
+     "v":true,
+     "adj":true,
+     "adv":false,
+     "score":5},
+    {"idx":2,
+     "word":"solarium",
+     "def":"a room fitted with extensive areas of glass to admit sunlight.",
+     "n":true,
+     "v":false,
+     "adv":true,
+     "adj":false,
+     "score":2}
+  ]
 
-class InputTextWithLabel extends React.Component {
-  render() {
-    let { multiline=false, value='' } = this.props;
-    let textStyle = multiline
-      ? [style.input, style.input_multi_lines]
-      : style.input;
+  let result = [
+    {"idx":0,
+     "word":"savant",
+     "def":"a learned person, especially a distinguished scientist",
+     "n":true,
+     "v":false,
+     "adj":true,
+     "adv":false,
+     "score":4},
+    {"idx":1,
+     "word":"martinet",
+     "def":"a strict disciplinarian, especially in the armed forces.",
+     "n":true,
+     "v":true,
+     "adj":true,
+     "adv":false,
+     "score":5},
+  ]
 
-    return (
-      <View style={style.main}>
-        <Text style={style.label}>{this.props.label}:</Text>
-        <TextInput
-          style={textStyle} underlineColorAndroid={'transparent'}
-          multiline={multiline} numberOfLines={multiline ? 3 : 1}
-          value={value} onChangeText={this.props.onChangeText}
-        />
-      </View>
-    );
-  }
-}
-
-export default InputTextWithLabel;
+  expect(filterWordList(original, 'an')).toEqual(result);
+})

@@ -47,6 +47,8 @@ export class SearchBox extends React.Component {
             placeholder={"Search"} placeholderTextColor={'white'}
             returnKeyType={'search'} selectTextOnFocus={true}
             underlineColorAndroid={'transparent'} returnKeyType={'next'}
+            onChangeText={this.props.onChangeText}
+            value={this.props.searchTerm}
           />
         </View>
       </View>

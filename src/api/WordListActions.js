@@ -34,8 +34,9 @@ export const searchWord = (term) => {
   }
 }
 
-export const getAllWords = () => {
+export const getAllWords = (words) => {
   return {
     type: 'GET_ALL_WORDS',
+    words,
   }
 }

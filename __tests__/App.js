@@ -98,7 +98,7 @@ test('renders the loading screen', async () => {
   expect(tree).toMatchSnapshot();
 });
 
-test('renders the root without loading screen', async () => {
-  const tree = filterKeys(renderer.create(<App skipLoadingScreen />).toJSON());
-  expect(tree).toMatchSnapshot();
-});
+// // test('renders the root without loading screen', async () => {
+// //   const tree = filterKeys(renderer.create(<App skipLoadingScreen />).toJSON());
+// //   expect(tree).toMatchSnapshot();
+// // });

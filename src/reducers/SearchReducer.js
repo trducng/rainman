@@ -27,52 +27,15 @@
  * @flow
  */
 
-import React from 'react';
-import { View, Text } from 'react-native';
+var initialState = '';
 
-import { appBarStyle } from '../styles';
-import { screenGeneral } from '../styles/screens';
-import style from '../styles/screens/WordScreen';
+export const searchTerm = (state = initialState, action) => {
+  switch (action.type) {
 
-import StatusBarButtonHolder from '../components/StatusBarButtonHolder';
-import DynamicViewPager from '../components/DynamicViewPager';
+    case 'SEARCH_WORD':
+      return action.term;
 
-import { INDEX, WORD, DEFINITION } from '../constants/DB';
-
-
-class WordScreen extends React.Component {
-
-  static navigationOptions = ({ navigation }) => {
-    let { params } = navigation.state;
-    return {
-      title: 'Word Detail',
-      header: null,
-      headerTintColor: 'white',
-      headerStyle: appBarStyle,
-      headerRight: (<StatusBarButtonHolder
-          onDelete={() => console.log('Delete index: ' + params.data[params.index][INDEX])}
-          onEdit={() => navigation.navigate('Edit', {word: params.data[params.index]})} />
-      ),
-    }
-  }
-
-  render() {
-    var { params } = this.props.navigation.state;
-
-    if (typeof params === 'undefined') {
-      return <View><Text>Empty</Text></View>;
-    }
-
-    // return (
-    //   <View style={[screenGeneral, style.main]}>
-    //     <Text style={style.word}>{params.data[params.index][WORD]}</Text>
-    //     <Text style={style.def}>{params.data[params.index][DEFINITION]}</Text>
-    //   </View>
-    // );
-    return (
-      <DynamicViewPager />
-    );
+    default:
+      return state;
   }
 }
-
-export default WordScreen;

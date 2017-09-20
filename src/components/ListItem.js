@@ -28,7 +28,7 @@
  */
 
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, TouchableHighlight } from 'react-native';
 
 import style from '../styles/components/ListItem';
 
@@ -36,10 +36,12 @@ import style from '../styles/components/ListItem';
 export default class ListItem extends React.Component {
  render() {
    return (
-     <View style={style.item_whole}>
-      <Text style={style.word}>{this.props.word}</Text>
-      <Text style={style.def}>{this.props.def}</Text>
-     </View>
+     <TouchableHighlight onPress={this.props.onPress}>
+       <View style={style.item_whole}>
+        <Text style={style.word}>{this.props.word}</Text>
+        <Text style={style.def}>{this.props.def}</Text>
+       </View>
+     </TouchableHighlight>
    );
  }
 }
