@@ -46,13 +46,20 @@ class WordScreen extends React.Component {
     let { params } = navigation.state;
     return {
       title: 'Word Detail',
-      header: null,
       headerTintColor: 'white',
       headerStyle: appBarStyle,
       headerRight: (<StatusBarButtonHolder
           onDelete={() => console.log('Delete index: ' + params.data[params.index][INDEX])}
           onEdit={() => navigation.navigate('Edit', {word: params.data[params.index]})} />
       ),
+    }
+  }
+
+  constructor(props: Object) {
+    super(props);
+    this.state = {
+      currentPage: 0,
+      allPages: ["Page 1", "Page 2", "Page 3", "Page 4"],
     }
   }
 
@@ -70,9 +77,80 @@ class WordScreen extends React.Component {
     //   </View>
     // );
     return (
-      <DynamicViewPager />
+      <DynamicViewPager
+        onSwipedRight={this._onSwipedRight}
+        onSwipedLeft={this._onSwipedLeft}
+        onSwipedFail={this._onSwipedFail}
+        getLeftPage={this._getLeftPage}
+        getRightPage={this._getRightPage}
+        getMainPage={this._getMainPage}
+      />
     );
   }
+
+  _getLeftPage = () => {
+    console.log('Get Left Page');
+    return (
+      <View
+        style={{
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
+      >
+        <Text style={{fontSize: 20}}>{this.state.allPages[(this.state.currentPage+1) % 4]}</Text>
+      </View>
+    );
+  }
+
+  _getRightPage = () => {
+    console.log('Get Right Page Holaaaaaaaaaaaaaaa');
+    return (
+      <View
+        style={{
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
+      >
+        <Text style={{fontSize: 20}}>{this.state.allPages[(this.state.currentPage+1) % 4]}</Text>
+      </View>
+    );
+  }
+
+  _getMainPage = () => {
+    console.log('Get Main Page');
+    return (
+      <View
+        style={{
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
+      >
+        <Text style={{fontSize: 20}}>{this.state.allPages[this.state.currentPage]}</Text>
+      </View>
+    );
+  }
+
+  _onSwipedRight = () => {
+    this.setState(prevState => {
+      return {
+        currentPage: (prevState.currentPage + 1) % 4,
+      };
+    });
+  }
+
+  _onSwipedLeft = () => {
+    this.setState(prevState => {
+      return {
+        currentPage: (prevState.currentPage + 1) % 4
+      };
+    });
+  }
+
+  _onSwipedFail = () => {}
+
 }
 
 export default WordScreen;

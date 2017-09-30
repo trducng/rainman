@@ -28,130 +28,77 @@
  */
 
 import React from 'react';
-import { Animated, Dimensions, PanResponder, Text, View } from 'react-native';
+import { Animated, PanResponder, Text, View } from 'react-native';
+
+import style from '../styles/components/DynamicViewPager';
+import CONSTANTS from '../constants/Layout';
+import { VERBOSE } from '../constants/Meta';
 
 
-class DynamicViewPager extends React.Component {
+type Props = {
+  onSwipedRight: Function,
+  onSwipedLeft: Function,
+  onSwipedFail: Function,
+  getLeftPage: Function,
+  getRightPage: Function,
+  getMainPage: Function
+}
 
-  constructor(props) {
+type State = {
+  scrollValue: Animated.View
+}
+
+/**
+ * The DynamicViewPager handles efficiently showing pages through swiping left
+ * and right. This component is most effective when the developer cannot
+ * know the amount of pages that the view pager should handle, or when the order
+ * of pages is unpredictable. Since the content is dynamically generated, this
+ * component will not handle data, but instead it will only be responsible for
+ * showing the supplied data.
+ *
+ * Basically, there are 3 main methods that you will need to supply, each
+ * method should return a React component:
+ *    - getMainPage: will display the current page
+ *    - getLeftPage: will display the left page to the current page
+ *    - getRightPage: will display the right page to the current page
+ *
+ * There are also handlers that will fired up when pages are swiped, with self-
+ * explanatory name below:
+ *    - onSwipedRight
+ *    - onSwipedLeft
+ *    - onSwipedFail
+ *
+ * TODO:
+ *    - if any page has animation or video or music (that runs, then swiping)
+ *      might refresh it, creating an annoying lag
+ */
+class DynamicViewPager extends React.Component<Props, State> {
+
+  constructor(props: Object) {
     super(props);
-    var deviceWidth = Dimensions.get('window').width;
     this.state = {
-      currentPage: 0,
-      allPages: ["Page 1", "Page 2", "Page 3", "Page 4"],
-      swiping: false,
-      scrollValue: new Animated.Value(0-deviceWidth),
+      scrollValue: new Animated.Value(0-CONSTANTS.window.width)
     };
-  }
-
-  _handlePanResponseEnd = (e: Object, gestureState: Object) => {
-    // console.log('onPanResponderRelease');
-    // console.log('This is gestureState');
-    // console.log('stateID: ' + gestureState.stateID);
-    // console.log('moveX: ' + gestureState.moveX);
-    // console.log('moveY: ' + gestureState.moveY);
-    // console.log('x0: ' + gestureState.x0);
-    // console.log('y0: ' + gestureState.y0);
-    // console.log('dx: ' + gestureState.dx);
-    // console.log('dy: ' + gestureState.dy);
-    // console.log('vx: ' + gestureState.vx);
-    // console.log('vy: ' + gestureState.vy);
-    var deviceWidth = Dimensions.get('window').width;
-    var relativeSwipeDistance = gestureState.dx / Dimensions.get('window').width;
-    var vx = gestureState.vx;
-
-    if (relativeSwipeDistance < -0.3 ||
-        (relativeSwipeDistance < 0 && vx <= -1)) {
-      Animated.timing(this.state.scrollValue,
-        {
-          toValue: -2 * deviceWidth,
-          duration: 250
-        }).start((event) => {
-          if (event.finished) {
-            this.setState(prevState => {
-              return {
-                currentPage: (prevState.currentPage + 1) % 4,
-              };
-            });
-            this.state.scrollValue.setValue(-deviceWidth);
-          }
-        });
-      console.log("Swipe right");
-      console.log('currentPage: ' + this.state.currentPage)
-    } else if (relativeSwipeDistance > 0.3 ||
-        (relativeSwipeDistance > 0 && vx >= 1)) {
-      Animated.timing(this.state.scrollValue,
-        {
-          toValue: 0,
-          duration: 250
-        }).start((event) => {
-          if (event.finished) {
-            this.setState(prevState => {
-              return {
-                currentPage: (prevState.currentPage + 1) % 4
-              };
-            });
-            this.state.scrollValue.setValue(-deviceWidth);
-          }
-        });
-      console.log("Swipe left");
-      console.log('currentPage: ' + this.state.currentPage);
-    } else {
-      Animated.timing(this.state.scrollValue,
-        {
-          toValue: -deviceWidth,
-          duration: 200
-        }).start();
-      console.log("No swipe!");
-      console.log('vx: ' + vx);
-    }
-    console.log('End swipe!');
-    console.log('');
-
-  }
-
-  _getLeftPage = () => {
-    console.log('Get Left Page');
-    var deviceWidth = Dimensions.get('window').width;
-    return (
-      <View style={{width: deviceWidth, flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-        <Text style={{fontSize: 20}}>{this.state.allPages[(this.state.currentPage+1) % 4]}</Text>
-      </View>
-    );
-  }
-
-  _getRightPage = () => {
-    console.log('Get Right Page');
-    var deviceWidth = Dimensions.get('window').width;
-    return (
-      <View style={{width: deviceWidth, flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-        <Text style={{fontSize: 20}}>{this.state.allPages[(this.state.currentPage+1) % 4]}</Text>
-      </View>
-    );
-  }
-
-  _getMainPage = () => {
-    console.log('Get Main Page');
-    var deviceWidth = Dimensions.get('window').width;
-    return (
-      <View style={{width: deviceWidth, flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-        <Text style={{fontSize: 20}}>{this.state.allPages[this.state.currentPage]}</Text>
-      </View>
-    );
   }
 
   componentWillMount() {
     this._panResponder = PanResponder.create({
       onStartShouldSetPanResponder: (evt, gestureState) => {
-        // console.log('onStartShouldSetPanResponder');
+        if (VERBOSE >= 5) {
+          console.log('DynamicViewPager: onStartShouldSetPanResponder');
+        }
         return true;
       },
       onMoveShouldSetPanResponder: (evt, gestureState) => {
-        // console.log('onMoveShouldSetPanResponder');
+        if (VERBOSE >= 5) {
+          console.log('DynamicViewPager: onMoveShouldSetPanResponder');
+        }
         return true;
       },
       onMoveShouldSetPanResponderCapture: (evt, gestureState) => {
-        // console.log('onMoveShouldSetPanResponderCapture');
+        if (VERBOSE >= 5) {
+          console.log('DynamicViewPager: onMoveShouldSetPanResponderCapture');
+        }
         return true;
       },
 
@@ -160,65 +107,121 @@ class DynamicViewPager extends React.Component {
         // what is happening!
 
         // gestureState.d{x,y} will be set to zero now
-        // console.log('onPanResponderGrant');
-        console.log('Start swipe');
+        if (VERBOSE >= 5) {
+          console.log('DynamicViewPager: onPanResponderGrant');
+        }
       },
       onPanResponderMove: (evt, gestureState) => {
         // The most recent move distance is gestureState.move{X,Y}
 
         // The accumulated gesture distance since becoming responder is
         // gestureState.d{x,y}
-        // console.log('vx: ' + gestureState.vx);
-        // console.log('vy: ' + gestureState.vy);
-        // console.log('xO: ' + gestureState.x0);
-        // console.log('moveX: ' + gestureState.moveX);
-        var deviceWidth = Dimensions.get('window').width;
-        this.state.scrollValue.setValue(-deviceWidth + gestureState.dx);
+        if (VERBOSE >= 5) {
+          console.log('vx: ' + gestureState.vx);
+          console.log('vy: ' + gestureState.vy);
+          console.log('xO: ' + gestureState.x0);
+          console.log('moveX: ' + gestureState.moveX);
+        }
+        this.state.scrollValue.setValue(-CONSTANTS.window.width + gestureState.dx);
       },
       onPanResponderTerminationRequest: (evt, gestureState) => {
         console.log('onPanResponderTerminationRequest');
         return true;
       },
       onPanResponderRelease: this._handlePanResponseEnd,
-      onPanResponderTerminate: (evt, gestureState) => {
-        // Another component has become the responder, so this gesture
-        // should be cancelled
-        console.log('onPanResponderTerminate');
-      },
+      onPanResponderTerminate: this._handlePanResponseEnd,
       onShouldBlockNativeResponder: (evt, gestureState) => {
         // Returns whether this component should block native components from
         // becoming the JS responder. Returns true by default. Is currently
         // only supported on android.
-        // console.log('onShouldBlockNativeResponder');
+        if (VERBOSE >= 5) {
+          console.log('DynamicViewPager: onShouldBlockNativeResponder');
+        }
         return true;
       },
     });
   }
 
   render() {
-    var deviceWidth = Dimensions.get('window').width;
-    const style = {
-      width: 3 * deviceWidth,
-      flex: 1,
-      flexDirection: 'row'
-    }
-
-    // var translateX = this.state.scrollValue.interpolate({
-    //   inputRange: [-deviceWidth, deviceWidth],
-    //   outputRange:
-    // });
-
     return (
       <View style={{flex: 1}}>
-        <Animated.View style={[style, {transform: [{translateX: this.state.scrollValue}]}]} {...this._panResponder.panHandlers}>
-          {this._getLeftPage()}
-          {this._getMainPage()}
-          {this._getRightPage()}
+        <Animated.View
+         style={[style.main, {transform: [{translateX: this.state.scrollValue}]}]}
+         {...this._panResponder.panHandlers}>
+          <View style={style.pageWrapper}>
+            {this.props.getLeftPage()}
+          </View>
+          <View style={style.pageWrapper}>
+            {this.props.getMainPage()}
+          </View>
+          <View style={style.pageWrapper}>
+            {this.props.getRightPage()}
+          </View>
         </Animated.View>
       </View>
     );
   }
 
+  _handlePanResponseEnd = (e: Object, gestureState: Object) => {
+
+    if (VERBOSE >= 5) {
+      console.log('onPanResponderRelease');
+      console.log('This is gestureState');
+      console.log('stateID: ' + gestureState.stateID);
+      console.log('moveX: ' + gestureState.moveX);
+      console.log('moveY: ' + gestureState.moveY);
+      console.log('x0: ' + gestureState.x0);
+      console.log('y0: ' + gestureState.y0);
+      console.log('dx: ' + gestureState.dx);
+      console.log('dy: ' + gestureState.dy);
+      console.log('vx: ' + gestureState.vx);
+      console.log('vy: ' + gestureState.vy);
+    }
+
+    var relativeSwipeDistance = gestureState.dx / CONSTANTS.window.width;
+    var vx = gestureState.vx;
+
+    if (relativeSwipeDistance < -0.3 || (relativeSwipeDistance < 0 && vx <= -1)) {
+      Animated.timing(
+        this.state.scrollValue,
+        { toValue: -2 * CONSTANTS.window.width, duration: 250 }
+      ).start((event) => {
+        if (event.finished) {
+          if (VERBOSE >= 4) {
+            console.log("onSwipedRight");
+          }
+          this.props.onSwipedRight();
+          this.state.scrollValue.setValue(-CONSTANTS.window.width);
+        }
+      });
+    } else if (relativeSwipeDistance > 0.3 || (relativeSwipeDistance > 0 && vx >= 1)) {
+      Animated.timing(
+        this.state.scrollValue,
+        { toValue: 0, duration: 250 }
+      ).start((event) => {
+        if (event.finished) {
+          if (VERBOSE >= 4) {
+            console.log("onSwipedLeft");
+          }
+          this.props.onSwipedLeft();
+          this.state.scrollValue.setValue(-CONSTANTS.window.width);
+        }
+      });
+    } else {
+      Animated.timing(
+       this.state.scrollValue,
+       {toValue: -CONSTANTS.window.width, duration: 200 }
+      ).start((event) => {
+        if (event.finished) {
+          if (VERBOSE >= 4) {
+            console.log('onSwipedFail');
+            console.log('vx: ' + vx);
+          }
+          this.props.onSwipedFail();
+        }
+      });
+    }
+  }
 }
 
 export default DynamicViewPager;
