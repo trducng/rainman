@@ -30,6 +30,7 @@
 import WordListScreen, { filterWordList } from '../../src/screens/WordListScreen';
 import { INDEX, WORD, DEFINITION,
          NOUN, VERB, ADJECTIVE, ADVERB, SCORE } from '../../src/constants/DB';
+import { test, expect } from 'jest';
 
 test('filter words and definition with search term', () => {
   let original = [

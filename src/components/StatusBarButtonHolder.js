@@ -35,7 +35,13 @@ import { Ionicons } from '@expo/vector-icons';
 import style from '../styles/components/StatusBarButtonHolder';
 
 
-export default class StatusBarButtonHolder extends React.Component {
+type Props = {
+  onEdit?: Function,
+  onDelete?: Function
+}
+
+
+export default class StatusBarButtonHolder extends React.Component<Props> {
   render() {
     var buttons = [];
 

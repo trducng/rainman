@@ -32,7 +32,12 @@ import { Text, TouchableNativeFeedback, View } from 'react-native';
 
 import style from '../styles/components/NormalButton';
 
-class NormalButton extends React.Component {
+
+type Props = {
+  onPress: Function
+}
+
+class NormalButton extends React.Component<Props> {
   render() {
     return (
       <View style={style.main}>

@@ -30,7 +30,7 @@
 import { Notifications } from 'expo';
 import { Ionicons } from '@expo/vector-icons';
 
-import PropTypes from 'prop-types';
+import { EventSubscription } from 'fbemitter';
 
 import React from 'react';
 import { Platform } from 'react-native';
@@ -48,6 +48,12 @@ import StackScreen from '../screens/StackScreen';
 
 import WordListStackNavigator from './WordListNavigation';
 import { AddNavigator, WordNavigator, QuizNavigator } from './DummyNavigators';
+
+
+type Props = {
+  dispatch: Function,
+  nav: Object
+}
 
 
 export const MainTabNavigator = TabNavigator(
@@ -112,7 +118,9 @@ export const MainTabNavigator = TabNavigator(
 /**
  * Integrate react-navigation state into redux state tree.
  */
-class RootNavigator extends React.Component {
+class RootNavigator extends React.Component<Props> {
+
+  _notificationSubscription: EventSubscription;
 
   componentDidMount() {
     this._notificationSubscription = this._registerForPushNotifications();
@@ -152,11 +160,6 @@ class RootNavigator extends React.Component {
     );
   };
 }
-
-RootNavigator.propTypes = {
-  dispatch: PropTypes.func.isRequired,
-  nav: PropTypes.object.isRequired,
-};
 
 const mapStateToProps = state => ({ nav: state.nav })
 

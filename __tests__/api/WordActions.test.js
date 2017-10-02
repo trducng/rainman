@@ -29,7 +29,7 @@
 
 import { displayWord, editWord,
          addWord, changeScore } from '../../src/api/WordActions';
-
+import { test, expect } from 'jest';
 
 test('display with word index action', () => {
   let result = {
@@ -47,8 +47,8 @@ test('edit word with appropriate information', () => {
     def: 'a learned person',
     n: true, v: false, adj: true, adv: false,
   };
-  expect(editWord(id=4, word='Savant', def='a learned person',
-                  n=true, v=false, adj=true, adv=false)).toEqual(result);
+  expect(editWord(4, 'Savant', 'a learned person',
+                  true, false, true, false)).toEqual(result);
 });
 
 test('add word with appropriate information', () => {
@@ -59,8 +59,8 @@ test('add word with appropriate information', () => {
     n: true, v: true, adj: true, adv: true,
     score: 6,
   };
-  expect(addWord(id='Savant', def='a learned person',
-                 n=true, v=true, adj=true, adv=true)).toEqual(result);
+  expect(addWord('Savant', 'a learned person',
+                 true, true, true, true)).toEqual(result);
 });
 
 test('changeScore', () => {
@@ -69,5 +69,5 @@ test('changeScore', () => {
       id: 1,
       val: -1
   };
-  expect(changeScore(id=1, val=-1)).toEqual(result);
+  expect(changeScore(1, -1)).toEqual(result);
 });

@@ -33,7 +33,12 @@ import { Text, TouchableHighlight, View } from 'react-native';
 import style from '../styles/components/ListSelectable';
 
 
-class ListSelectable extends React.Component {
+type Props = {
+  items: Array<Object>
+}
+
+
+class ListSelectable extends React.Component<Props> {
  render() {
    return (
      <View style={style.main}>

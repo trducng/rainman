@@ -27,14 +27,14 @@
  * @flow
  */
 
-export const searchWord = (term) => {
+export const searchWord = (term: string) => {
   return {
     type: 'SEARCH_WORD',
     term,
   }
 }
 
-export const getAllWords = (words) => {
+export const getAllWords = (words: Array<Array<string>>) => {
   return {
     type: 'GET_ALL_WORDS',
     words,

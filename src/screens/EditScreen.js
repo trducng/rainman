@@ -46,7 +46,23 @@ import { editWord } from '../api/WordActions';
 import { mergeItem } from '../api/AsyncDB';
 
 
-class EditScreen extends React.Component {
+type Props = {
+    onEdit: Function,
+    navigation: Object
+}
+
+type State = {
+  id?: number,
+  word: string,
+  def?: string,
+  n?: boolean,
+  v?: boolean,
+  adj?: boolean,
+  adv?: boolean
+}
+
+
+class EditScreen extends React.Component<Props, State> {
 
   constructor(props) {
     super(props);

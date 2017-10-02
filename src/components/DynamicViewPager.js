@@ -79,6 +79,8 @@ type State = {
  */
 class DynamicViewPager extends React.Component<Props, State> {
 
+  _panResponder: Object;
+
   constructor(props: Object) {
     super(props);
     this.state = {

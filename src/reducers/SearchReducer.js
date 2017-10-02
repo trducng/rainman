@@ -29,7 +29,7 @@
 
 var initialState = '';
 
-export const searchTerm = (state = initialState, action) => {
+export const searchTerm = (state: string = initialState, action: Object) => {
   switch (action.type) {
 
     case 'SEARCH_WORD':

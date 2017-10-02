@@ -31,6 +31,9 @@ import 'react-native';
 import React from 'react';
 import { searchWord, getAllWords } from '../../src/api/WordListActions';
 
+import { test, expect } from 'jest';
+
+
 test('get all words action', () => {
   let result = {
     type: 'GET_ALL_WORDS',

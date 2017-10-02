@@ -40,6 +40,12 @@ import WordScreen from '../screens/WordScreen';
 import QuizScreen from '../screens/QuizScreen';
 
 
+type Props = {
+  dispatch: Function,
+  nav: Object
+}
+
+
 /**
  * Create all stack navigators for these single screens
  */
@@ -59,7 +65,7 @@ export const QuizScreenNavigator = StackNavigator({
 /**
  * Create wrapper for those navigators
  */
-class AddScreenWrapper extends React.Component {
+class AddScreenWrapper extends React.Component<Props> {
   render() {
     return (
       <AddScreenNavigator
@@ -72,7 +78,7 @@ class AddScreenWrapper extends React.Component {
   }
 }
 
-class WordScreenWrapper extends React.Component {
+class WordScreenWrapper extends React.Component<Props> {
   render() {
     return (
       <WordScreenNavigator
@@ -85,7 +91,7 @@ class WordScreenWrapper extends React.Component {
   }
 }
 
-class QuizScreenWrapper extends React.Component {
+class QuizScreenWrapper extends React.Component<Props> {
   render() {
     return (
       <QuizScreenNavigator
@@ -97,25 +103,6 @@ class QuizScreenWrapper extends React.Component {
     );
   }
 }
-
-
-/**
- * Specify PropTypes checking
- */
-AddScreenWrapper.propTypes = {
-  dispatch: PropTypes.func.isRequired,
-  nav: PropTypes.object.isRequired
-};
-
-WordScreenWrapper.propTypes = {
-  dispatch: PropTypes.func.isRequired,
-  nav: PropTypes.object.isRequired
-};
-
-QuizScreenWrapper.propTypes = {
-  dispatch: PropTypes.func.isRequired,
-  nav: PropTypes.object.isRequired
-};
 
 
 /**

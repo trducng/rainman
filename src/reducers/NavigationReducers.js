@@ -40,7 +40,7 @@ import { WordListNavigator } from '../navigation/WordListNavigation';
 const firstAction = MainTabNavigator.router.getActionForPathAndParams('List');
 const initialNavState = MainTabNavigator.router.getStateForAction(firstAction);
 
-export const nav = (state = initialNavState, action) => {
+export const nav = (state: Object = initialNavState, action: Object) => {
  let nextState;
  switch (action.type) {
    case 'Links':
@@ -63,7 +63,7 @@ export const nav = (state = initialNavState, action) => {
 const firstListAction = WordListNavigator.router.getActionForPathAndParams('WordList');
 const initialListState = WordListNavigator.router.getStateForAction(firstListAction);
 
-export const navWordList = (state = initialListState, action) => {
+export const navWordList = (state: Object = initialListState, action: Object) => {
  let nextState = WordListNavigator.router.getStateForAction(action, state);
  return nextState || state;
 };

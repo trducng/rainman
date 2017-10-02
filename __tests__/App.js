@@ -30,7 +30,10 @@
 import 'react-native';
 import React from 'react';
 import App from '../App';
+
+import { test, expect } from 'jest';
 import renderer from 'react-test-renderer';
+
 
 // remove all the keys named 'key', crude implementation
 const filterKeys = (state) => {

@@ -30,23 +30,23 @@
 import { AsyncStorage } from 'react-native';
 
 
-export const retrieveAll = (callback) => {
+export const retrieveAll = (callback: Function) => {
   AsyncStorage.getAllKeys((err, keys) => {
     AsyncStorage.multiGet(keys, callback);
   });
 };
 
-export const setItem = (k, v) => {
-  AsyncStorage.setItem(k, v, (err) => {
+export const setItem = (k: string, v: Object) => {
+  AsyncStorage.setItem(k, JSON.stringify(v), (err) => {
     console.log('Item setted!');
   });
 };
 
-export const getItem = (k, f) => {
+export const getItem = (k: string, f: Function) => {
   AsyncStorage.getItem(k, f);
 };
 
-export const deleteItem = (k, callback) => {
+export const deleteItem = (k: string, callback: Function) => {
   if (typeof callback === 'undefined') {
     AsyncStorage.removeItem(k);
   } else {
@@ -54,10 +54,10 @@ export const deleteItem = (k, callback) => {
   }
 };
 
-export const multiRemove = (k) => {
+export const multiRemove = (k: Array<string>) => {
   AsyncStorage.multiRemove(k);
 };
 
-export const mergeItem = (k, v) => {
+export const mergeItem = (k: string, v: Object) => {
   AsyncStorage.mergeItem(k, JSON.stringify(v));
 };

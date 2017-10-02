@@ -32,7 +32,15 @@ import { View, Text, TextInput } from 'react-native';
 
 import style from '../styles/components/InputTextWithLabel';
 
-class InputTextWithLabel extends React.Component {
+
+type Props = {
+  label: string,
+  onChangeText: Function,
+  multiline?: boolean,
+  value?: string
+}
+
+class InputTextWithLabel extends React.Component<Props> {
   render() {
     let { multiline=false, value='' } = this.props;
     let textStyle = multiline

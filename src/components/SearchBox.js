@@ -34,7 +34,14 @@ import { Ionicons } from '@expo/vector-icons';
 
 import style from '../styles/components/SearchBox';
 
-export class SearchBox extends React.Component {
+
+type Props = {
+  onChangeText: Function,
+  value: string
+}
+
+
+export class SearchBox extends React.Component<Props> {
   render() {
     let iconName = Platform.OS === 'ios' ? 'ios-search' : 'md-search';
 
@@ -48,7 +55,7 @@ export class SearchBox extends React.Component {
             returnKeyType={'search'} selectTextOnFocus={true}
             underlineColorAndroid={'transparent'} returnKeyType={'next'}
             onChangeText={this.props.onChangeText}
-            value={this.props.searchTerm}
+            value={this.props.value}
           />
         </View>
       </View>

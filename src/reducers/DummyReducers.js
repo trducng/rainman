@@ -39,21 +39,21 @@ import {
 
 const aAction = AddScreenNavigator.router.getActionForPathAndParams('DummyAdd');
 const aState = AddScreenNavigator.router.getStateForAction(aAction);
-export const navAdd = (state = aState, action) => {
+export const navAdd = (state: Object = aState, action: Object) => {
  let nextState = AddScreenNavigator.router.getStateForAction(action, state);
  return nextState || state;
 }
 
 const wAction = WordScreenNavigator.router.getActionForPathAndParams('DummyDetail');
 const wState = WordScreenNavigator.router.getStateForAction(wAction);
-export const navWord = (state = wState, action) => {
+export const navWord = (state: Object = wState, action: Object) => {
  let nextState = WordScreenNavigator.router.getStateForAction(action, state);
  return nextState || state;
 }
 
 const qAction = QuizScreenNavigator.router.getActionForPathAndParams('DummyQuiz');
 const qState = QuizScreenNavigator.router.getStateForAction(qAction);
-export const navQuiz = (state = qState, action) => {
+export const navQuiz = (state: Object = qState, action: Object) => {
  let nextState = QuizScreenNavigator.router.getStateForAction(action, state);
  return nextState || state;
 }
