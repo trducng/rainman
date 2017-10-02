@@ -29,14 +29,14 @@
 
 import { INDEX, WORD, DEFINITION,
          NOUN, VERB, ADJECTIVE, ADVERB, SCORE } from '../constants/DB';
-
+import { VERBOSE } from '../constants/Meta';
 
 var initialState = {
   ALL_WORDS: [],
   SORTED_SCORES: []
 }
 
-export const wordData = (state = initialState, action) => {
+export const wordData = (state: Object = initialState, action: Object) => {
   switch (action.type) {
 
     case 'GET_ALL_WORDS':
@@ -93,6 +93,15 @@ export const wordData = (state = initialState, action) => {
             ? {...wordObj, score: wordObj.score + action.val}
             : wordObj),
         SORTED_SCORES: state.SORTED_SCORES
+      }
+
+    case 'DELETE_WORD':
+      if (VERBOSE >= 5) {
+        console.log(`WordDataReducer: DELETE_WORD for ${action.word}`);
+      }
+      return {
+        ALL_WORDS: state.ALL_WORDS.filter((wordObj) => wordObj[WORD] !== action.word),
+        SORTED_SCORES: state.SORTED_SCORES.filter((wordObj) => wordObj[WORD] !== action.word)
       }
 
     default:

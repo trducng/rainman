@@ -1,7 +1,9 @@
 # Roadmap
+- Make all files Flow-compatible
 
 ## Medium priority
 - Add filter for each word
+- Add edit and edit buttons for each list item in WordListScreen
 
 ## Low priority
 - Make the status bar's search input an expandable button (likely need some Animation).

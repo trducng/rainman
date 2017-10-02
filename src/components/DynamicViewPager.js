@@ -74,6 +74,8 @@ type State = {
  * TODO:
  *    - if any page has animation or video or music (that runs, then swiping)
  *      might refresh it, creating an annoying lag
+ *    - handle cases when the amount of page is 0 and 1
+ *    - handle non-loop use case
  */
 class DynamicViewPager extends React.Component<Props, State> {
 

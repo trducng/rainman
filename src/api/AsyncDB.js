@@ -46,8 +46,12 @@ export const getItem = (k, f) => {
   AsyncStorage.getItem(k, f);
 };
 
-export const removeItem = (k) => {
-  AsyncStorage.removeItem(k);
+export const deleteItem = (k, callback) => {
+  if (typeof callback === 'undefined') {
+    AsyncStorage.removeItem(k);
+  } else {
+    AsyncStorage.removeItem(k, callback);
+  }
 };
 
 export const multiRemove = (k) => {

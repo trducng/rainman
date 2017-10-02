@@ -35,6 +35,9 @@ export const currentWord = (state:number = initialState, action: Object) => {
     case 'DISPLAY_WORD':
       return action.index;
 
+    case 'DELETE_WORD':
+      return Math.max(state - 1, 0);
+
     default:
       return state;
   }

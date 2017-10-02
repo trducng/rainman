@@ -28,7 +28,7 @@
  */
 
 import React from 'react';
-import { View, Text } from 'react-native';
+import { Alert, View, Text } from 'react-native';
 import { connect } from 'react-redux';
 
 import { appBarStyle } from '../styles';
@@ -59,17 +59,38 @@ class WordScreen extends React.Component<Props> {
 
   static navigationOptions = ({ navigation, screenProps }) => {
     let { params } = navigation.state;
+    let { allWords, currentWord, onDeleteWord } = screenProps;
+
     return {
       title: 'Word Detail',
       headerTintColor: 'white',
       headerStyle: appBarStyle,
       headerRight: (<StatusBarButtonHolder
-        onDelete={() => console.log('Delete index: ' + screenProps.currentWord)}
+        onDelete={() => {
+          if (VERBOSE >= 5) {
+            console.log('WordScreen: delete index: ' + currentWord);
+          }
+          Alert.alert(
+            `Confirm Delete`,
+            `Are you sure to delete the word '${allWords[currentWord][WORD]}'?`,
+            [
+              {text: 'Cancel'},
+              {text: 'Delete', onPress: () => {
+                if (VERBOSE >= 5) {
+                  console.log('WordScreen: delete word');
+                }
+                navigation.goBack();
+                onDeleteWord(allWords[currentWord][WORD]);
+              }}
+            ],
+            { cancelable: false }
+          );
+        }}
         onEdit={() => {
           if (VERBOSE >= 5) {
-            console.log('Edit index: ' + screenProps.currentWord);
+            console.log('WordScreen: edit index: ' + currentWord);
           }
-          navigation.navigate('Edit', {word: screenProps.allWords[screenProps.currentWord]});
+          navigation.navigate('Edit', {word: allWords[currentWord]});
         }} />
       ),
     }
@@ -93,6 +114,15 @@ class WordScreen extends React.Component<Props> {
       console.log('WordScreen: get left page');
     }
 
+    if (this.props.allWords.length === 0) {
+      return (
+        <View style={[screenGeneral, style.main]}>
+          <Text style={style.word}>This deck is empty!</Text>
+          <Text style={style.def}>There are currently no words, please add some!</Text>
+        </View>
+      )
+    }
+
     var word = this.props.allWords[mod(this.props.currentWord - 1,
                                        this.props.allWords.length)];
 
@@ -109,6 +139,15 @@ class WordScreen extends React.Component<Props> {
       console.log('WordScreen: get right page');
     }
 
+    if (this.props.allWords.length === 0) {
+      return (
+        <View style={[screenGeneral, style.main]}>
+          <Text style={style.word}>This deck is empty!</Text>
+          <Text style={style.def}>There are currently no words, please add some!</Text>
+        </View>
+      )
+    }
+
     var word = this.props.allWords[mod(this.props.currentWord + 1,
                                        this.props.allWords.length)];
 
@@ -123,6 +162,19 @@ class WordScreen extends React.Component<Props> {
   _getMainPage = () => {
     if (VERBOSE >= 5) {
       console.log('Get Main Page');
+    }
+    console.log('Current word');
+    console.log(this.props.currentWord);
+    console.log('allWords');
+    console.log(this.props.allWords);
+
+    if (this.props.allWords.length === 0) {
+      return (
+        <View style={[screenGeneral, style.main]}>
+          <Text style={style.word}>This deck is empty!</Text>
+          <Text style={style.def}>There are currently no words, please add some!</Text>
+        </View>
+      )
     }
 
     var word = this.props.allWords[this.props.currentWord];

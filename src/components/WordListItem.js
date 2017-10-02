@@ -30,10 +30,16 @@
 import React from 'react';
 import { View, Text, TouchableHighlight } from 'react-native';
 
-import style from '../styles/components/ListItem';
+import style from '../styles/components/WordListItem';
 
 
-export default class ListItem extends React.Component {
+type Props = {
+  word: string,
+  def: string,
+  onPress: Function
+}
+
+export default class WordListItem extends React.Component<Props> {
  render() {
    return (
      <TouchableHighlight onPress={this.props.onPress}>

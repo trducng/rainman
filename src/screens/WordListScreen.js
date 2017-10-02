@@ -35,7 +35,7 @@ import { connect } from 'react-redux';
 import { appBarStyle } from '../styles';
 import { screenGeneral } from '../styles/screens';
 
-import ListItem from '../components/ListItem';
+import WordListItem from '../components/WordListItem';
 import SearchBox from '../components/SearchBox';
 
 import { searchWord } from '../api/WordListActions';
@@ -45,6 +45,10 @@ import { INDEX, WORD, DEFINITION } from '../constants/DB';
 
 type Props = {
   wordList: Array<{
+    idx: number, word: string, def: string, n: boolean, v: boolean,
+    adj: boolean, adv: boolean, score: number
+  }>,
+  allWords: Array<{
     idx: number, word: string, def: string, n: boolean, v: boolean,
     adj: boolean, adv: boolean, score: number
   }>,
@@ -93,10 +97,12 @@ class WordListScreen extends React.Component<Props> {
           data={this.props.wordList}
           keyExtractor={(item, index) => item[INDEX]}
           renderItem={({item, index}) => (
-            <ListItem word={item[WORD]} def={item[DEFINITION]}
-                      onPress={() => {
-                        this.props.setCurrentWord(item[INDEX]);
-                        this.props.navigation.navigate('Detail')}}
+            <WordListItem
+              word={item[WORD]} def={item[DEFINITION]}
+              onPress={() => {
+                let idx = this.props.allWords.findIndex(i => item[WORD] === i[WORD]);
+                this.props.setCurrentWord(idx);
+                this.props.navigation.navigate('Detail')}}
             />
           )}
         />
@@ -109,6 +115,7 @@ class WordListScreen extends React.Component<Props> {
 const mapStateToProps = (state, ownProps) => {
   return {
     wordList: filterWordList(state.wordData.ALL_WORDS, state.searchTerm),
+    allWords: state.wordData.ALL_WORDS
   }
 };
 

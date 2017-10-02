@@ -143,9 +143,9 @@ export default class App extends React.Component<Props, State> {
     }
   }
 
-  _loadData = (error, stores) => {
+  _loadData = (error, result) => {
     this.setState({ dataLoaded: true});
-    this.store.dispatch(getAllWords(stores));
+    this.store.dispatch(getAllWords(result));
   }
 
 }

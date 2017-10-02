@@ -64,6 +64,13 @@ export const addWord = (
   }
 }
 
+export const deleteWord = (word: string) => {
+  return {
+    type: 'DELETE_WORD',
+    word
+  }
+}
+
 export const changeScore = (id: number, val: number) => {
   return {
     type: 'CHANGE_WORD_SCORE',

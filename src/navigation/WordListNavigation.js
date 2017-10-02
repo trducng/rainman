@@ -37,13 +37,13 @@ import EditScreen from '../screens/EditScreen';
 import WordScreen from '../screens/WordScreen';
 
 import { searchWord } from '../api/WordListActions';
-
+import { deleteWord, displayWord } from '../api/WordActions';
 
 type Props = {
   dispatch: Function,
   nav: Object,
-  searchTerm: String,
-  currentWord: Number,
+  searchTerm: string,
+  currentWord: number,
   allWords: Array<{
     idx: number, word: string, def: string, n: boolean, v: boolean,
     adj: boolean, adv: boolean, score: number
@@ -75,7 +75,8 @@ class WordListTempNavigator extends React.Component<Props> {
           searchTerm: this.props.searchTerm,
           onSearch: (term) => this.props.dispatch(searchWord(term)),
           currentWord: this.props.currentWord,
-          allWords: this.props.allWords
+          allWords: this.props.allWords,
+          onDeleteWord: (word) => this.props.dispatch(deleteWord(word))
         }}
       />
     );
@@ -88,6 +89,9 @@ const mapStateToProps = state => ({
   currentWord: state.currentWord, // pass to WordScreen's navigationOptions
   allWords: state.wordData.ALL_WORDS, // pass to WordScreen's navigationOptions
 });
+
+
+
 const WordListStackNavigator = connect(mapStateToProps)(WordListTempNavigator);
 
 WordListStackNavigator.navigationOptions = {
