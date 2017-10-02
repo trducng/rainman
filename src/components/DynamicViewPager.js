@@ -41,7 +41,8 @@ type Props = {
   onSwipedFail: Function,
   getLeftPage: Function,
   getRightPage: Function,
-  getMainPage: Function
+  getMainPage: Function,
+  style?: Object
 }
 
 type State = {
@@ -67,6 +68,8 @@ type State = {
  *    - onSwipedRight
  *    - onSwipedLeft
  *    - onSwipedFail
+ *
+ *  Users can provide styling with the `style` prop.
  *
  * TODO:
  *    - if any page has animation or video or music (that runs, then swiping)
@@ -143,8 +146,13 @@ class DynamicViewPager extends React.Component<Props, State> {
   }
 
   render() {
+
+    var viewWrapper = (this.props.style
+      ? style.viewWrapper
+      : [style.viewWrapper, this.props.style]);
+
     return (
-      <View style={{flex: 1}}>
+      <View style={viewWrapper}>
         <Animated.View
          style={[style.main, {transform: [{translateX: this.state.scrollValue}]}]}
          {...this._panResponder.panHandlers}>

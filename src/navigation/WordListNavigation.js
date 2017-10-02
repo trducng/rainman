@@ -39,6 +39,17 @@ import WordScreen from '../screens/WordScreen';
 import { searchWord } from '../api/WordListActions';
 
 
+type Props = {
+  dispatch: Function,
+  nav: Object,
+  searchTerm: String,
+  currentWord: Number,
+  allWords: Array<{
+    idx: number, word: string, def: string, n: boolean, v: boolean,
+    adj: boolean, adv: boolean, score: number
+  }>
+}
+
 
 export const WordListNavigator = StackNavigator({
   WordList: { screen: WordListScreen },
@@ -47,9 +58,12 @@ export const WordListNavigator = StackNavigator({
 });
 
 /**
- * Integrate react-navigation state into redux state tree.
+ * Integrate react-navigation state into redux state tree. Note that:
+ *    - navigation: the navigation state that now stored in redux
+ *    - screenProps: react-navigation - the props that will be passed to each
+ *      child screen's navigationOptions
  */
-class WordListTempNavigator extends React.Component {
+class WordListTempNavigator extends React.Component<Props> {
   render() {
     return (
       <WordListNavigator
@@ -60,20 +74,19 @@ class WordListTempNavigator extends React.Component {
         screenProps={{
           searchTerm: this.props.searchTerm,
           onSearch: (term) => this.props.dispatch(searchWord(term)),
+          currentWord: this.props.currentWord,
+          allWords: this.props.allWords
         }}
       />
     );
   }
 }
 
-WordListTempNavigator.propTypes = {
-  dispatch: PropTypes.func.isRequired,
-  nav: PropTypes.object.isRequired
-};
-
 const mapStateToProps = state => ({
   nav: state.navWordList,
-  searchTerm: state.searchTerm,
+  searchTerm: state.searchTerm,   // pass to WordListScreen's navigationOptions
+  currentWord: state.currentWord, // pass to WordScreen's navigationOptions
+  allWords: state.wordData.ALL_WORDS, // pass to WordScreen's navigationOptions
 });
 const WordListStackNavigator = connect(mapStateToProps)(WordListTempNavigator);
 

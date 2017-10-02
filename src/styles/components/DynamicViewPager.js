@@ -31,6 +31,9 @@ import { StyleSheet } from 'react-native';
 import CONSTANTS from '../../constants/Layout';
 
 export default StyleSheet.create({
+  viewWrapper: {
+    flex: 1
+  },
   main: {
     width: 3 * CONSTANTS.window.width,
     flex: 1,

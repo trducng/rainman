@@ -39,10 +39,25 @@ import ListItem from '../components/ListItem';
 import SearchBox from '../components/SearchBox';
 
 import { searchWord } from '../api/WordListActions';
+import { displayWord } from '../api/WordActions';
 import { INDEX, WORD, DEFINITION } from '../constants/DB';
 
 
-export const filterWordList = (wordList, searchTerm) => {
+type Props = {
+  wordList: Array<{
+    idx: number, word: string, def: string, n: boolean, v: boolean,
+    adj: boolean, adv: boolean, score: number
+  }>,
+  navigation: Object,
+  setCurrentWord: Function
+}
+
+
+export const filterWordList = (
+ wordList: Array<{
+  idx: number, word: string, def: string, n: boolean, v: boolean,
+  adj: boolean, adv: boolean, score: number}>,
+ searchTerm: string) => {
 
   if (searchTerm === '') {
     return wordList;
@@ -56,14 +71,17 @@ export const filterWordList = (wordList, searchTerm) => {
 }
 
 
-class WordListScreen extends React.Component {
+class WordListScreen extends React.Component<Props> {
 
   static navigationOptions({ navigation, screenProps }) {
     return {
       title: 'Word List',
       headerTintColor: 'white',
       headerStyle: appBarStyle,
-      headerRight: <SearchBox onChangeText={screenProps.onSearch} value={screenProps.searchTerm}/>,
+      headerRight: (<SearchBox
+        onChangeText={screenProps.onSearch}
+        value={screenProps.searchTerm}/>
+      ),
     }
   }
 
@@ -76,8 +94,9 @@ class WordListScreen extends React.Component {
           keyExtractor={(item, index) => item[INDEX]}
           renderItem={({item, index}) => (
             <ListItem word={item[WORD]} def={item[DEFINITION]}
-                      onPress={() => this.props.navigation.navigate('Detail',
-                                     {data: this.props.wordList, index: index})}
+                      onPress={() => {
+                        this.props.setCurrentWord(item[INDEX]);
+                        this.props.navigation.navigate('Detail')}}
             />
           )}
         />
@@ -93,4 +112,10 @@ const mapStateToProps = (state, ownProps) => {
   }
 };
 
-export default connect(mapStateToProps)(WordListScreen);
+const mapDispatchToProps = (dispatch, ownProps) => {
+  return {
+    setCurrentWord: (idx) => dispatch(displayWord(idx))
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(WordListScreen);

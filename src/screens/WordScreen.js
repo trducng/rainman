@@ -29,6 +29,7 @@
 
 import React from 'react';
 import { View, Text } from 'react-native';
+import { connect } from 'react-redux';
 
 import { appBarStyle } from '../styles';
 import { screenGeneral } from '../styles/screens';
@@ -38,44 +39,43 @@ import StatusBarButtonHolder from '../components/StatusBarButtonHolder';
 import DynamicViewPager from '../components/DynamicViewPager';
 
 import { INDEX, WORD, DEFINITION } from '../constants/DB';
+import { VERBOSE } from '../constants/Meta';
+import { mod } from '../api/utils';
+import { displayWord } from '../api/WordActions';
 
 
-class WordScreen extends React.Component {
+type Props = {
+  navigation: Object,
+  currentWord: number,
+  allWords: Array<{
+    idx: number, word: string, def: string, n: boolean, v: boolean,
+    adj: boolean, adv: boolean, score: number
+  }>,
+  setCurrentWord: Function
+}
 
-  static navigationOptions = ({ navigation }) => {
+
+class WordScreen extends React.Component<Props> {
+
+  static navigationOptions = ({ navigation, screenProps }) => {
     let { params } = navigation.state;
     return {
       title: 'Word Detail',
       headerTintColor: 'white',
       headerStyle: appBarStyle,
       headerRight: (<StatusBarButtonHolder
-          onDelete={() => console.log('Delete index: ' + params.data[params.index][INDEX])}
-          onEdit={() => navigation.navigate('Edit', {word: params.data[params.index]})} />
+        onDelete={() => console.log('Delete index: ' + screenProps.currentWord)}
+        onEdit={() => {
+          if (VERBOSE >= 5) {
+            console.log('Edit index: ' + screenProps.currentWord);
+          }
+          navigation.navigate('Edit', {word: screenProps.allWords[screenProps.currentWord]});
+        }} />
       ),
     }
   }
 
-  constructor(props: Object) {
-    super(props);
-    this.state = {
-      currentPage: 0,
-      allPages: ["Page 1", "Page 2", "Page 3", "Page 4"],
-    }
-  }
-
   render() {
-    var { params } = this.props.navigation.state;
-
-    if (typeof params === 'undefined') {
-      return <View><Text>Empty</Text></View>;
-    }
-
-    // return (
-    //   <View style={[screenGeneral, style.main]}>
-    //     <Text style={style.word}>{params.data[params.index][WORD]}</Text>
-    //     <Text style={style.def}>{params.data[params.index][DEFINITION]}</Text>
-    //   </View>
-    // );
     return (
       <DynamicViewPager
         onSwipedRight={this._onSwipedRight}
@@ -89,68 +89,78 @@ class WordScreen extends React.Component {
   }
 
   _getLeftPage = () => {
-    console.log('Get Left Page');
+    if (VERBOSE >= 5) {
+      console.log('WordScreen: get left page');
+    }
+
+    var word = this.props.allWords[mod(this.props.currentWord - 1,
+                                       this.props.allWords.length)];
+
     return (
-      <View
-        style={{
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}
-      >
-        <Text style={{fontSize: 20}}>{this.state.allPages[(this.state.currentPage+1) % 4]}</Text>
+      <View style={[screenGeneral, style.main]} >
+        <Text style={style.word}>{word[WORD]}</Text>
+        <Text style={style.def}>{word[DEFINITION]}</Text>
       </View>
     );
   }
 
   _getRightPage = () => {
-    console.log('Get Right Page Holaaaaaaaaaaaaaaa');
+    if (VERBOSE >= 5) {
+      console.log('WordScreen: get right page');
+    }
+
+    var word = this.props.allWords[mod(this.props.currentWord + 1,
+                                       this.props.allWords.length)];
+
     return (
-      <View
-        style={{
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}
-      >
-        <Text style={{fontSize: 20}}>{this.state.allPages[(this.state.currentPage+1) % 4]}</Text>
+      <View style={[screenGeneral, style.main]} >
+        <Text style={style.word}>{word[WORD]}</Text>
+        <Text style={style.def}>{word[DEFINITION]}</Text>
       </View>
     );
   }
 
   _getMainPage = () => {
-    console.log('Get Main Page');
+    if (VERBOSE >= 5) {
+      console.log('Get Main Page');
+    }
+
+    var word = this.props.allWords[this.props.currentWord];
+
     return (
-      <View
-        style={{
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}
-      >
-        <Text style={{fontSize: 20}}>{this.state.allPages[this.state.currentPage]}</Text>
+      <View style={[screenGeneral, style.main]} >
+        <Text style={style.word}>{word[WORD]}</Text>
+        <Text style={style.def}>{word[DEFINITION]}</Text>
       </View>
     );
   }
 
   _onSwipedRight = () => {
-    this.setState(prevState => {
-      return {
-        currentPage: (prevState.currentPage + 1) % 4,
-      };
-    });
+    this.props.setCurrentWord(mod(this.props.currentWord + 1,
+                                  this.props.allWords.length));
+
   }
 
   _onSwipedLeft = () => {
-    this.setState(prevState => {
-      return {
-        currentPage: (prevState.currentPage + 1) % 4
-      };
-    });
+    this.props.setCurrentWord(mod(this.props.currentWord - 1,
+                                  this.props.allWords.length));
   }
 
   _onSwipedFail = () => {}
 
 }
 
-export default WordScreen;
+const mapStateToProps = (state, ownProps) => {
+  return {
+    currentWord: state.currentWord,
+    allWords: state.wordData.ALL_WORDS
+  }
+}
+
+const mapDispatchToProps = (dispatch, ownProps) => {
+  return {
+    setCurrentWord: (idx) => dispatch(displayWord(idx))
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(WordScreen);

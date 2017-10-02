@@ -43,12 +43,25 @@ import { retrieveAll, setItem, multiRemove } from './src/api/AsyncDB';
 import { getAllWords } from './src/api/WordListActions';
 
 
-export default class App extends React.Component {
+type Props = {
+  skipLoadingScreen?: boolean
+}
 
-  state = {
-    assetsAreLoaded: false,
-    dataLoaded: false,
-  };
+type State = {
+  assetsAreLoaded: boolean,
+  dataLoaded: boolean
+}
+
+
+export default class App extends React.Component<Props, State> {
+
+  constructor(props: Object) {
+    super(props);
+    this.state = {
+      assetsAreLoaded: false,
+      dataLoaded: false,
+    };
+  }
 
   store = createStore(AppReducer);
 

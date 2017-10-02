@@ -27,14 +27,16 @@
  * @flow
  */
 
-export const displayWord = (id) => {
+export const displayWord = (index: number) => {
   return {
     type: 'DISPLAY_WORD',
-    id,
+    index,
   }
 }
 
-export const editWord = (id, word, def, n, v, adj, adv) => {
+export const editWord = (
+ id: number, word: string, def: string, n: boolean,
+ v: boolean, adj: boolean, adv:boolean) => {
   return {
     type: 'EDIT_WORD',
     id,
@@ -47,7 +49,9 @@ export const editWord = (id, word, def, n, v, adj, adv) => {
   }
 }
 
-export const addWord = (word, def, n, v, adj, adv) => {
+export const addWord = (
+ word: string, def: string, n: boolean, v: boolean,
+ adj: boolean, adv: boolean) => {
   return {
     type: 'ADD_WORD',
     word,
@@ -60,7 +64,7 @@ export const addWord = (word, def, n, v, adj, adv) => {
   }
 }
 
-export const changeScore = (id, val) => {
+export const changeScore = (id: number, val: number) => {
   return {
     type: 'CHANGE_WORD_SCORE',
     id,

@@ -27,15 +27,6 @@
  * @flow
  */
 
-var initialState = 0;
-
-export const currentWord = (state:number = initialState, action: Object) => {
-  switch (action.type) {
-
-    case 'DISPLAY_WORD':
-      return action.index;
-
-    default:
-      return state;
-  }
-}
+export const mod = (n: number, m: number): number => {
+  return ((n % m) + m) % m;
+};
