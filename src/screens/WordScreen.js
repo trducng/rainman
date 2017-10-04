@@ -42,7 +42,7 @@ import { ID, WORD, DEFINITION } from '../constants/DB';
 import { VERBOSE } from '../constants/Meta';
 
 import { mod } from '../api/utils';
-import { displayWord } from '../api/WordActions';
+import { setCurrentWord } from '../api/WordActions';
 
 
 type Props = {
@@ -52,7 +52,7 @@ type Props = {
     idx: number, word: string, def: string, n: boolean, v: boolean,
     adj: boolean, adv: boolean, score: number
   }>,
-  setCurrentWord: Function
+  setWord: Function
 }
 
 
@@ -189,14 +189,14 @@ class WordScreen extends React.Component<Props> {
   }
 
   _onSwipedRight = () => {
-    this.props.setCurrentWord(mod(this.props.currentWord + 1,
-                                  this.props.allWords.length));
+    this.props.setWord(mod(this.props.currentWord + 1,
+                           this.props.allWords.length));
 
   }
 
   _onSwipedLeft = () => {
-    this.props.setCurrentWord(mod(this.props.currentWord - 1,
-                                  this.props.allWords.length));
+    this.props.setWord(mod(this.props.currentWord - 1,
+                           this.props.allWords.length));
   }
 
   _onSwipedFail = () => {}
@@ -205,14 +205,14 @@ class WordScreen extends React.Component<Props> {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    currentWord: state.currentWord,
+    currentWord: state.wordData.CURRENT_WORD,
     allWords: state.wordData.ALL_WORDS
   }
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    setCurrentWord: (idx) => dispatch(displayWord(idx))
+    setWord: (idx) => dispatch(setCurrentWord(idx))
   }
 }
 

@@ -27,9 +27,9 @@
  * @flow
  */
 
-export const displayWord = (index: number) => {
+export const setCurrentWord = (index: number) => {
   return {
-    type: 'DISPLAY_WORD',
+    type: 'SET_CURRENT_WORD',
     index,
   }
 }

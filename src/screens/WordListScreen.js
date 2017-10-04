@@ -39,7 +39,7 @@ import WordListItem from '../components/WordListItem';
 import SearchBox from '../components/SearchBox';
 
 import { searchWord } from '../api/WordListActions';
-import { displayWord } from '../api/WordActions';
+import { setCurrentWord } from '../api/WordActions';
 import { ID, WORD, DEFINITION } from '../constants/DB';
 
 
@@ -53,7 +53,7 @@ type Props = {
     adj: boolean, adv: boolean, score: number
   }>,
   navigation: Object,
-  setCurrentWord: Function
+  setWord: Function
 }
 
 
@@ -101,7 +101,7 @@ class WordListScreen extends React.Component<Props> {
               word={item[WORD]} def={item[DEFINITION]}
               onPress={() => {
                 let idx = this.props.allWords.findIndex(i => item[WORD] === i[WORD]);
-                this.props.setCurrentWord(idx);
+                this.props.setWord(idx);
                 this.props.navigation.navigate('Detail')}}
             />
           )}
@@ -121,7 +121,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    setCurrentWord: (idx) => dispatch(displayWord(idx))
+    setWord: (idx) => dispatch(setCurrentWord(idx))
   }
 }
 

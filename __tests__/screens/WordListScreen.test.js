@@ -28,7 +28,7 @@
  */
 
 import WordListScreen, { filterWordList } from '../../src/screens/WordListScreen';
-import { INDEX, WORD, DEFINITION,
+import { ID, WORD, DEFINITION,
          NOUN, VERB, ADJECTIVE, ADVERB, SCORE } from '../../src/constants/DB';
 import { test, expect } from 'jest';
 

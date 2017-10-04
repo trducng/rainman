@@ -33,11 +33,13 @@ import { VERBOSE } from '../constants/Meta';
 
 var initialState = {
   ALL_WORDS: [],
-  SORTED_SCORES: []
+  SORTED_SCORES: [],
+  CURRENT_WORD: 0
 }
 
 
 export const wordData = (state: Object = initialState, action: Object) => {
+
   switch (action.type) {
 
     case 'GET_ALL_WORDS':
@@ -53,7 +55,8 @@ export const wordData = (state: Object = initialState, action: Object) => {
 
       return {
         ALL_WORDS: allWords,
-        SORTED_SCORES: sortedScores
+        SORTED_SCORES: sortedScores,
+        CURRENT_WORD: state.CURRENT_WORD
       }
 
 
@@ -77,7 +80,8 @@ export const wordData = (state: Object = initialState, action: Object) => {
               return wordObj;
             }
           }),
-          SORTED_SCORES: state.SORTED_SCORES
+          SORTED_SCORES: state.SORTED_SCORES,
+          CURRENT_WORD: state.CURRENT_WORD
         }
       } else {
 
@@ -106,7 +110,11 @@ export const wordData = (state: Object = initialState, action: Object) => {
 
         return {
           ALL_WORDS: allWords,
-          SORTED_SCORES: sortedScores
+          SORTED_SCORES: sortedScores,
+          CURRENT_WORD: Math.min(
+            state.CURRENT_WORD,
+            Math.max(sortedScores.length-1, 0)
+          )
         }
       }
 
@@ -120,8 +128,10 @@ export const wordData = (state: Object = initialState, action: Object) => {
 
       return {
         ALL_WORDS: [...state.ALL_WORDS, word],
-        SORTED_SCORES: [state.ALL_WORDS.length, ...state.SORTED_SCORES]
+        SORTED_SCORES: [state.ALL_WORDS.length, ...state.SORTED_SCORES],
+        CURRENT_WORD: state.CURRENT_WORD
       }
+
 
     case 'CHANGE_WORD_SCORE':
       return {
@@ -129,8 +139,10 @@ export const wordData = (state: Object = initialState, action: Object) => {
           (wordObj[ID] === action.id)
             ? {...wordObj, score: wordObj.score + action.val}
             : wordObj),
-        SORTED_SCORES: state.SORTED_SCORES
+        SORTED_SCORES: state.SORTED_SCORES,
+        CURRENT_WORD: state.CURRENT_WORD
       }
+
 
     case 'DELETE_WORD':
       if (VERBOSE >= 5) {
@@ -138,8 +150,18 @@ export const wordData = (state: Object = initialState, action: Object) => {
       }
       return {
         ALL_WORDS: state.ALL_WORDS.filter((wordObj) => wordObj[WORD] !== action.word),
-        SORTED_SCORES: state.SORTED_SCORES.filter((wordObj) => wordObj[WORD] !== action.word)
+        SORTED_SCORES: state.SORTED_SCORES.filter((wordObj) => wordObj[WORD] !== action.word),
+        CURRENT_WORD: Math.max(state.CURRENT_WORD - 1, 0)
       }
+
+
+    case 'SET_CURRENT_WORD':
+      return {
+        ALL_WORDS: state.ALL_WORDS,
+        SORTED_SCORES: state.SORTED_SCORES,
+        CURRENT_WORD: action.index
+      }
+
 
     default:
       return state;

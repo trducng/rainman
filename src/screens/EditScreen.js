@@ -71,10 +71,7 @@ class EditScreen extends React.Component<Props, State> {
     return {
       title: 'Edit Word',
       headerTintColor: 'white',
-      headerStyle: appBarStyle,
-      headerRight: (<StatusBarButtonHolder
-        onDelete={() => console.log('Delete: ' + params.word['word'])}
-      />),
+      headerStyle: appBarStyle
     }
   }
 
@@ -161,11 +158,11 @@ class EditScreen extends React.Component<Props, State> {
     } else {
       Alert.alert(
         `Possible duplication`,
-        (`The word ${this.state.word} already exists. ` +
+        (`The word '${this.state.word}' already exists. ` +
          `The old word will be replaced. Do you wish to continue?`),
         [
           {text: 'Cancel'},
-          {text: `Delete`, onPress: () => {
+          {text: 'Replace', onPress: () => {
             this.props.onEdit(
               this.state.id, this.state.word, this.state.def,
               this.state.n, this.state.v, this.state.adj, this.state.adv,

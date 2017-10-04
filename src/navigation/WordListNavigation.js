@@ -38,7 +38,7 @@ import WordScreen from '../screens/WordScreen';
 
 import { deleteItem } from '../api/AsyncDB';
 import { searchWord } from '../api/WordListActions';
-import { deleteWord, displayWord } from '../api/WordActions';
+import { deleteWord, setCurrentWord } from '../api/WordActions';
 
 type Props = {
   dispatch: Function,
@@ -90,9 +90,13 @@ class WordListTempNavigator extends React.Component<Props> {
 
 const mapStateToProps = state => ({
   nav: state.navWordList,
-  searchTerm: state.searchTerm,   // pass to WordListScreen's navigationOptions
-  currentWord: state.currentWord, // pass to WordScreen's navigationOptions
-  allWords: state.wordData.ALL_WORDS, // pass to WordScreen's navigationOptions
+
+  // pass to WordListScreen's navigationOptions
+  searchTerm: state.searchTerm,
+
+  // pass to WordScreen's navigationOptions
+  currentWord: state.wordData.CURRENT_WORD,
+  allWords: state.wordData.ALL_WORDS,
 });
 
 
