@@ -39,7 +39,7 @@ import InputTextWithLabel from '../components/InputTextWithLabel';
 import ListSelectable from '../components/ListSelectable';
 import NormalButton from '../components/NormalButton';
 
-import { INDEX, WORD, DEFINITION,
+import { ID, WORD, DEFINITION,
          NOUN, VERB, ADJECTIVE, ADVERB, SCORE } from '../constants/DB';
 
 import { editWord } from '../api/WordActions';
@@ -83,7 +83,7 @@ class EditScreen extends React.Component<Props, State> {
 
     let { params } = this.props.navigation.state;
     this.state = {
-      id: typeof params === 'undefined' ? -1 : params.word[INDEX],
+      id: typeof params === 'undefined' ? -1 : params.word[ID],
       word: typeof params === 'undefined' ? '' : params.word[WORD],
       oldWord: typeof params === 'undefined'? '' : params.word[WORD],
       def: typeof params === 'undefined' ? '' : params.word[DEFINITION],
@@ -128,7 +128,7 @@ class EditScreen extends React.Component<Props, State> {
 
   _onEdit = () => {
     var obj = {};
-    obj[INDEX] = this.state.id; obj[WORD] = this.state.word;
+    obj[ID] = this.state.id; obj[WORD] = this.state.word;
     obj[DEFINITION] = this.state.def; obj[NOUN] = this.state.n;
     obj[VERB] = this.state.v; obj[ADJECTIVE] = this.state.adj;
     obj[ADVERB] = this.state.adv;
@@ -136,6 +136,7 @@ class EditScreen extends React.Component<Props, State> {
     var wordNotExisted = true;
     var theSameWords = (this.state.word.toLowerCase()
       === this.state.oldWord.toLowerCase());
+
     if (theSameWords) {
       mergeItem(this.state.oldWord, obj);
     } else {
@@ -147,31 +148,38 @@ class EditScreen extends React.Component<Props, State> {
         deleteItem(this.state.oldWord, () => {
           setItem(this.state.word, obj);
         });
-      } else {
-        Alert.alert(
-          `Possible duplication`,
-          (`The word ${this.state.word} already exists. ` +
-           `The old word will be replaced. Do you wish to continue?`),
-          [
-            {text: 'Cancel'},
-            {text: `Delete`, onPress: () => {
-              multiRemove([this.state.oldWord, this.state.word], () => {
-                setItem(this.state.word, obj);
-              });
-            }}
-          ],
-          { cancelable: false }
-        );
       }
     }
 
-    this.props.onEdit(
-      this.state.id, this.state.word, this.state.def,
-      this.state.n, this.state.v, this.state.adj, this.state.adv,
-      this.state.oldWord, wordNotExisted
-    );
-
-    this.props.navigation.goBack();
+    if (wordNotExisted) {
+      this.props.onEdit(
+        this.state.id, this.state.word, this.state.def,
+        this.state.n, this.state.v, this.state.adj, this.state.adv,
+        this.state.oldWord, wordNotExisted
+      );
+      this.props.navigation.goBack();
+    } else {
+      Alert.alert(
+        `Possible duplication`,
+        (`The word ${this.state.word} already exists. ` +
+         `The old word will be replaced. Do you wish to continue?`),
+        [
+          {text: 'Cancel'},
+          {text: `Delete`, onPress: () => {
+            this.props.onEdit(
+              this.state.id, this.state.word, this.state.def,
+              this.state.n, this.state.v, this.state.adj, this.state.adv,
+              this.state.oldWord, wordNotExisted
+            );
+            this.props.navigation.goBack();
+            multiRemove([this.state.oldWord, this.state.word], () => {
+              setItem(this.state.word, obj);
+            });
+          }}
+        ],
+        { cancelable: false }
+      );
+    }
   }
 }
 
@@ -182,7 +190,9 @@ const mapStateToProps = (state, ownProps) => {
 }
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    onEdit: (id, word, def, n, v, adj, adv) => dispatch(editWord(id, word, def, n, v, adj, adv)),
+    onEdit: (id, word, def, n, v, adj, adv, oldWord, wordNotExisted) => {
+      dispatch(editWord(id, word, def, n, v, adj, adv, oldWord, wordNotExisted));
+    },
   }
 };
 

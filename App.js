@@ -69,8 +69,8 @@ export default class App extends React.Component<Props, State> {
   componentWillMount() {
     this._loadAssetsAsync();
     retrieveAll(this._loadData);
-    // setItem("savant", JSON.stringify({
-    //   'idx': 0,
+    // setItem("savant", {
+    //   'id': 0,
     //   'word': 'savant',
     //   'def': 'a learned person, especially a distinguished scientist',
     //   'n': true,
@@ -78,9 +78,9 @@ export default class App extends React.Component<Props, State> {
     //   'adj': true,
     //   'adv': false,
     //   'score': 4
-    // }));
-    // setItem("martinet", JSON.stringify({
-    //   'idx': 1,
+    // });
+    // setItem("martinet", {
+    //   'id': 1,
     //   'word': 'martinet',
     //   'def': 'a strict disciplinarian, especially in the armed forces.',
     //   'n': true,
@@ -88,9 +88,9 @@ export default class App extends React.Component<Props, State> {
     //   'adj': true,
     //   'adv': false,
     //   'score': 5
-    // }));
-    // setItem("solarium", JSON.stringify({
-    //   'idx': 2,
+    // });
+    // setItem("solarium", {
+    //   'id': 2,
     //   'word': 'solarium',
     //   'def': 'a room fitted with extensive areas of glass to admit sunlight.',
     //   'n': true,
@@ -98,7 +98,7 @@ export default class App extends React.Component<Props, State> {
     //   'adv': true,
     //   'adj': false,
     //   'score': 2
-    // }))
+    // });
   }
 
   render() {

@@ -27,7 +27,7 @@
  * @flow
  */
 
-import { INDEX, WORD, DEFINITION,
+import { ID, WORD, DEFINITION,
          NOUN, VERB, ADJECTIVE, ADVERB, SCORE } from '../constants/DB';
 import { VERBOSE } from '../constants/Meta';
 
@@ -41,78 +41,79 @@ export const wordData = (state: Object = initialState, action: Object) => {
   switch (action.type) {
 
     case 'GET_ALL_WORDS':
-      var words = action.words.map(item => JSON.parse(item[1]));
-      words.sort((a, b) => a[INDEX] - b[INDEX]);
+      var allWords = action.words.map(item => JSON.parse(item[1]));
+      allWords.sort((a, b) => a[ID] - b[ID]);
 
       var sortedScores = [];
-      for (var i=0; i<words.length; i++) {
-        sortedScores.push([i, words[i][SCORE]]);
+      for (var i=0; i<allWords.length; i++) {
+        sortedScores.push([i, allWords[i][SCORE]]);
       }
       sortedScores.sort((first, second) => first[1] - second[1]);
       sortedScores = sortedScores.map(item => item[0]);
 
       return {
-        ALL_WORDS: words,
+        ALL_WORDS: allWords,
         SORTED_SCORES: sortedScores
       }
 
 
     case 'EDIT_WORD':
       if (VERBOSE >= 5) {
-        console.log(`WordDataReducer: EDIT_WORD - ${action[WORD]}`);
+        console.log(`WordDataReducer: EDIT_WORD - ${action[WORD]}: `
+          + `wordNotExisted (${action.wordNotExisted})`);
       }
 
       if (action.wordNotExisted) {
-        /**
-         * This function is used when a word is simply editted without having to
-         * delete any other word (when the changed word has the same WORD as the
-         * original word, or the changed word's new WORD did not already exist)
-         */
-        var reducerEditWordMap = (wordObj) => {
-          if (action[INDEX] === wordObj[INDEX]) {
-            let word = {...wordObj};
-            word[WORD] = action[WORD]; word[DEFINITION] = action[DEFINITION];
-            word[NOUN] = action[NOUN]; word[VERB] = action[VERB];
-            word[ADJECTIVE] = action[ADJECTIVE]; word[ADVERB] = action[ADVERB];
-            return word;
-          } else {
-            return wordObj;
-          }
-        }
         return {
-          ALL_WORDS: state.ALL_WORDS.map(reducerEditWordMap),
-          SORTED_SCORES: state.SORTED_SCORES.map(reducerEditWordMap),
+          ALL_WORDS: state.ALL_WORDS.map((wordObj) => {
+            if (action[ID] === wordObj[ID]) {
+              let word = {};
+              word[ID] = wordObj[ID]; word[SCORE] = wordObj[SCORE];
+              word[WORD] = action[WORD]; word[DEFINITION] = action[DEFINITION];
+              word[NOUN] = action[NOUN]; word[VERB] = action[VERB];
+              word[ADJECTIVE] = action[ADJECTIVE]; word[ADVERB] = action[ADVERB];
+              return word;
+            } else {
+              return wordObj;
+            }
+          }),
+          SORTED_SCORES: state.SORTED_SCORES
         }
       } else {
-        /**
-         * This function is used when a word is editted, but the changed word (1)
-         * now has different WORD, and there already exists a word (2) with that
-         * same WORD. The action would be to change word (1) and delete word (2)
-         */
-        var reducerEditWordReduce = (array, wordObj) => {
-          if (action[INDEX] === wordObj[INDEX]) {
-            let word = {...wordObj};
+
+        var allWords = [];
+        var sortedScores = [];
+        var length = state.SORTED_SCORES.length;
+
+        for (var i=0; i<length; i++) {
+          let wordObj = state.ALL_WORDS[i];
+          if (action[ID] === wordObj[ID]) {
+            let word = {}
+            word[ID] = wordObj[ID]; word[SCORE] = wordObj[SCORE]
             word[WORD] = action[WORD]; word[DEFINITION] = action[DEFINITION];
             word[NOUN] = action[NOUN]; word[VERB] = action[VERB];
             word[ADJECTIVE] = action[ADJECTIVE]; word[ADVERB] = action[ADVERB];
-            array.push(word)
+
+            allWords.push(word);
+            sortedScores.push(wordObj[SCORE]);
           } else {
             if (action[WORD] !== wordObj[WORD]) {
-              array.push(wordObj);
+              allWords.push(wordObj);
+              sortedScores.push(wordObj[SCORE]);
             }
           }
-          return array
         }
+
         return {
-          ALL_WORDS: state.ALL_WORDS.reduce(reducerEditWordReduce, []),
-          SORTED_SCORES: state.SORTED_SCORES.reduce(reducerEditWordReduce, [])
+          ALL_WORDS: allWords,
+          SORTED_SCORES: sortedScores
         }
       }
 
 
     case 'ADD_WORD':
       let word = {};
-      word[INDEX] = state.ALL_WORDS[state.ALL_WORDS.length - 1][INDEX] + 1;
+      word[ID] = state.ALL_WORDS[state.ALL_WORDS.length - 1][ID] + 1;
       word[WORD] = action.word; word[DEFINITION] = action.def;
       word[NOUN] = action.n; word[VERB] = action.v;
       word[ADJECTIVE] = action.adj, word[ADVERB]= action.adv;
@@ -125,7 +126,7 @@ export const wordData = (state: Object = initialState, action: Object) => {
     case 'CHANGE_WORD_SCORE':
       return {
         ALL_WORDS: state.ALL_WORDS.map((wordObj) =>
-          (wordObj[INDEX] === action.id)
+          (wordObj[ID] === action.id)
             ? {...wordObj, score: wordObj.score + action.val}
             : wordObj),
         SORTED_SCORES: state.SORTED_SCORES

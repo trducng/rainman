@@ -40,7 +40,7 @@ import SearchBox from '../components/SearchBox';
 
 import { searchWord } from '../api/WordListActions';
 import { displayWord } from '../api/WordActions';
-import { INDEX, WORD, DEFINITION } from '../constants/DB';
+import { ID, WORD, DEFINITION } from '../constants/DB';
 
 
 type Props = {
@@ -95,7 +95,7 @@ class WordListScreen extends React.Component<Props> {
         <FlatList
           style={{flex: 1}}
           data={this.props.wordList}
-          keyExtractor={(item, index) => item[INDEX]}
+          keyExtractor={(item, index) => item[ID]}
           renderItem={({item, index}) => (
             <WordListItem
               word={item[WORD]} def={item[DEFINITION]}

@@ -38,8 +38,9 @@ import style from '../styles/screens/WordScreen';
 import StatusBarButtonHolder from '../components/StatusBarButtonHolder';
 import DynamicViewPager from '../components/DynamicViewPager';
 
-import { INDEX, WORD, DEFINITION } from '../constants/DB';
+import { ID, WORD, DEFINITION } from '../constants/DB';
 import { VERBOSE } from '../constants/Meta';
+
 import { mod } from '../api/utils';
 import { displayWord } from '../api/WordActions';
 
@@ -162,11 +163,11 @@ class WordScreen extends React.Component<Props> {
   _getMainPage = () => {
     if (VERBOSE >= 5) {
       console.log('Get Main Page');
+      console.log('Current word');
+      console.log(this.props.currentWord);
+      console.log('allWords');
+      console.log(this.props.allWords);
     }
-    console.log('Current word');
-    console.log(this.props.currentWord);
-    console.log('allWords');
-    console.log(this.props.allWords);
 
     if (this.props.allWords.length === 0) {
       return (

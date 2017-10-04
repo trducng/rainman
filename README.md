@@ -1,7 +1,10 @@
 # Roadmap
 - Reconsider the edit procedure in EditScreen (that problematically justifies Index)
   + Handle all editing cases in reducer and in database access
+
 # Minor fixes
+- (Maybe, move current words to wordData)
+- WordDataReducer: DELETE_WORD -> SORTED_SCORES is an array of numbers, not objects
 - Reposition the buttons in the app bar
 
 ## Medium priority

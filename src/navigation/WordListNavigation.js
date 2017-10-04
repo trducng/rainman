@@ -36,6 +36,7 @@ import WordListScreen from '../screens/WordListScreen';
 import EditScreen from '../screens/EditScreen';
 import WordScreen from '../screens/WordScreen';
 
+import { deleteItem } from '../api/AsyncDB';
 import { searchWord } from '../api/WordListActions';
 import { deleteWord, displayWord } from '../api/WordActions';
 
@@ -76,7 +77,11 @@ class WordListTempNavigator extends React.Component<Props> {
           onSearch: (term) => this.props.dispatch(searchWord(term)),
           currentWord: this.props.currentWord,
           allWords: this.props.allWords,
-          onDeleteWord: (word) => this.props.dispatch(deleteWord(word))
+          onDeleteWord: (word) => {
+            deleteItem(word, () => {
+              this.props.dispatch(deleteWord(word));
+            });
+          }
         }}
       />
     );

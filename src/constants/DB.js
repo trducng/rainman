@@ -27,7 +27,7 @@
  * @flow
  */
 
-export const INDEX = 'idx';   // Unique. Keep track chrono-order of all words
+export const ID = 'id';   // Unique. Keep track chrono-order of all words
 export const WORD = 'word';   // Unique.
 export const DEFINITION = 'def';
 export const NOUN = 'n';
@@ -37,7 +37,7 @@ export const ADVERB = 'adv';
 export const SCORE = 'score';
 
 export const SCHEMA = {
-  INDEX: Number,
+  ID: Number,
   WORD: String,
   DEFINITION: String,
   NOUN: Boolean,
