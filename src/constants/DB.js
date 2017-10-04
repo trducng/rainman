@@ -27,8 +27,8 @@
  * @flow
  */
 
-export const INDEX = 'idx';
-export const WORD = 'word';
+export const INDEX = 'idx';   // Unique. Keep track chrono-order of all words
+export const WORD = 'word';   // Unique.
 export const DEFINITION = 'def';
 export const NOUN = 'n';
 export const VERB = 'v';

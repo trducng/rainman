@@ -28,7 +28,7 @@
  */
 
 import React from 'react';
-import { Button, View, Text } from 'react-native';
+import { Alert, Button, View, Text } from 'react-native';
 import { connect } from 'react-redux';
 
 import { appBarStyle } from '../styles/';
@@ -43,17 +43,19 @@ import { INDEX, WORD, DEFINITION,
          NOUN, VERB, ADJECTIVE, ADVERB, SCORE } from '../constants/DB';
 
 import { editWord } from '../api/WordActions';
-import { mergeItem } from '../api/AsyncDB';
+import { deleteItem, mergeItem, multiRemove, setItem } from '../api/AsyncDB';
 
 
 type Props = {
     onEdit: Function,
-    navigation: Object
+    navigation: Object,
+    allWords: Array<Object>
 }
 
 type State = {
   id?: number,
   word: string,
+  oldWord: string,
   def?: string,
   n?: boolean,
   v?: boolean,
@@ -64,21 +66,6 @@ type State = {
 
 class EditScreen extends React.Component<Props, State> {
 
-  constructor(props) {
-    super(props);
-
-    let { params } = this.props.navigation.state;
-    this.state = {
-      id: typeof params === 'undefined' ? -1 : params.word[INDEX],
-      word: typeof params === 'undefined' ? '' : params.word[WORD],
-      def: typeof params === 'undefined' ? '' : params.word[DEFINITION],
-      n: typeof params === 'undefined' ? false : params.word[NOUN],
-      v: typeof params === 'undefined' ? false : params.word[VERB],
-      adj: typeof params === 'undefined' ? false : params.word[ADJECTIVE],
-      adv: typeof params === 'undefined' ? false : params.word[ADVERB],
-    }
-  }
-
   static navigationOptions = ({navigation}) => {
     let { params } = navigation.state;
     return {
@@ -88,6 +75,22 @@ class EditScreen extends React.Component<Props, State> {
       headerRight: (<StatusBarButtonHolder
         onDelete={() => console.log('Delete: ' + params.word['word'])}
       />),
+    }
+  }
+
+  constructor(props) {
+    super(props);
+
+    let { params } = this.props.navigation.state;
+    this.state = {
+      id: typeof params === 'undefined' ? -1 : params.word[INDEX],
+      word: typeof params === 'undefined' ? '' : params.word[WORD],
+      oldWord: typeof params === 'undefined'? '' : params.word[WORD],
+      def: typeof params === 'undefined' ? '' : params.word[DEFINITION],
+      n: typeof params === 'undefined' ? false : params.word[NOUN],
+      v: typeof params === 'undefined' ? false : params.word[VERB],
+      adj: typeof params === 'undefined' ? false : params.word[ADJECTIVE],
+      adv: typeof params === 'undefined' ? false : params.word[ADVERB],
     }
   }
 
@@ -117,30 +120,65 @@ class EditScreen extends React.Component<Props, State> {
           onChangeText={(text) => this.setState({def: text})}/>
         <ListSelectable items={vocabTypes} />
         <NormalButton
-          onPress={() => {
-
-            this.props.onEdit(this.state.id, this.state.word,
-              this.state.def, this.state.n, this.state.v,
-              this.state.adj, this.state.adv);
-
-            // TODO: change key from word to index
-            let obj = {};
-            obj[INDEX] = this.state.id; obj[WORD] = this.state.word;
-            obj[DEFINITION] = this.state.def; obj[NOUN] = this.state.n;
-            obj[VERB] = this.state.v; obj[ADJECTIVE] = this.state.adj;
-            obj[ADVERB] = this.state.adv;
-            mergeItem(this.state.word, obj);
-
-            this.props.navigation.goBack();
-          }}/>
+          onPress={this._onEdit}/>
       </View>
     );
 
   }
+
+  _onEdit = () => {
+    var obj = {};
+    obj[INDEX] = this.state.id; obj[WORD] = this.state.word;
+    obj[DEFINITION] = this.state.def; obj[NOUN] = this.state.n;
+    obj[VERB] = this.state.v; obj[ADJECTIVE] = this.state.adj;
+    obj[ADVERB] = this.state.adv;
+
+    var wordNotExisted = true;
+    var theSameWords = (this.state.word.toLowerCase()
+      === this.state.oldWord.toLowerCase());
+    if (theSameWords) {
+      mergeItem(this.state.oldWord, obj);
+    } else {
+      wordNotExisted = (this.props.allWords.findIndex((wordObj, index) => {
+        return wordObj[WORD] === this.state.word
+      }) === -1);
+
+      if (wordNotExisted) {
+        deleteItem(this.state.oldWord, () => {
+          setItem(this.state.word, obj);
+        });
+      } else {
+        Alert.alert(
+          `Possible duplication`,
+          (`The word ${this.state.word} already exists. ` +
+           `The old word will be replaced. Do you wish to continue?`),
+          [
+            {text: 'Cancel'},
+            {text: `Delete`, onPress: () => {
+              multiRemove([this.state.oldWord, this.state.word], () => {
+                setItem(this.state.word, obj);
+              });
+            }}
+          ],
+          { cancelable: false }
+        );
+      }
+    }
+
+    this.props.onEdit(
+      this.state.id, this.state.word, this.state.def,
+      this.state.n, this.state.v, this.state.adj, this.state.adv,
+      this.state.oldWord, wordNotExisted
+    );
+
+    this.props.navigation.goBack();
+  }
 }
 
 const mapStateToProps = (state, ownProps) => {
-  return {};
+  return {
+    allWords: state.wordData.ALL_WORDS
+  };
 }
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {

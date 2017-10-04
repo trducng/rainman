@@ -1,6 +1,7 @@
 # Roadmap
-- Make all files Flow-compatible
 - Reconsider the edit procedure in EditScreen (that problematically justifies Index)
+  + Handle all editing cases in reducer and in database access
+# Minor fixes
 - Reposition the buttons in the app bar
 
 ## Medium priority

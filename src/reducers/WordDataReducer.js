@@ -36,6 +36,7 @@ var initialState = {
   SORTED_SCORES: []
 }
 
+
 export const wordData = (state: Object = initialState, action: Object) => {
   switch (action.type) {
 
@@ -55,24 +56,59 @@ export const wordData = (state: Object = initialState, action: Object) => {
         SORTED_SCORES: sortedScores
       }
 
-    case 'EDIT_WORD':
-      console.log('Reducer EDIT_WORD: '+ action.word);
-      console.log('Reducer EDIT_WORD: ' + action.def);
 
-      return {
-        ALL_WORDS: state.ALL_WORDS.map((wordObj) => {
-          if (action.id === wordObj[INDEX]) {
+    case 'EDIT_WORD':
+      if (VERBOSE >= 5) {
+        console.log(`WordDataReducer: EDIT_WORD - ${action[WORD]}`);
+      }
+
+      if (action.wordNotExisted) {
+        /**
+         * This function is used when a word is simply editted without having to
+         * delete any other word (when the changed word has the same WORD as the
+         * original word, or the changed word's new WORD did not already exist)
+         */
+        var reducerEditWordMap = (wordObj) => {
+          if (action[INDEX] === wordObj[INDEX]) {
             let word = {...wordObj};
-            word[WORD] = action.word; word[DEFINITION] = action.def;
-            word[NOUN] = action.n; word[VERB] = action.v;
-            word[ADJECTIVE] = action.adj; word[ADVERB] = action.adv;
+            word[WORD] = action[WORD]; word[DEFINITION] = action[DEFINITION];
+            word[NOUN] = action[NOUN]; word[VERB] = action[VERB];
+            word[ADJECTIVE] = action[ADJECTIVE]; word[ADVERB] = action[ADVERB];
             return word;
           } else {
             return wordObj;
           }
-        }),
-        SORTED_SCORES: state.SORTED_SCORES,
+        }
+        return {
+          ALL_WORDS: state.ALL_WORDS.map(reducerEditWordMap),
+          SORTED_SCORES: state.SORTED_SCORES.map(reducerEditWordMap),
+        }
+      } else {
+        /**
+         * This function is used when a word is editted, but the changed word (1)
+         * now has different WORD, and there already exists a word (2) with that
+         * same WORD. The action would be to change word (1) and delete word (2)
+         */
+        var reducerEditWordReduce = (array, wordObj) => {
+          if (action[INDEX] === wordObj[INDEX]) {
+            let word = {...wordObj};
+            word[WORD] = action[WORD]; word[DEFINITION] = action[DEFINITION];
+            word[NOUN] = action[NOUN]; word[VERB] = action[VERB];
+            word[ADJECTIVE] = action[ADJECTIVE]; word[ADVERB] = action[ADVERB];
+            array.push(word)
+          } else {
+            if (action[WORD] !== wordObj[WORD]) {
+              array.push(wordObj);
+            }
+          }
+          return array
+        }
+        return {
+          ALL_WORDS: state.ALL_WORDS.reduce(reducerEditWordReduce, []),
+          SORTED_SCORES: state.SORTED_SCORES.reduce(reducerEditWordReduce, [])
+        }
       }
+
 
     case 'ADD_WORD':
       let word = {};

@@ -35,8 +35,8 @@ export const displayWord = (index: number) => {
 }
 
 export const editWord = (
- id: number, word: string, def: string, n: boolean,
- v: boolean, adj: boolean, adv:boolean) => {
+ id: number, word: string, def: string, n: boolean, v: boolean,
+ adj: boolean, adv:boolean, oldWord: string, wordNotExisted: boolean ) => {
   return {
     type: 'EDIT_WORD',
     id,
@@ -45,7 +45,9 @@ export const editWord = (
     n,
     v,
     adj,
-    adv
+    adv,
+    oldWord,
+    wordNotExisted
   }
 }
 

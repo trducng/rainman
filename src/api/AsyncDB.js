@@ -28,7 +28,7 @@
  */
 
 import { AsyncStorage } from 'react-native';
-
+import { VERBOSE } from '../constants/Meta';
 
 export const retrieveAll = (callback: Function) => {
   AsyncStorage.getAllKeys((err, keys) => {
@@ -38,7 +38,9 @@ export const retrieveAll = (callback: Function) => {
 
 export const setItem = (k: string, v: Object) => {
   AsyncStorage.setItem(k, JSON.stringify(v), (err) => {
-    console.log('Item setted!');
+    if (VERBOSE >= 5) {
+      console.log(`AsyncDB: setItem - ${k}`);
+    }
   });
 };
 
@@ -46,7 +48,7 @@ export const getItem = (k: string, f: Function) => {
   AsyncStorage.getItem(k, f);
 };
 
-export const deleteItem = (k: string, callback: Function) => {
+export const deleteItem = (k: string, callback?: Function) => {
   if (typeof callback === 'undefined') {
     AsyncStorage.removeItem(k);
   } else {
@@ -54,8 +56,12 @@ export const deleteItem = (k: string, callback: Function) => {
   }
 };
 
-export const multiRemove = (k: Array<string>) => {
-  AsyncStorage.multiRemove(k);
+export const multiRemove = (k: Array<string>, callback?: Function) => {
+  if (typeof callback === 'undefined') {
+    AsyncStorage.multiRemove(k);
+  } else {
+    AsyncStorage.multiRemove(k, callback);
+  }
 };
 
 export const mergeItem = (k: string, v: Object) => {
