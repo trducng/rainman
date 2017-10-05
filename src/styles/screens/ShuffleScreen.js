@@ -9,9 +9,9 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of this software authors nor the names of its
- *       contributors may be used to endorse or promote products derived from
- *       this software without specific prior written permission.
+ *     * Neither the name of this software authors nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -27,57 +27,6 @@
  * @flow
  */
 
-export const setCurrentWord = (index: number) => {
-  return {
-    type: 'SET_CURRENT_WORD',
-    index,
-  }
-}
+import style from './WordScreen';
 
-export const editWord = (
- id: number, word: string, def: string, n: boolean, v: boolean,
- adj: boolean, adv:boolean, oldWord: string, wordNotExisted: boolean ) => {
-  return {
-    type: 'EDIT_WORD',
-    id,
-    word,
-    def,
-    n,
-    v,
-    adj,
-    adv,
-    oldWord,
-    wordNotExisted
-  }
-}
-
-export const addWord = (
- id: number, word: string, def: string, n: boolean, v: boolean,
- adj: boolean, adv: boolean) => {
-  return {
-    type: 'ADD_WORD',
-    id,
-    word,
-    def,
-    n,
-    v,
-    adj,
-    adv,
-    score: 6
-  }
-}
-
-export const deleteWord = (word: string) => {
-  return {
-    type: 'DELETE_WORD',
-    word
-  }
-}
-
-export const changeWordScore = (word: string, increase: boolean) => {
-  return {
-    type: 'CHANGE_WORD_SCORE',
-    word,
-    increase,
-  }
-}
+export default style;

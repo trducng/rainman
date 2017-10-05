@@ -10,7 +10,9 @@
 
 ## Medium priority
 - Add filter for each word
-- Add edit and edit buttons for each list item in WordListScreen
+- Add response in AddScreen so that users know each word is added successfully
+- A slight tutorial in Shuffle screen
+- Add the ability to note and examples
 
 ## Low priority
 - Make the status bar's search input an expandable button (likely need some Animation).

@@ -33,7 +33,7 @@ import { NavigationActions } from 'react-navigation';
 
 import {
   AddScreenNavigator,
-  WordScreenNavigator,
+  ShuffleScreenNavigator,
   QuizScreenNavigator } from '../navigation/DummyNavigators';
 
 
@@ -44,10 +44,10 @@ export const navAdd = (state: Object = aState, action: Object) => {
  return nextState || state;
 }
 
-const wAction = WordScreenNavigator.router.getActionForPathAndParams('DummyDetail');
-const wState = WordScreenNavigator.router.getStateForAction(wAction);
+const wAction = ShuffleScreenNavigator.router.getActionForPathAndParams('DummyDetail');
+const wState = ShuffleScreenNavigator.router.getStateForAction(wAction);
 export const navWord = (state: Object = wState, action: Object) => {
- let nextState = WordScreenNavigator.router.getStateForAction(action, state);
+ let nextState = ShuffleScreenNavigator.router.getStateForAction(action, state);
  return nextState || state;
 }
 

@@ -36,7 +36,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import AddScreen from '../screens/AddScreen';
-import WordScreen from '../screens/WordScreen';
+import ShuffleScreen from '../screens/ShuffleScreen';
 import QuizScreen from '../screens/QuizScreen';
 
 
@@ -53,8 +53,8 @@ export const AddScreenNavigator = StackNavigator({
   DummyAdd: { screen: AddScreen },
 });
 
-export const WordScreenNavigator = StackNavigator({
-  DummyDetail: { screen: WordScreen },
+export const ShuffleScreenNavigator = StackNavigator({
+  DummyDetail: { screen: ShuffleScreen },
 });
 
 export const QuizScreenNavigator = StackNavigator({
@@ -78,10 +78,10 @@ class AddScreenWrapper extends React.Component<Props> {
   }
 }
 
-class WordScreenWrapper extends React.Component<Props> {
+class ShuffleScreenWrapper extends React.Component<Props> {
   render() {
     return (
-      <WordScreenNavigator
+      <ShuffleScreenNavigator
         navigation={addNavigationHelpers({
           dispatch: this.props.dispatch,
           state: this.props.nav
@@ -112,7 +112,7 @@ const mapStateToPropsAdd = state => ({nav: state.navAdd });
 const AddNavigator = connect(mapStateToPropsAdd)(AddScreenWrapper);
 
 const mapStateToPropsWord = state => ({nav: state.navWord});
-const WordNavigator = connect(mapStateToPropsWord)(WordScreenWrapper);
+const ShuffleNavigator = connect(mapStateToPropsWord)(ShuffleScreenWrapper);
 
 const mapStateToPropsQuiz = state => ({nav: state.navQuiz});
 const QuizNavigator = connect(mapStateToPropsQuiz)(QuizScreenWrapper);
@@ -122,7 +122,7 @@ const QuizNavigator = connect(mapStateToPropsQuiz)(QuizScreenWrapper);
  * Some minor edits and export
  */
 AddNavigator.navigationOptions = {title: 'Add'};
-WordNavigator.navigationOptions = {title: 'Shuffle'};
+ShuffleNavigator.navigationOptions = {title: 'Shuffle'};
 QuizNavigator.navigationOptions = {title: 'Quiz'};
 
-export { AddNavigator, WordNavigator, QuizNavigator };
+export { AddNavigator, ShuffleNavigator, QuizNavigator };

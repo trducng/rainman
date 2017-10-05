@@ -47,7 +47,7 @@ import QuizScreen from '../screens/QuizScreen';
 import StackScreen from '../screens/StackScreen';
 
 import WordListStackNavigator from './WordListNavigation';
-import { AddNavigator, WordNavigator, QuizNavigator } from './DummyNavigators';
+import { AddNavigator, ShuffleNavigator, QuizNavigator } from './DummyNavigators';
 
 
 type Props = {
@@ -65,7 +65,7 @@ export const MainTabNavigator = TabNavigator(
       screen: AddNavigator,
     },
     Shuffle: {
-      screen: WordNavigator,
+      screen: ShuffleNavigator,
     },
     Quiz: {
       screen: QuizNavigator,
