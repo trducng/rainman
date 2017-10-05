@@ -34,6 +34,7 @@ import style from '../styles/components/NormalButton';
 
 
 type Props = {
+  value: string,
   onPress: Function
 }
 
@@ -45,7 +46,7 @@ class NormalButton extends React.Component<Props> {
           onPress={this.props.onPress}
           background={TouchableNativeFeedback.SelectableBackground()}>
             <View style={style.content}>
-              <Text style={style.text}>Edit</Text>
+              <Text style={style.text}>{this.props.value}</Text>
             </View>
         </TouchableNativeFeedback>
       </View>

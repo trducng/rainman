@@ -27,23 +27,28 @@
  * @flow
  */
 
-import 'react-native';
-import React from 'react';
-import { searchWord, getAllWords } from '../../src/api/WordListActions';
+import { initialState, wordData } from '../../src/reducers/WordDataReducer';
 
+describe('WordDataReducer: test edge cases', () => {
+  test('wordData is incorrectly initialized', () => {
+    let result = {
+      ALL_WORDS: [],
+      SORTED_SCORES: [],
+      CURRENT_WORD: 0
+    };
+    expect(initialState).toEqual(result);
+  });
 
-test('get all words action', () => {
-  let result = {
-    type: 'GET_ALL_WORDS',
-    words: [['hello', 'world'], ['goodbye', 'world']]
-  };
-  expect(getAllWords([['hello', 'world'], ['goodbye', 'world']])).toEqual(result);
-});
-
-test('search term action', () => {
-  let result = {
-    type: 'SEARCH_WORD',
-    term: 'hello'
-  };
-  expect(searchWord('hello')).toEqual(result);
+  test('wordData does not return state for unknown action type', () => {
+    let result = {
+      ALL_WORDS: [{id: 0, word: 'solarium', def: 'room'},
+                  {id: 1, word: 'savant', def: 'a learned person'}],
+      SORTED_SCORES: {'3': [['solarium', 'room'], ['savant', 'a learned person']]},
+      CURRENT_WORD: 1
+    };
+    let action = {
+      type: 'HUH?'
+    };
+    expect(wordData(result, action)).toEqual(result);
+  })
 });

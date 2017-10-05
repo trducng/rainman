@@ -18,6 +18,9 @@
 ; Ignore Expo
 .*/node_modules/.*
 
+; Ignore test folders
+<PROJECT_ROOT>/__tests__/
+
 [include]
 
 [libs]

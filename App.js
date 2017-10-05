@@ -69,6 +69,7 @@ export default class App extends React.Component<Props, State> {
   componentWillMount() {
     this._loadAssetsAsync();
     retrieveAll(this._loadData);
+    // multiRemove(['savant', 'martinet', 'solarium']);
     // setItem("savant", {
     //   'id': 0,
     //   'word': 'savant',

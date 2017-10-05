@@ -27,16 +27,15 @@
  * @flow
  */
 
-import { displayWord, editWord,
+import { setCurrentWord, editWord, deleteWord,
          addWord, changeScore } from '../../src/api/WordActions';
-import { test, expect } from 'jest';
 
 test('display with word index action', () => {
   let result = {
-    type: 'DISPLAY_WORD',
-    id: 5
+    type: 'SET_CURRENT_WORD',
+    index: 5
   };
-  expect(displayWord(5)).toEqual(result);
+  expect(setCurrentWord(5)).toEqual(result);
 });
 
 test('edit word with appropriate information', () => {
@@ -46,9 +45,10 @@ test('edit word with appropriate information', () => {
     word: 'Savant',
     def: 'a learned person',
     n: true, v: false, adj: true, adv: false,
+    oldWord: 'Solarium', wordNotExisted: true
   };
-  expect(editWord(4, 'Savant', 'a learned person',
-                  true, false, true, false)).toEqual(result);
+  expect(editWord(4, 'Savant', 'a learned person', true,
+                  false, true, false, 'Solarium', true)).toEqual(result);
 });
 
 test('add word with appropriate information', () => {
@@ -61,6 +61,14 @@ test('add word with appropriate information', () => {
   };
   expect(addWord('Savant', 'a learned person',
                  true, true, true, true)).toEqual(result);
+});
+
+test('delete word by word name (a [WORD] entry should be unique)', () => {
+  let result = {
+    type: 'DELETE_WORD',
+    word: 'solarium'
+  };
+  expect(deleteWord('solarium')).toEqual(result);
 });
 
 test('changeScore', () => {

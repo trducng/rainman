@@ -28,7 +28,7 @@
  */
 
 import DynamicViewPager from '../../src/components/DynamicViewPager';
-import { test } from 'jest';
+// import { test } from 'jest';
 
 test('DynamicViewPager components: need implementation', async() => {
 

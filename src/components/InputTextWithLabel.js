@@ -54,6 +54,7 @@ class InputTextWithLabel extends React.Component<Props> {
           style={textStyle} underlineColorAndroid={'transparent'}
           multiline={multiline} numberOfLines={multiline ? 3 : 1}
           value={value} onChangeText={this.props.onChangeText}
+          autoCorrect={false}
         />
       </View>
     );

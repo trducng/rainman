@@ -31,12 +31,12 @@ import { ID, WORD, DEFINITION,
          NOUN, VERB, ADJECTIVE, ADVERB, SCORE } from '../constants/DB';
 import { VERBOSE } from '../constants/Meta';
 
-var initialState = {
+
+export const initialState = {
   ALL_WORDS: [],
   SORTED_SCORES: [],
   CURRENT_WORD: 0
 }
-
 
 export const wordData = (state: Object = initialState, action: Object) => {
 
@@ -121,10 +121,10 @@ export const wordData = (state: Object = initialState, action: Object) => {
 
     case 'ADD_WORD':
       let word = {};
-      word[ID] = state.ALL_WORDS[state.ALL_WORDS.length - 1][ID] + 1;
-      word[WORD] = action.word; word[DEFINITION] = action.def;
-      word[NOUN] = action.n; word[VERB] = action.v;
-      word[ADJECTIVE] = action.adj, word[ADVERB]= action.adv;
+      word[ID] = action.id; word[WORD] = action.word;
+      word[DEFINITION] = action.def; word[NOUN] = action.n;
+      word[VERB] = action.v; word[ADJECTIVE] = action.adj;
+      word[ADVERB]= action.adv;
 
       return {
         ALL_WORDS: [...state.ALL_WORDS, word],
@@ -148,6 +148,11 @@ export const wordData = (state: Object = initialState, action: Object) => {
       if (VERBOSE >= 5) {
         console.log(`WordDataReducer: DELETE_WORD for ${action.word}`);
       }
+
+      var allWords = [];
+      var sortedScores = [];
+      var length = state.SORTED_SCORES.length;
+
       return {
         ALL_WORDS: state.ALL_WORDS.filter((wordObj) => wordObj[WORD] !== action.word),
         SORTED_SCORES: state.SORTED_SCORES.filter((wordObj) => wordObj[WORD] !== action.word),

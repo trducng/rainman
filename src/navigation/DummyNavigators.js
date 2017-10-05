@@ -35,7 +35,7 @@ import { addNavigationHelpers, StackNavigator } from 'react-navigation';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import EditScreen from '../screens/EditScreen';
+import AddScreen from '../screens/AddScreen';
 import WordScreen from '../screens/WordScreen';
 import QuizScreen from '../screens/QuizScreen';
 
@@ -50,7 +50,7 @@ type Props = {
  * Create all stack navigators for these single screens
  */
 export const AddScreenNavigator = StackNavigator({
-  DummyAdd: { screen: EditScreen },
+  DummyAdd: { screen: AddScreen },
 });
 
 export const WordScreenNavigator = StackNavigator({

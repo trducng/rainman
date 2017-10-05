@@ -52,10 +52,11 @@ export const editWord = (
 }
 
 export const addWord = (
- word: string, def: string, n: boolean, v: boolean,
+ id: number, word: string, def: string, n: boolean, v: boolean,
  adj: boolean, adv: boolean) => {
   return {
     type: 'ADD_WORD',
+    id,
     word,
     def,
     n,

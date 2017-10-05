@@ -67,7 +67,6 @@ type State = {
 class EditScreen extends React.Component<Props, State> {
 
   static navigationOptions = ({navigation}) => {
-    let { params } = navigation.state;
     return {
       title: 'Edit Word',
       headerTintColor: 'white',
@@ -116,8 +115,7 @@ class EditScreen extends React.Component<Props, State> {
           multiline={true} label={'Definition'} value={this.state.def}
           onChangeText={(text) => this.setState({def: text})}/>
         <ListSelectable items={vocabTypes} />
-        <NormalButton
-          onPress={this._onEdit}/>
+        <NormalButton value='Edit' onPress={this._onEdit}/>
       </View>
     );
 
