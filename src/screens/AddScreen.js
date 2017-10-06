@@ -39,6 +39,8 @@ import InputTextWithLabel from '../components/InputTextWithLabel';
 import ListSelectable from '../components/ListSelectable';
 import NormalButton from '../components/NormalButton';
 
+import { DEFAULT_SCORE, VERBOSE } from '../constants/Meta';
+
 import { ID, WORD, DEFINITION,
          NOUN, VERB, ADJECTIVE, ADVERB, SCORE } from '../constants/DB';
 
@@ -150,6 +152,7 @@ class AddScreen extends React.Component<Props, State> {
     obj[WORD] = this.state.word; obj[DEFINITION] = this.state.def;
     obj[NOUN] = this.state.n; obj[VERB] = this.state.v;
     obj[ADJECTIVE] = this.state.adj; obj[ADVERB] = this.state.adv;
+    obj[SCORE] = DEFAULT_SCORE;
     if (this.props.allWords.length > 0) {
       obj[ID] = this.props.allWords[this.props.allWords.length-1][ID] + 1;
     } else {

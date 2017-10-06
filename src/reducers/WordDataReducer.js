@@ -29,12 +29,22 @@
 
 import { ID, WORD, DEFINITION,
          NOUN, VERB, ADJECTIVE, ADVERB, SCORE } from '../constants/DB';
-import { VERBOSE } from '../constants/Meta';
+import { DEFAULT_SCORE, VERBOSE } from '../constants/Meta';
 
 
 export const initialState = {
+
+  // has structure of: [
+  //  {id, word...}, {id, word...},...
+  // ]
   ALL_WORDS: [],
-  SORTED_SCORES: [],
+
+  // has structure of: {
+  //    score1: [[id, word, def], [id, word, def], [id, word, def]...],
+  //    score2: [...],
+  //    ...
+  // }
+  SORTED_SCORES: {},
   CURRENT_WORD: 0
 }
 
@@ -46,12 +56,23 @@ export const wordData = (state: Object = initialState, action: Object) => {
       var allWords = action.words.map(item => JSON.parse(item[1]));
       allWords.sort((a, b) => a[ID] - b[ID]);
 
-      var sortedScores = [];
+      var sortedScores = {};
       for (var i=0; i<allWords.length; i++) {
-        sortedScores.push([i, allWords[i][SCORE]]);
+        var wordObj = allWords[i];
+        try {
+          sortedScores[wordObj[SCORE]].push([
+            wordObj[ID], wordObj[WORD], wordObj[DEFINITION]
+          ]);
+        } catch (error) {
+          if (error instanceof TypeError) {
+            sortedScores[wordObj[SCORE]] = [[
+              wordObj[ID], wordObj[WORD], wordObj[DEFINITION]
+            ]];
+          } else {
+            throw error;
+          }
+        }
       }
-      sortedScores.sort((first, second) => first[1] - second[1]);
-      sortedScores = sortedScores.map(item => item[0]);
 
       return {
         ALL_WORDS: allWords,
@@ -66,54 +87,53 @@ export const wordData = (state: Object = initialState, action: Object) => {
           + `wordNotExisted (${action.wordNotExisted})`);
       }
 
+      var allWords = [];
+      var sortedScores = {};
+
+      for (var i=0, l=state.ALL_WORDS.length; i<l; i++) {
+        var wordObj = state.ALL_WORDS[i];
+
+        if (action[ID] === wordObj[ID]) {
+          let word = {};
+          word[ID] = wordObj[ID]; word[SCORE] = wordObj[SCORE];
+          word[WORD] = action[WORD]; word[DEFINITION] = action[DEFINITION];
+          word[NOUN] = action[NOUN]; word[VERB] = action[VERB];
+          word[ADJECTIVE] = action[ADJECTIVE]; word[ADVERB] = action[ADVERB];
+
+          wordObj = word;
+        } else if (action[WORD] === wordObj[WORD]) {
+          continue;
+        }
+        allWords[i] = wordObj;
+
+        try {
+          sortedScores[wordObj[SCORE]].push([
+            wordObj[ID], wordObj[WORD], wordObj[DEFINITION]
+          ]);
+        } catch (error) {
+          if (error instanceof TypeError) {
+            sortedScores[wordObj[SCORE]] = [[
+              wordObj[ID], wordObj[WORD], wordObj[DEFINITION]
+            ]];
+          } else {
+            throw error;
+          }
+        }
+      }
+
       if (action.wordNotExisted) {
         return {
-          ALL_WORDS: state.ALL_WORDS.map((wordObj) => {
-            if (action[ID] === wordObj[ID]) {
-              let word = {};
-              word[ID] = wordObj[ID]; word[SCORE] = wordObj[SCORE];
-              word[WORD] = action[WORD]; word[DEFINITION] = action[DEFINITION];
-              word[NOUN] = action[NOUN]; word[VERB] = action[VERB];
-              word[ADJECTIVE] = action[ADJECTIVE]; word[ADVERB] = action[ADVERB];
-              return word;
-            } else {
-              return wordObj;
-            }
-          }),
-          SORTED_SCORES: state.SORTED_SCORES,
+          ALL_WORDS: allWords,
+          SORTED_SCORES: sortedScores,
           CURRENT_WORD: state.CURRENT_WORD
         }
       } else {
-
-        var allWords = [];
-        var sortedScores = [];
-        var length = state.SORTED_SCORES.length;
-
-        for (var i=0; i<length; i++) {
-          let wordObj = state.ALL_WORDS[i];
-          if (action[ID] === wordObj[ID]) {
-            let word = {}
-            word[ID] = wordObj[ID]; word[SCORE] = wordObj[SCORE]
-            word[WORD] = action[WORD]; word[DEFINITION] = action[DEFINITION];
-            word[NOUN] = action[NOUN]; word[VERB] = action[VERB];
-            word[ADJECTIVE] = action[ADJECTIVE]; word[ADVERB] = action[ADVERB];
-
-            allWords.push(word);
-            sortedScores.push(wordObj[SCORE]);
-          } else {
-            if (action[WORD] !== wordObj[WORD]) {
-              allWords.push(wordObj);
-              sortedScores.push(wordObj[SCORE]);
-            }
-          }
-        }
-
         return {
           ALL_WORDS: allWords,
           SORTED_SCORES: sortedScores,
           CURRENT_WORD: Math.min(
             state.CURRENT_WORD,
-            Math.max(sortedScores.length-1, 0)
+            Math.max(allWords.length-1, 0)
           )
         }
       }
@@ -124,7 +144,7 @@ export const wordData = (state: Object = initialState, action: Object) => {
       word[ID] = action.id; word[WORD] = action.word;
       word[DEFINITION] = action.def; word[NOUN] = action.n;
       word[VERB] = action.v; word[ADJECTIVE] = action.adj;
-      word[ADVERB]= action.adv;
+      word[ADVERB]= action.adv; word[SCORE] = DEFAULT_SCORE;
 
       return {
         ALL_WORDS: [...state.ALL_WORDS, word],
@@ -155,7 +175,7 @@ export const wordData = (state: Object = initialState, action: Object) => {
 
       return {
         ALL_WORDS: state.ALL_WORDS.filter((wordObj) => wordObj[WORD] !== action.word),
-        SORTED_SCORES: state.SORTED_SCORES.filter((wordObj) => wordObj[WORD] !== action.word),
+        SORTED_SCORES: state.SORTED_SCORES,
         CURRENT_WORD: Math.max(state.CURRENT_WORD - 1, 0)
       }
 

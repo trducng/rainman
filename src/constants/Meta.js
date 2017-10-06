@@ -30,3 +30,5 @@
 // 0: No output; 1: critical; 2: error; 3: warning; 4: info; 5: debug
 // Other numbers will be used to deal with specific use cases
 export const VERBOSE = 4;
+
+export const DEFAULT_SCORE = 10;
