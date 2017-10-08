@@ -97,6 +97,40 @@ class WordScreen extends React.Component<Props> {
     }
   }
 
+  constructor(props: Object) {
+    super(props);
+    console.log('WordScreen: constructor');
+  }
+
+  componentWillMount() {
+    console.log('WordScreen: componentWillMount');
+  }
+
+  componentDidMount() {
+    console.log('WordScreen: componentDidMount')
+  }
+
+  componentWillReceiveProps() {
+    console.log('WordScreen: componentWillReceiveProps');
+  }
+
+  shouldComponentUpdate() {
+    console.log('WordScreen: shouldComponentUpdate');
+    return true;
+  }
+
+  componentWillUpdate() {
+    console.log('WordScreen: componentWillUpdate');
+  }
+
+  componentDidUpdate() {
+    console.log('WordScreen: componentDidUpdate');
+  }
+
+  componentWillUnmount() {
+    console.log('WordScreen: componentWillUnmount');
+  }
+
   render() {
     return (
       <DynamicViewPager

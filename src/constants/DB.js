@@ -34,7 +34,9 @@ export const NOUN = 'n';
 export const VERB = 'v';
 export const ADJECTIVE = 'adj';
 export const ADVERB = 'adv';
+
 export const SCORE = 'score';
+export const LAST_OPENED = 'last';
 
 export const SCHEMA = {
   ID: Number,
@@ -44,5 +46,6 @@ export const SCHEMA = {
   VERB: Boolean,
   ADJECTIVE: Boolean,
   ADVERB: Boolean,
-  SCORE: Number
+  SCORE: Number,
+  LAST_OPENED: String
 };

@@ -41,3 +41,21 @@ var SORTED_SCORES = {
   * Then code.
  + TL;DR: (1) think as users to determine the functionality and how the app should look, (2) design internal data state (what information to store, how to organize the information) to accommodate the functionality and user experience, make sure to normalize state as much as possible, (3) everything else builds from there.
  + https://blog.realm.io/introducing-realm-react-native/
+
+- Component's lifecycle:
+ + When a component is first created:
+  * `constructor`
+  * `componentWillMount`
+  * `render`
+  * `componentDidMount`
++ When a component is updated:
+ * `componentWillReceiveProps(nextProps)`: can call `this.setState` here
+ * `shouldComponentUpdate(nextProps, nextState)`: compare nextProps & nextState to the current props and state to determine whether the component should be re-rendered (true) or not (false)
+ * `componentWillUpdate(nextProps, nextState)`: do not call `this.setState` at this step; this step should be used to prepare before the update
+ * `render`
+ * `componentDidUpdate(prevProps, prevState)`
++ When a component is destroyed:
+ * `componentWillUnmount`
+
+- An important note on how React component will update when a new Redux state is return:
+>> For React Redux, connect checks to see if the props returned from a mapStateToProps function have changed in order to determine if a component needs to update. To improve performance, connect takes some shortcuts that rely on the state being immutable, and uses shallow reference equality checks to detect changes. This means that changes made to objects and arrays by direct mutation will not be detected, and components will not re-render.

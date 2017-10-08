@@ -62,8 +62,7 @@ export const addWord = (
     n,
     v,
     adj,
-    adv,
-    score: 6
+    adv
   }
 }
 
