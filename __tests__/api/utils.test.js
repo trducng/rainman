@@ -27,45 +27,43 @@
  * @flow
  */
 
-export const mod = (n: number, m: number): number => {
-  return ((n % m) + m) % m;
-};
+import { mod, binarySearchArray } from '../../src/api/utils';
 
+describe('testing `mod` operation', () => {
+  test('`mod` does not return correct value for 5 mod 10', () => {
+    expect(mod(5, 10)).toBe(5);
+  });
 
-/**
- * Perform binary search on a sorted array of numbers
- */
-export const binarySearchArray = (
- array: Array<number>, element: number,
- getSupposedIndex: boolean = false): number => {
-   var minIndex = 0;
-   var maxIndex = array.length - 1;
-   var currentIndex = 0;
-   var currentElement;
+  test('`mod` does not return correct value for -2 mod 6', () => {
+    expect(mod(-2, 6)).toBe(4);
+  });
 
-   while (minIndex <= maxIndex) {
-       currentIndex = (minIndex + maxIndex) / 2 | 0;
-       currentElement = array[currentIndex];
+  test('`mod` does not return correct value for 3 mod -4', () => {
+    expect(mod(3, -4)).toBe(-1);
+  });
 
-       if (currentElement < element) {
-           minIndex = currentIndex + 1;
-       }
-       else if (currentElement > element) {
-           maxIndex = currentIndex - 1;
-       }
-       else {
-           return currentIndex;
-       }
-   }
+  test('`mod` does not return correct value for -12 mod -5', () => {
+    expect(mod(-12, -5)).toBe(-2);
+  });
 
-   if (getSupposedIndex) {
-     // This condition is necessary since `currentIndex` is initialized at a
-     // lower value so that it is biased toward a lower value.
-     if (minIndex === array.length) {
-       return currentIndex + 1;
-     }
-     return currentIndex;
-   }
+  test('`mod` does not return correct value for 0 mod -2', () => {
+    expect(mod(0, -2)).toBe(0);
+  });
+});
 
-   return -1;
-};
+var testArray = [1, 2, 4, 7, 8, 100, 121];
+describe('testing `binarySearchArray`...', () => {
+  test('`binarySearchArray` returns incorrect value index', () => {
+    expect(binarySearchArray(testArray, 7)).toBe(3);
+  });
+
+  test('`binarySearchArray` returns index of ghost value', () => {
+    expect(binarySearchArray(testArray, 3)).toBe(-1);
+  });
+
+  test('`binarySearchArray` returns correct index for missing value', () => {
+    expect(binarySearchArray(testArray, 0, true)).toBe(0);
+    expect(binarySearchArray(testArray, 3, true)).toBe(2);
+    expect(binarySearchArray(testArray, 127, true)).toBe(7);
+  });
+});

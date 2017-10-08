@@ -27,45 +27,48 @@
  * @flow
  */
 
-export const mod = (n: number, m: number): number => {
-  return ((n % m) + m) % m;
+export const addWord = (
+ id: number, word: string, def: string, n: boolean, v: boolean,
+ adj: boolean, adv: boolean) => {
+  return {
+    type: 'ADD_WORD',
+    id,
+    word,
+    def,
+    n,
+    v,
+    adj,
+    adv
+  };
 };
 
 
-/**
- * Perform binary search on a sorted array of numbers
- */
-export const binarySearchArray = (
- array: Array<number>, element: number,
- getSupposedIndex: boolean = false): number => {
-   var minIndex = 0;
-   var maxIndex = array.length - 1;
-   var currentIndex = 0;
-   var currentElement;
+export const editWord = (
+ id: number, word: string, def: string, n: boolean, v: boolean,
+ adj: boolean, adv:boolean, replacedIdx: number ) => {
+  return {
+    type: 'EDIT_WORD',
+    id,
+    word,
+    def,
+    n,
+    v,
+    adj,
+    adv,
+    replacedIdx
+  };
+};
 
-   while (minIndex <= maxIndex) {
-       currentIndex = (minIndex + maxIndex) / 2 | 0;
-       currentElement = array[currentIndex];
+export const deleteWord = (id: number) => {
+  return {
+    type: 'DELETE_WORD',
+    id
+  };
+};
 
-       if (currentElement < element) {
-           minIndex = currentIndex + 1;
-       }
-       else if (currentElement > element) {
-           maxIndex = currentIndex - 1;
-       }
-       else {
-           return currentIndex;
-       }
-   }
-
-   if (getSupposedIndex) {
-     // This condition is necessary since `currentIndex` is initialized at a
-     // lower value so that it is biased toward a lower value.
-     if (minIndex === array.length) {
-       return currentIndex + 1;
-     }
-     return currentIndex;
-   }
-
-   return -1;
+export const setCurrentWord = (index: number) => {
+  return {
+    type: 'SET_CURRENT_WORD',
+    index,
+  };
 };

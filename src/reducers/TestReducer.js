@@ -54,7 +54,7 @@ const switchWordKind = (array: Array<number>, id: number,
   if (val) {
     if (binarySearchArray(array, id) === -1) {
       var idx = binarySearchArray(array, id, true);
-      return [...array.slice(0, idx), id, ...array.slice(idx+1)];
+      return [...array.slice(0, idx), id, ...array.slice(idx)];
     } else {
       return array;
     }
@@ -75,7 +75,7 @@ const editWordNonExisting = (state: Object, action: Object): Object => {
   return {
     WORDS: {
       ...state.WORDS,
-      id: {
+      [action.id]: {
         word: action.word,
         def: action.def
       }
@@ -96,12 +96,13 @@ const editWordNonExisting = (state: Object, action: Object): Object => {
 const editWordExisting = (state: Object, action: Object): Object => {
 
   // Remove all traces of the replaced word
-  var sortedScoresIdx = binarySearchArray(state.SORTED_SCORES, action.replacedIdx);
+  var id = state.ALL_IDS[action.replacedIdx];
+  var sortedScoresIdx = binarySearchArray(state.SORTED_SCORES, id);
 
-  var nIdx = binarySearchArray(state.NOUNS, action.replacedIdx);
-  var vIdx = binarySearchArray(state.VERBS, action.replacedIdx);
-  var adjIdx = binarySearchArray(state.ADJECTIVES, action.replacedIdx);
-  var advIdx = binarySearchArray(state.ADVERBS, action.replacedIdx);
+  var nIdx = binarySearchArray(state.NOUNS, id);
+  var vIdx = binarySearchArray(state.VERBS, id);
+  var adjIdx = binarySearchArray(state.ADJECTIVES, id);
+  var advIdx = binarySearchArray(state.ADVERBS, id);
 
   var n=state.NOUNS, v=state.VERBS, adj=state.ADJECTIVES, adv=state.ADVERBS;
 
@@ -121,14 +122,14 @@ const editWordExisting = (state: Object, action: Object): Object => {
   return {
     WORDS: {
       ...state.WORDS,
-      id: {
+      [action.id]: {
         word: action.word,
         def: action.def
       }
     },
     ALL_IDS: [
       ...state.ALL_IDS.slice(0, action.replacedIdx),
-      ...state.ALL_IDS.slice(action.replacedIdx)
+      ...state.ALL_IDS.slice(action.replacedIdx+1)
     ],
     SORTED_SCORES: [
       ...state.SORTED_SCORES.slice(0, sortedScoresIdx),
@@ -142,7 +143,7 @@ const editWordExisting = (state: Object, action: Object): Object => {
 
     CURRENT_WORD: Math.min(
       state.CURRENT_WORD,
-      Math.max(state.SORTED_SCORES.length-2, 0)
+      Math.max(state.ALL_IDS.length-2, 0)
     )
   }
 }
@@ -157,7 +158,7 @@ export const wordData = (state: Object = initialState, action: Object): Object =
       var n = [], v = [], adj = [], adv = [];
 
       for (var i=0, l=action.words.length; i<l; i++) {
-        var wordObj = JSON.parse(action.words.length[1]);
+        var wordObj = JSON.parse(action.words[i][1]);
 
         words[wordObj[ID]] = {
           word: wordObj[WORD],
@@ -167,7 +168,7 @@ export const wordData = (state: Object = initialState, action: Object): Object =
 
         sortedScores.push([
           wordObj[ID],
-          Math.sqrt(wordObj[LAST_OPENED]) * wordObj[SCORE]
+          wordObj[LAST_OPENED] * wordObj[SCORE] * Math.sqrt(wordObj[SCORE])
         ]);
 
         if (wordObj[NOUN]) {
@@ -201,36 +202,28 @@ export const wordData = (state: Object = initialState, action: Object): Object =
         NOUNS: n,
         VERBS: v,
         ADJECTIVES: adj,
-        ADVERBS: adv
+        ADVERBS: adv,
+        CURRENT_WORD: state.CURRENT_WORD
       };
     }
 
     case 'ADD_WORD': {
-      var currentDate = Math.floor(Date.now() / DAYS_IN_SECS) - INSTALLED_DAY
-      var idx = binarySearchArray(
-        state.SORTED_SCORES,
-        currentDate * DEFAULT_SCORE,
-        true
-      );
 
       return {
         WORDS: {
           ...state.WORDS,
-          id: {
+          [action.id]: {
             word: action.word,
             def: action.def
           }
         },
         ALL_IDS: [...state.ALL_IDS, action.id],
-        SORTED_SCORES: [
-          ...state.SORTED_SCORES.slice(0, idx),
-          currentDate * DEFAULT_SCORE,
-          ...state.SORTED_SCORES.slice(idx, state.SORTED_SCORES.length)
-        ],
+        SORTED_SCORES: [action.id, ...state.SORTED_SCORES.slice(0)],
         NOUNS: action.n ? [...state.NOUNS, action.id] : state.NOUNS,
         VERBS: action.v ? [...state.VERBS, action.id] : state.VERBS,
         ADJECTIVES: action.adj ? [...state.ADJECTIVES, action.id] : state.ADJECTIVES,
-        ADVERBS: action.adv ? [...state.ADVERBS, action.id] : state.ADVERBS
+        ADVERBS: action.adv ? [...state.ADVERBS, action.id] : state.ADVERBS,
+        CURRENT_WORD: state.CURRENT_WORD
       }
     }
 
@@ -246,19 +239,23 @@ export const wordData = (state: Object = initialState, action: Object): Object =
 
     case 'DELETE_WORD': {
       var idx = binarySearchArray(state.ALL_IDS, action.id);
-      var sortedScoresIdx = binarySearchArray(state.SORTED_SCORES, action.id);
+      var sortedScoresIdx = state.SORTED_SCORES.indexOf(action.id);
 
       return {
         WORDS: state.WORDS,
         ALL_IDS: [...state.ALL_IDS.slice(0, idx), ...state.ALL_IDS.slice(idx+1)],
         SORTED_SCORES: [
           ...state.SORTED_SCORES.slice(0, sortedScoresIdx),
-          ...state.SORTED_SCORES.slice(sortedScoresIdx)
+          ...state.SORTED_SCORES.slice(sortedScoresIdx+1)
         ],
         NOUNS: switchWordKind(state.NOUNS, action.id, false),
         VERBS: switchWordKind(state.VERBS, action.id, false),
         ADJECTIVES: switchWordKind(state.ADJECTIVES, action.id, false),
-        ADVERBS: switchWordKind(state.ADVERBS, action.id, false)
+        ADVERBS: switchWordKind(state.ADVERBS, action.id, false),
+        CURRENT_WORD: Math.min(
+          state.CURRENT_WORD,
+          Math.max(state.ALL_IDS.length-2, 0)
+        )
       };
     }
 
@@ -270,7 +267,8 @@ export const wordData = (state: Object = initialState, action: Object): Object =
         NOUNS: state.NOUNS,
         VERBS: state.VERBS,
         ADJECTIVES: state.ADJECTIVES,
-        ADVERB: state.ADVERBS
+        ADVERBS: state.ADVERBS,
+        CURRENT_WORD: action.index
       }
     }
 

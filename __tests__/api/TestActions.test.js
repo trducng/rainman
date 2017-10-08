@@ -27,45 +27,62 @@
  * @flow
  */
 
-export const mod = (n: number, m: number): number => {
-  return ((n % m) + m) % m;
-};
+import { addWord, editWord, deleteWord,
+         setCurrentWord } from '../../src/api/TestActions';
 
+describe('testing all WordActions\' action creators', () => {
+  test('`addWord` creates incorrect action', () => {
+    var result = {
+      type: 'ADD_WORD',
+      id: 0,
+      word: 'savant',
+      def: 'a learned person.',
+      n: true,
+      v: false,
+      adj: false,
+      adv: false
+    };
 
-/**
- * Perform binary search on a sorted array of numbers
- */
-export const binarySearchArray = (
- array: Array<number>, element: number,
- getSupposedIndex: boolean = false): number => {
-   var minIndex = 0;
-   var maxIndex = array.length - 1;
-   var currentIndex = 0;
-   var currentElement;
+    expect(addWord(
+      0, 'savant', 'a learned person.', true,
+      false, false, false
+    )).toEqual(result);
+  });
 
-   while (minIndex <= maxIndex) {
-       currentIndex = (minIndex + maxIndex) / 2 | 0;
-       currentElement = array[currentIndex];
+  test('`editWord` creates incorrect action', () => {
+    var result = {
+      type: 'EDIT_WORD',
+      id: 0,
+      word: 'savant',
+      def: 'a learned person.',
+      n: false,
+      v: true,
+      adj: false,
+      adv: false,
+      replacedIdx: 5
+    };
 
-       if (currentElement < element) {
-           minIndex = currentIndex + 1;
-       }
-       else if (currentElement > element) {
-           maxIndex = currentIndex - 1;
-       }
-       else {
-           return currentIndex;
-       }
-   }
+    expect(editWord(
+      0, 'savant', 'a learned person.', false,
+      true, false, false, 5
+    )).toEqual(result);
+  });
 
-   if (getSupposedIndex) {
-     // This condition is necessary since `currentIndex` is initialized at a
-     // lower value so that it is biased toward a lower value.
-     if (minIndex === array.length) {
-       return currentIndex + 1;
-     }
-     return currentIndex;
-   }
+  test('`deleteWord` creates incorrect action', () => {
+    var result = {
+      type: 'DELETE_WORD',
+      id: 1
+    };
 
-   return -1;
-};
+    expect(deleteWord(1)).toEqual(result);
+  });
+
+  test('`setCurrentWord` creates incorrect action', () => {
+    var result = {
+      type: 'SET_CURRENT_WORD',
+      index: 4
+    };
+
+    expect(setCurrentWord(4)).toEqual(result);
+  });
+});
