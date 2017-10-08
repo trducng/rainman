@@ -74,10 +74,15 @@ export const deleteWord = (word: string) => {
   }
 }
 
-export const changeWordScore = (word: string, increase: boolean) => {
+export const changeWordScore = (
+  id: number, word: string, def: string,
+  current: number, val: number) => {
   return {
     type: 'CHANGE_WORD_SCORE',
+    id,
     word,
-    increase,
+    def,
+    current,
+    val,
   }
 }

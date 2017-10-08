@@ -148,7 +148,9 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    changeScore: (word, increase) => dispatch(changeWordScore(word, increase)),
+    changeScore: (id, word, def, current, val) => {
+      dispatch(changeWordScore(id, word, def, current, val));
+    },
   }
 }
 

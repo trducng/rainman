@@ -13,6 +13,7 @@
 - Add response in AddScreen so that users know each word is added successfully
 - A slight tutorial in Shuffle screen
 - Add the ability to note and examples
+- Normalize Redux state and move some state components from arrays to objects
 
 ## Low priority
 - Make the status bar's search input an expandable button (likely need some Animation).
@@ -30,9 +31,13 @@ var SORTED_SCORES = {
 }
 {% endhighlight %}
 
+
 - Current development procedure:
  + When adding new feature (assuming that the overall structure of the program has been determined):
   * List out all functionalities (thinking as end-user).
   * For each functionality, list out (1) all states, functions that all the components in this feature needs to access, (2) requirements for the implementation of this functionality, (3) any potential problem and solution, and (4) crude step-by-step procedure of what needs to be done.
+  * Think of state structure that can best serve all functionalities above. Remember to decouple the data to minimize the amount of UI updates after each state update.
   * Based on the previous information, write test suites.
   * Then code.
+ + TL;DR: (1) think as users to determine the functionality and how the app should look, (2) design internal data state (what information to store, how to organize the information) to accommodate the functionality and user experience, make sure to normalize state as much as possible, (3) everything else builds from there.
+ + https://blog.realm.io/introducing-realm-react-native/

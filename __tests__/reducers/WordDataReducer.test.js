@@ -28,12 +28,16 @@
  */
 
 import { initialState, wordData } from '../../src/reducers/WordDataReducer';
+import { addWord, deleteWord, editWord,
+         changeWordScore, setCurrentWord } from '../../src/api/WordActions';
+import { getAllWords } from '../../src/api/WordListActions';
+import { DEFAULT_SCORE } from '../../src/constants/Meta';
 
 describe('WordDataReducer: test edge cases', () => {
   test('wordData is incorrectly initialized', () => {
     let result = {
       ALL_WORDS: [],
-      SORTED_SCORES: [],
+      SORTED_SCORES: {},
       CURRENT_WORD: 0
     };
     expect(initialState).toEqual(result);
@@ -51,4 +55,277 @@ describe('WordDataReducer: test edge cases', () => {
     };
     expect(wordData(result, action)).toEqual(result);
   })
+});
+
+
+var currentState = {
+  ALL_WORDS: [
+    {
+      'id': 0,
+      'word': 'savant',
+      'def': 'a learned person.',
+      'n': true,
+      'v': false,
+      'adj': true,
+      'adv': false,
+      'score': 4
+    },
+    {
+      'id': 1,
+      'word': 'martinet',
+      'def': 'a strict disciplinarian.',
+      'n': true,
+      'v': true,
+      'adj': true,
+      'adv': false,
+      'score': 5
+    },
+    {
+      'id': 2,
+      'word': 'solarium',
+      'def': 'a room filled with glass.',
+      'n': true,
+      'v': false,
+      'adv': true,
+      'adj': false,
+      'score': 2
+    }
+  ],
+  SORTED_SCORES: {
+    2: [[2, 'solarium', 'a room filled with glass.']],
+    4: [[0, 'savant', 'a learned person.']],
+    5: [[1, 'martinet', 'a strict disciplinarian.']]
+  },
+  CURRENT_WORD: 2
+};
+
+describe('WordDataReducer: use cases', () => {
+  test('GET_ALL_WORDS does not return all words and sorted scores', () => {
+    let action = getAllWords([
+      [
+        'savant',
+        JSON.stringify({
+          'id': 1, 'word': 'savant', 'def': 'a learned person',
+          'n': true, 'adj': false, 'v': false, 'adv': false, 'score': 10
+        })
+      ],
+
+      [
+        'martinet',
+        JSON.stringify({
+          'id': 2, 'word': 'martinet', 'def': 'a strict disciplinarian.',
+          'n': true, 'v': true, 'adj': true, 'adv': false, 'score': 10
+        })
+      ],
+      [
+        'solarium',
+        JSON.stringify({
+          'id': 3, 'word': 'solarium', 'def': 'a room filled with glass.',
+          'n': true, 'v': false, 'adv': true, 'adj': false, 'score': 2
+        })
+      ]
+    ]);
+    let result = {
+      ALL_WORDS: [
+        {
+          'id': 1, 'word': 'savant', 'def': 'a learned person',
+          'n': true, 'adj': false, 'v': false, 'adv': false, 'score': 10
+        },
+        {
+          'id': 2, 'word': 'martinet', 'def': 'a strict disciplinarian.',
+          'n': true, 'v': true, 'adj': true, 'adv': false, 'score': 10
+        },
+        {
+          'id': 3, 'word': 'solarium', 'def': 'a room filled with glass.',
+          'n': true, 'v': false, 'adv': true, 'adj': false, 'score': 2
+        }
+      ],
+      SORTED_SCORES: {
+        2: [[3, 'solarium', 'a room filled with glass.']],
+        10: [
+          [1, 'savant', 'a learned person'],
+          [2, 'martinet', 'a strict disciplinarian.']
+        ]
+      },
+      CURRENT_WORD: 0
+    };
+    expect(wordData(initialState, action)).toEqual(result);
+  });
+
+  test('EDIT_WORD doesn\'t correctly edit non-word, non-def data', () => {
+    let result = JSON.parse(JSON.stringify(currentState));
+    result['ALL_WORDS'][2] = {
+      'id': 2,
+      'word': 'solarium',
+      'def': 'a room filled with glass.',
+      'n': false,
+      'v': true,
+      'adj': false,
+      'adv': true,
+      'score': 2
+    };
+
+    expect(wordData(
+      currentState,
+      editWord(
+        2, 'solarium', 'a room filled with glass.', false, true,
+        false, true, 'solarium', false
+      )
+    )).toEqual(result);
+  });
+
+  test('EDIT_WORD does\'t correctly edit definition data', () => {
+    let result = JSON.parse(JSON.stringify(currentState));
+    result['ALL_WORDS'][2] = {
+      'id': 2,
+      'word': 'solarium',
+      'def': 'a learned superman.',
+      'n': true,
+      'v': true,
+      'adj': true,
+      'adv': true,
+      'score': 2
+    };
+    result['SORTED_SCORES'][2] = [
+      [2, 'solarium', 'a learned superman.']
+    ];
+
+    expect(wordData(
+      currentState,
+      editWord(
+        2, 'solarium', 'a learned superman.', true, true,
+        true, true, 'solarium', false
+      )
+    ));
+  });
+
+  test('EDIT_WORD doesn\'t correctly edit word term', () => {
+    let result = JSON.parse(JSON.stringify(currentState));
+    result['ALL_WORDS'] = [
+      {
+        'id': 0,
+        'word': 'savant',
+        'def': 'a learned person.',
+        'n': true,
+        'v': false,
+        'adj': true,
+        'adv': false,
+        'score': 4
+      },
+      {
+        'id': 2,
+        'word': 'martinet',
+        'def': 'a room filled with some glass.',
+        'n': true,
+        'v': true,
+        'adj': true,
+        'adv': false,
+        'score': 2
+      }
+    ];
+    result['SORTED_SCORES'] = {
+      2: [[2, 'martinet', 'a room filled with some glass.']],
+      4: [[0, 'savant', 'a learned person.']],
+    };
+    result['CURRENT_WORD'] = 1;
+
+    expect(wordData(
+      currentState,
+      editWord(
+        2, 'martinet', 'a room filled with some glass.', true,
+        true, true, false, 'solarium', true
+      )
+    )).toEqual(result);
+  });
+
+  test('ADD_WORD does\'t correctly add new word', () => {
+    let result = JSON.parse(JSON.stringify(currentState));
+    result['ALL_WORDS'].push({
+      'id': 3,
+      'word': 'restive',
+      'def': 'a state of restless confusion.',
+      'n': false,
+      'v': false,
+      'adv': false,
+      'adj': true,
+      'score': DEFAULT_SCORE
+    });
+
+    try {
+      result['SORTED_SCORES'][DEFAULT_SCORE].push([
+        3, 'restive', 'a state of restless confusion.'
+      ]);
+    } catch (error) {
+      if (error instanceof TypeError) {
+        result['SORTED_SCORES'][DEFAULT_SCORE] = [[
+          3, 'restive', 'a state of restless confusion.'
+        ]];
+      } else {
+        throw error;
+      }
+    }
+
+    expect(wordData(
+      currentState,
+      addWord(
+        3, 'restive', 'a state of restless confusion.',
+        false, false, true, false)
+    )).toEqual(result);
+  });
+
+  test('DELETE doesn\'t correctly remove word', () => {
+    let result = JSON.parse(JSON.stringify(currentState));
+    result['ALL_WORDS'] = [
+      {
+        'id': 0,
+        'word': 'savant',
+        'def': 'a learned person.',
+        'n': true,
+        'v': false,
+        'adj': true,
+        'adv': false,
+        'score': 4
+      },
+      {
+        'id': 1,
+        'word': 'martinet',
+        'def': 'a strict disciplinarian.',
+        'n': true,
+        'v': true,
+        'adj': true,
+        'adv': false,
+        'score': 5
+      }
+    ]
+    result['SORTED_SCORES'] = {
+      4: [[0, 'savant', 'a learned person.']],
+      5: [[1, 'martinet', 'a strict disciplinarian.']]
+    };
+    result['CURRENT_WORD'] = 1;
+
+    expect(wordData(currentState, deleteWord('solarium'))).toEqual(result);
+  });
+
+  test('CHANGE_WORD_SCORE doesn\'t correctly change score', () => {
+    let result = JSON.parse(JSON.stringify(currentState));
+    result['SORTED_SCORES'] = {
+      2: [[2, 'solarium', 'a room filled with glass.']],
+      5: [
+        [1, 'martinet', 'a strict disciplinarian.'],
+        [0, 'savant', 'a learned person.'],
+      ]
+    };
+
+    expect(wordData(
+      currentState,
+      changeWordScore(0, 'savant', 'a learned person.', 4, 1)
+    )).toEqual(result);
+  });
+
+  test('SET_CURRENT_WORD doesn\'t change word index correctly', () => {
+    var result = {...currentState};
+    result['CURRENT_WORD'] = 0;
+
+    expect(wordData(currentState, setCurrentWord(0))).toEqual(result);
+  });
 });

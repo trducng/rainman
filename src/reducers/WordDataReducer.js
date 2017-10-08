@@ -87,8 +87,14 @@ export const wordData = (state: Object = initialState, action: Object) => {
           + `wordNotExisted (${action.wordNotExisted})`);
       }
 
+      // There are 3 different cases:
+      //    - The [WORD] is not editted
+      //    - The [WORD] is editted to a non-existing new [WORD]
+      //    - The [WORD] is editted to a new [WORD] that already exists
+
       var allWords = [];
       var sortedScores = {};
+      var currentWord = 0;
 
       for (var i=0, l=state.ALL_WORDS.length; i<l; i++) {
         var wordObj = state.ALL_WORDS[i];
@@ -101,10 +107,11 @@ export const wordData = (state: Object = initialState, action: Object) => {
           word[ADJECTIVE] = action[ADJECTIVE]; word[ADVERB] = action[ADVERB];
 
           wordObj = word;
+          currentWord = allWords.length;
         } else if (action[WORD] === wordObj[WORD]) {
           continue;
         }
-        allWords[i] = wordObj;
+        allWords.push(wordObj);
 
         try {
           sortedScores[wordObj[SCORE]].push([
@@ -121,21 +128,14 @@ export const wordData = (state: Object = initialState, action: Object) => {
         }
       }
 
-      if (action.wordNotExisted) {
-        return {
-          ALL_WORDS: allWords,
-          SORTED_SCORES: sortedScores,
-          CURRENT_WORD: state.CURRENT_WORD
-        }
-      } else {
-        return {
-          ALL_WORDS: allWords,
-          SORTED_SCORES: sortedScores,
-          CURRENT_WORD: Math.min(
-            state.CURRENT_WORD,
-            Math.max(allWords.length-1, 0)
-          )
-        }
+      return {
+        ALL_WORDS: allWords,
+        SORTED_SCORES: sortedScores,
+        CURRENT_WORD: currentWord
+        //     CURRENT_WORD: Math.min(
+        //       state.CURRENT_WORD,
+        //       Math.max(allWords.length-1, 0)
+        //     )
       }
 
 
@@ -146,20 +146,59 @@ export const wordData = (state: Object = initialState, action: Object) => {
       word[VERB] = action.v; word[ADJECTIVE] = action.adj;
       word[ADVERB]= action.adv; word[SCORE] = DEFAULT_SCORE;
 
+      var sortedScores = {...state.SORTED_SCORES}
+      try {
+        sortedScores[DEFAULT_SCORE].push([
+          word[ID], word[WORD], word[DEFINITION]
+        ]);
+      } catch (error) {
+        if (error instanceof TypeError) {
+          sortedScores[DEFAULT_SCORE] = [[
+            word[ID], word[WORD], word[DEFINITION]
+          ]];
+        } else {
+          throw error;
+        }
+      }
+
       return {
         ALL_WORDS: [...state.ALL_WORDS, word],
-        SORTED_SCORES: [state.ALL_WORDS.length, ...state.SORTED_SCORES],
+        SORTED_SCORES: sortedScores,
         CURRENT_WORD: state.CURRENT_WORD
       }
 
 
     case 'CHANGE_WORD_SCORE':
+      var sortedScores = {};
+      for (var prop in state.SORTED_SCORES) {
+        if (!state.SORTED_SCORES.hasOwnProperty(prop)) {
+          continue;
+        }
+
+        var array = [];
+
+        if (prop == action.current) {
+          for (var i=0, l = state.SORTED_SCORES[prop].length; i<l; i++) {
+            var obj = state.SORTED_SCORES[prop][i];
+            if (obj[0] !== action.id) {
+              array.push(state.SORTED_SCORES[prop][i]);
+            }
+          }
+        }
+        else if (prop == action.current + action.val) {
+          array = [...state.SORTED_SCORES[prop], [action.id, action.word, action.def]];
+        } else {
+          array = state.SORTED_SCORES[prop];
+        }
+
+        if (array.length > 0) {
+          sortedScores[prop] = array;
+        }
+      }
+
       return {
-        ALL_WORDS: state.ALL_WORDS.map((wordObj) =>
-          (wordObj[ID] === action.id)
-            ? {...wordObj, score: wordObj.score + action.val}
-            : wordObj),
-        SORTED_SCORES: state.SORTED_SCORES,
+        ALL_WORDS: state.ALL_WORDS,
+        SORTED_SCORES: sortedScores,
         CURRENT_WORD: state.CURRENT_WORD
       }
 
@@ -168,14 +207,35 @@ export const wordData = (state: Object = initialState, action: Object) => {
       if (VERBOSE >= 5) {
         console.log(`WordDataReducer: DELETE_WORD for ${action.word}`);
       }
-
       var allWords = [];
-      var sortedScores = [];
-      var length = state.SORTED_SCORES.length;
+      var sortedScores = {};
+
+      for (var i=0, l=state.ALL_WORDS.length; i<l; i++) {
+        var wordObj = state.ALL_WORDS[i];
+        if (wordObj[WORD] === action[WORD]) {
+          continue;
+        }
+        allWords.push(wordObj);
+
+        try {
+          sortedScores[wordObj[SCORE]].push([
+            wordObj[ID], wordObj[WORD], wordObj[DEFINITION]
+          ]);
+        }
+        catch (error) {
+          if (error instanceof TypeError) {
+            sortedScores[wordObj[SCORE]] = [[
+              wordObj[ID], wordObj[WORD], wordObj[DEFINITION]
+            ]];
+          } else {
+            throw error;
+          }
+        }
+      }
 
       return {
-        ALL_WORDS: state.ALL_WORDS.filter((wordObj) => wordObj[WORD] !== action.word),
-        SORTED_SCORES: state.SORTED_SCORES,
+        ALL_WORDS: allWords,
+        SORTED_SCORES: sortedScores,
         CURRENT_WORD: Math.max(state.CURRENT_WORD - 1, 0)
       }
 

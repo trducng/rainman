@@ -73,7 +73,7 @@ export default class App extends React.Component<Props, State> {
     // setItem("savant", {
     //   'id': 0,
     //   'word': 'savant',
-    //   'def': 'a learned person, especially a distinguished scientist',
+    //   'def': 'a learned person.',
     //   'n': true,
     //   'v': false,
     //   'adj': true,
@@ -83,7 +83,7 @@ export default class App extends React.Component<Props, State> {
     // setItem("martinet", {
     //   'id': 1,
     //   'word': 'martinet',
-    //   'def': 'a strict disciplinarian, especially in the armed forces.',
+    //   'def': 'a strict disciplinarian.',
     //   'n': true,
     //   'v': true,
     //   'adj': true,
@@ -93,7 +93,7 @@ export default class App extends React.Component<Props, State> {
     // setItem("solarium", {
     //   'id': 2,
     //   'word': 'solarium',
-    //   'def': 'a room fitted with extensive areas of glass to admit sunlight.',
+    //   'def': 'a room filled with glass.',
     //   'n': true,
     //   'v': false,
     //   'adv': true,

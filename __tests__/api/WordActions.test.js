@@ -28,7 +28,7 @@
  */
 
 import { setCurrentWord, editWord, deleteWord,
-         addWord, changeScore } from '../../src/api/WordActions';
+         addWord, changeWordScore } from '../../src/api/WordActions';
 
 test('display with word index action', () => {
   let result = {
@@ -54,12 +54,13 @@ test('edit word with appropriate information', () => {
 test('add word with appropriate information', () => {
   let result = {
     type: 'ADD_WORD',
+    id: 10,
     word: 'Savant',
     def: 'a learned person',
     n: true, v: true, adj: true, adv: true,
     score: 6,
   };
-  expect(addWord('Savant', 'a learned person',
+  expect(addWord(10, 'Savant', 'a learned person',
                  true, true, true, true)).toEqual(result);
 });
 
@@ -71,11 +72,14 @@ test('delete word by word name (a [WORD] entry should be unique)', () => {
   expect(deleteWord('solarium')).toEqual(result);
 });
 
-test('changeScore', () => {
+test('changeWordScore', () => {
   let result = {
       type: 'CHANGE_WORD_SCORE',
       id: 1,
+      word: 'savant',
+      def: 'a person',
+      current: 5,
       val: -1
   };
-  expect(changeScore(1, -1)).toEqual(result);
+  expect(changeWordScore(1, 'savant', 'a person', 5, -1)).toEqual(result);
 });

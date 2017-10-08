@@ -30,3 +30,37 @@
 export const mod = (n: number, m: number): number => {
   return ((n % m) + m) % m;
 };
+
+
+/**
+ * Perform binary search on a sorted array of numbers
+ */
+export const binarySearchArray = (
+ array: Array<number>, element: number,
+ getSupposedIndex: boolean = false): number => {
+   var minIndex = 0;
+   var maxIndex = array.length - 1;
+   var currentIndex = 0;
+   var currentElement;
+
+   while (minIndex <= maxIndex) {
+       currentIndex = (minIndex + maxIndex) / 2 | 0;
+       currentElement = array[currentIndex];
+
+       if (currentElement < element) {
+           minIndex = currentIndex + 1;
+       }
+       else if (currentElement > element) {
+           maxIndex = currentIndex - 1;
+       }
+       else {
+           return currentIndex;
+       }
+   }
+
+   if (getSupposedIndex) {
+     return currentIndex;
+   }
+
+   return -1;
+};

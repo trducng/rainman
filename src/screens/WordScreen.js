@@ -124,8 +124,9 @@ class WordScreen extends React.Component<Props> {
       )
     }
 
-    var word = this.props.allWords[mod(this.props.currentWord - 1,
-                                       this.props.allWords.length)];
+    var word = this.props.allWords[
+      mod(this.props.currentWord - 1, this.props.allWords.length)
+    ];
 
     return (
       <View style={[screenGeneral, style.main]} >
