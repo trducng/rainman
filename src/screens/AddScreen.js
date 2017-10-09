@@ -39,17 +39,19 @@ import InputTextWithLabel from '../components/InputTextWithLabel';
 import ListSelectable from '../components/ListSelectable';
 import NormalButton from '../components/NormalButton';
 
-import { DEFAULT_SCORE, VERBOSE } from '../constants/Meta';
+import { DEFAULT_SCORE, VERBOSE, DAYS_IN_MILISECS,
+         INSTALLED_DAY } from '../constants/Meta';
 
-import { ID, WORD, DEFINITION,
-         NOUN, VERB, ADJECTIVE, ADVERB, SCORE } from '../constants/DB';
+import { ID, WORD, DEFINITION, NOUN, VERB,
+         ADJECTIVE, ADVERB, SCORE, LAST_OPENED } from '../constants/DB';
 
 import { addWord } from '../api/WordActions';
 import { setItem } from '../api/AsyncDB';
 
 
 type Props = {
-  allWords: Array<Object>,
+  words: Object,
+  ids: Array<number>,
   onAdd: Function
 };
 
@@ -67,7 +69,7 @@ class AddScreen extends React.Component<Props, State> {
 
   static navigationOptions = ({navigation}) => {
     return {
-      title: 'Edit Word',
+      title: 'Add Word',
       headerTintColor: 'white',
       headerStyle: appBarStyle
     }
@@ -153,10 +155,11 @@ class AddScreen extends React.Component<Props, State> {
     obj[NOUN] = this.state.n; obj[VERB] = this.state.v;
     obj[ADJECTIVE] = this.state.adj; obj[ADVERB] = this.state.adv;
     obj[SCORE] = DEFAULT_SCORE;
-    if (this.props.allWords.length > 0) {
-      obj[ID] = this.props.allWords[this.props.allWords.length-1][ID] + 1;
+    obj[LAST_OPENED] = Date.now() / DAYS_IN_MILISECS | 0 - INSTALLED_DAY;
+    if (this.props.ids.length > 0) {
+      obj[ID] = this.props.ids[this.props.ids.length-1] + 1;
     } else {
-      obj[ID] = 0;
+      obj[ID] = 1;
     }
 
     this.props.onAdd(
@@ -175,14 +178,13 @@ class AddScreen extends React.Component<Props, State> {
   }
 
   _checkIsDuplicate = (): boolean => {
-    var idx = this.props.allWords.findIndex(
-      (wordObj) => wordObj[WORD] === this.state.word
-    );
-
-    if (idx === -1) {
-      return false
+    var { words, ids } = this.props;
+    for (var i=0, l=ids.length; i<l; i++) {
+      if (words[ids[i]][WORD] === this.state.word) {
+        return true;
+      }
     }
-    return true
+    return false;
   }
 
 }
@@ -190,7 +192,8 @@ class AddScreen extends React.Component<Props, State> {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    allWords: state.wordData.ALL_WORDS
+    words: state.wordData.WORDS,
+    ids: state.wordData.ALL_IDS
   }
 }
 

@@ -27,59 +27,62 @@
  * @flow
  */
 
-import { setCurrentWord, editWord, deleteWord,
-         addWord, changeWordScore } from '../../src/api/WordActions';
+import { addWord, editWord, deleteWord,
+         setCurrentWord } from '../../src/api/WordActions';
 
-test('display with word index action', () => {
-  let result = {
-    type: 'SET_CURRENT_WORD',
-    index: 5
-  };
-  expect(setCurrentWord(5)).toEqual(result);
-});
-
-test('edit word with appropriate information', () => {
-  let result = {
-    type: 'EDIT_WORD',
-    id: 4,
-    word: 'Savant',
-    def: 'a learned person',
-    n: true, v: false, adj: true, adv: false,
-    oldWord: 'Solarium', wordNotExisted: true
-  };
-  expect(editWord(4, 'Savant', 'a learned person', true,
-                  false, true, false, 'Solarium', true)).toEqual(result);
-});
-
-test('add word with appropriate information', () => {
-  let result = {
-    type: 'ADD_WORD',
-    id: 10,
-    word: 'Savant',
-    def: 'a learned person',
-    n: true, v: true, adj: true, adv: true,
-    score: 6,
-  };
-  expect(addWord(10, 'Savant', 'a learned person',
-                 true, true, true, true)).toEqual(result);
-});
-
-test('delete word by word name (a [WORD] entry should be unique)', () => {
-  let result = {
-    type: 'DELETE_WORD',
-    word: 'solarium'
-  };
-  expect(deleteWord('solarium')).toEqual(result);
-});
-
-test('changeWordScore', () => {
-  let result = {
-      type: 'CHANGE_WORD_SCORE',
-      id: 1,
+describe('testing all WordActions\' action creators', () => {
+  test('`addWord` creates incorrect action', () => {
+    var result = {
+      type: 'ADD_WORD',
+      id: 0,
       word: 'savant',
-      def: 'a person',
-      current: 5,
-      val: -1
-  };
-  expect(changeWordScore(1, 'savant', 'a person', 5, -1)).toEqual(result);
+      def: 'a learned person.',
+      n: true,
+      v: false,
+      adj: false,
+      adv: false
+    };
+
+    expect(addWord(
+      0, 'savant', 'a learned person.', true,
+      false, false, false
+    )).toEqual(result);
+  });
+
+  test('`editWord` creates incorrect action', () => {
+    var result = {
+      type: 'EDIT_WORD',
+      id: 0,
+      word: 'savant',
+      def: 'a learned person.',
+      n: false,
+      v: true,
+      adj: false,
+      adv: false,
+      replacedIdx: 5
+    };
+
+    expect(editWord(
+      0, 'savant', 'a learned person.', false,
+      true, false, false, 5
+    )).toEqual(result);
+  });
+
+  test('`deleteWord` creates incorrect action', () => {
+    var result = {
+      type: 'DELETE_WORD',
+      id: 1
+    };
+
+    expect(deleteWord(1)).toEqual(result);
+  });
+
+  test('`setCurrentWord` creates incorrect action', () => {
+    var result = {
+      type: 'SET_CURRENT_WORD',
+      index: 4
+    };
+
+    expect(setCurrentWord(4)).toEqual(result);
+  });
 });

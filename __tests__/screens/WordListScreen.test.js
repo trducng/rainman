@@ -32,51 +32,22 @@ import { ID, WORD, DEFINITION,
          NOUN, VERB, ADJECTIVE, ADVERB, SCORE } from '../../src/constants/DB';
 
 test('filter words and definition with search term', () => {
-  let original = [
-    {"idx":0,
-     "word":"savant",
-     "def":"a learned person, especially a distinguished scientist",
-     "n":true,
-     "v":false,
-     "adj":true,
-     "adv":false,
-     "score":4},
-    {"idx":1,
-     "word":"martinet",
-     "def":"a strict disciplinarian, especially in the armed forces.",
-     "n":true,
-     "v":true,
-     "adj":true,
-     "adv":false,
-     "score":5},
-    {"idx":2,
-     "word":"solarium",
-     "def":"a room fitted with extensive areas of glass to admit sunlight.",
-     "n":true,
-     "v":false,
-     "adv":true,
-     "adj":false,
-     "score":2}
-  ]
+  let words = {
+    1: {
+      word: 'savant',
+      def: 'a learned person, especially a distinguished scientist'
+    },
+    2: {
+      word: 'martinet',
+      def: 'a strict disciplinarian, especially in the armed forces.'
+    },
+    3: {
+      word: 'solarium',
+      def: 'a room fitted with extensive areas of glass to admit sunlight.'
+    }
+  }
+  let ids = [1, 2, 3];
+  let result = [1, 2];
 
-  let result = [
-    {"idx":0,
-     "word":"savant",
-     "def":"a learned person, especially a distinguished scientist",
-     "n":true,
-     "v":false,
-     "adj":true,
-     "adv":false,
-     "score":4},
-    {"idx":1,
-     "word":"martinet",
-     "def":"a strict disciplinarian, especially in the armed forces.",
-     "n":true,
-     "v":true,
-     "adj":true,
-     "adv":false,
-     "score":5},
-  ]
-
-  expect(filterWordList(original, 'an')).toEqual(result);
+  expect(filterWordList(words, ids, 'an')).toEqual(result);
 })

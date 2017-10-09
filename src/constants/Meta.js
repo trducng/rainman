@@ -33,5 +33,5 @@ export const VERBOSE = 4;
 
 export const DEFAULT_SCORE = 10;
 
-export const DAYS_IN_SECS = 86400;
+export const DAYS_IN_MILISECS = 86400000;
 export const INSTALLED_DAY = 17447520;

@@ -49,18 +49,18 @@ import { deleteItem, mergeItem, multiRemove, setItem } from '../api/AsyncDB';
 type Props = {
     onEdit: Function,
     navigation: Object,
-    allWords: Array<Object>
+    words: Array<Object>,
+    ids: Array<number>
 }
 
 type State = {
-  id?: number,
+  id: number,
   word: string,
-  oldWord: string,
-  def?: string,
-  n?: boolean,
-  v?: boolean,
-  adj?: boolean,
-  adv?: boolean
+  def: string,
+  n: boolean,
+  v: boolean,
+  adj: boolean,
+  adv: boolean
 }
 
 
@@ -81,7 +81,6 @@ class EditScreen extends React.Component<Props, State> {
     this.state = {
       id: typeof params === 'undefined' ? -1 : params.word[ID],
       word: typeof params === 'undefined' ? '' : params.word[WORD],
-      oldWord: typeof params === 'undefined'? '' : params.word[WORD],
       def: typeof params === 'undefined' ? '' : params.word[DEFINITION],
       n: typeof params === 'undefined' ? false : params.word[NOUN],
       v: typeof params === 'undefined' ? false : params.word[VERB],
@@ -122,71 +121,94 @@ class EditScreen extends React.Component<Props, State> {
   }
 
   _onEdit = () => {
+    if (this._checkIsEmpty()) {
+      Alert.alert(
+        'Word and Definition are required',
+        'Please fill in both Word and Definition',
+        [{text: 'OK'}]
+      );
+      return;
+    }
+
+    var oldWord = this.props.navigation.state.params.word[WORD];
+    var theSameWords = this.state.word.toLowerCase() === oldWord.toLowerCase();
+    var replacedIdx = this._checkIsDuplicate();
+
     var obj = {};
     obj[ID] = this.state.id; obj[WORD] = this.state.word;
     obj[DEFINITION] = this.state.def; obj[NOUN] = this.state.n;
     obj[VERB] = this.state.v; obj[ADJECTIVE] = this.state.adj;
     obj[ADVERB] = this.state.adv;
 
-    var wordNotExisted = true;
-    var theSameWords = (this.state.word.toLowerCase()
-      === this.state.oldWord.toLowerCase());
-
     if (theSameWords) {
-      mergeItem(this.state.oldWord, obj);
+      mergeItem(oldWord, obj);
     } else {
-      wordNotExisted = (this.props.allWords.findIndex((wordObj, index) => {
-        return wordObj[WORD] === this.state.word
-      }) === -1);
-
-      if (wordNotExisted) {
-        deleteItem(this.state.oldWord, () => {
+      if (replacedIdx === -1) {
+        deleteItem(oldWord, () => {
           setItem(this.state.word, obj);
         });
+      } else {
+        Alert.alert(
+          `Possible duplication`,
+          (`The word '${this.state.word}' already exists. ` +
+           `The old word will be replaced. Do you wish to continue?`),
+          [
+            {text: 'Cancel'},
+            {text: 'Replace', onPress: () => {
+              this.props.onEdit(
+                this.state.id, this.state.word, this.state.def,
+                this.state.n, this.state.v, this.state.adj, this.state.adv,
+                replacedIdx
+              );
+              this.props.navigation.goBack();
+              multiRemove([oldWord, this.state.word], () => {
+                setItem(this.state.word, obj);
+              });
+            }}
+          ],
+          { cancelable: false }
+        );
+        return;
       }
     }
 
-    if (wordNotExisted) {
-      this.props.onEdit(
-        this.state.id, this.state.word, this.state.def,
-        this.state.n, this.state.v, this.state.adj, this.state.adv,
-        this.state.oldWord, wordNotExisted
-      );
-      this.props.navigation.goBack();
-    } else {
-      Alert.alert(
-        `Possible duplication`,
-        (`The word '${this.state.word}' already exists. ` +
-         `The old word will be replaced. Do you wish to continue?`),
-        [
-          {text: 'Cancel'},
-          {text: 'Replace', onPress: () => {
-            this.props.onEdit(
-              this.state.id, this.state.word, this.state.def,
-              this.state.n, this.state.v, this.state.adj, this.state.adv,
-              this.state.oldWord, wordNotExisted
-            );
-            this.props.navigation.goBack();
-            multiRemove([this.state.oldWord, this.state.word], () => {
-              setItem(this.state.word, obj);
-            });
-          }}
-        ],
-        { cancelable: false }
-      );
+    this.props.onEdit(
+      this.state.id, this.state.word, this.state.def,
+      this.state.n, this.state.v, this.state.adj, this.state.adv,
+      replacedIdx
+    );
+    this.props.navigation.goBack();
+  }
+
+  _checkIsEmpty = (): boolean => {
+    if (this.state.word.trim() === '' || this.state.def.trim() === '') {
+      return true;
     }
+    return false;
+  }
+
+  _checkIsDuplicate = (): number => {
+    var { words, ids } = this.props;
+    for (var i=0, l=ids.length; i<l; i++) {
+      if ((words[ids[i]][WORD] === this.state.word) &&
+          (ids[i] !== this.state.id)) {
+        return i;
+      }
+    }
+    return -1;
   }
 }
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    allWords: state.wordData.ALL_WORDS
+    words: state.wordData.WORDS,
+    ids: state.wordData.ALL_IDS
   };
 }
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    onEdit: (id, word, def, n, v, adj, adv, oldWord, wordNotExisted) => {
-      dispatch(editWord(id, word, def, n, v, adj, adv, oldWord, wordNotExisted));
+    onEdit: (id, word, def, n, v, adj, adv, replacedIdx) => {
+      dispatch(editWord(id, word, def, n, v, adj, adv, replacedIdx));
     },
   }
 };

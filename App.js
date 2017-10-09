@@ -48,8 +48,7 @@ type Props = {
 }
 
 type State = {
-  assetsAreLoaded: boolean,
-  dataLoaded: boolean
+  loaded: boolean,
 }
 
 
@@ -58,8 +57,7 @@ export default class App extends React.Component<Props, State> {
   constructor(props: Object) {
     super(props);
     this.state = {
-      assetsAreLoaded: false,
-      dataLoaded: false,
+      loaded: false,
     };
   }
 
@@ -68,56 +66,24 @@ export default class App extends React.Component<Props, State> {
 
   componentWillMount() {
     this._loadAssetsAsync();
-    retrieveAll(this._loadData);
-    // multiRemove(['savant', 'martinet', 'solarium']);
-    // setItem("savant", {
-    //   'id': 0,
-    //   'word': 'savant',
-    //   'def': 'a learned person.',
-    //   'n': true,
-    //   'v': false,
-    //   'adj': true,
-    //   'adv': false,
-    //   'score': 4
-    // });
-    // setItem("martinet", {
-    //   'id': 1,
-    //   'word': 'martinet',
-    //   'def': 'a strict disciplinarian.',
-    //   'n': true,
-    //   'v': true,
-    //   'adj': true,
-    //   'adv': false,
-    //   'score': 5
-    // });
-    // setItem("solarium", {
-    //   'id': 2,
-    //   'word': 'solarium',
-    //   'def': 'a room filled with glass.',
-    //   'n': true,
-    //   'v': false,
-    //   'adv': true,
-    //   'adj': false,
-    //   'score': 2
-    // });
   }
 
   render() {
-    if (!this.state.assetsAreLoaded && !this.props.skipLoadingScreen &&
-        !this.state.dataLoaded) {
-      return <AppLoading />;
-    } else {
 
-      return (
-        <Provider store={this.store}>
-          <RootNavigation />
-        </Provider>
-      );
+    if (!this.state.loaded && !this.props.skipLoadingScreen) {
+      return <AppLoading />;
     }
+
+    return (
+      <Provider store={this.store}>
+        <RootNavigation />
+      </Provider>
+    );
   }
 
   async _loadAssetsAsync() {
     try {
+      retrieveAll(this._loadData);
       await Promise.all([
         Asset.loadAsync([
           require('./lib/assets/images/robot-dev.png'),
@@ -140,24 +106,12 @@ export default class App extends React.Component<Props, State> {
       );
       console.log(e);
     } finally {
-      this.setState({ assetsAreLoaded: true });
+      this.setState({ loaded: true });
     }
   }
 
   _loadData = (error, result) => {
-    this.setState({ dataLoaded: true});
     this.store.dispatch(getAllWords(result));
   }
 
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  statusBarUnderlay: {
-    height: 24,
-    backgroundColor: 'rgba(0,0,0,0.2)',
-  },
-});

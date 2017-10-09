@@ -35,7 +35,6 @@ import { appBarStyle } from '../styles';
 import { screenGeneral } from '../styles/screens';
 import style from '../styles/screens/ShuffleScreen';
 
-import { changeWordScore } from '../api/WordActions';
 import DynamicViewPager from '../components/DynamicViewPager';
 
 import { ID, WORD, DEFINITION } from '../constants/DB';
@@ -44,7 +43,6 @@ import { VERBOSE } from '../constants/Meta';
 
 type Props = {
   sortedScores: Object,
-  changeScore: Function,
 };
 
 type State = {
@@ -146,12 +144,4 @@ const mapStateToProps = (state, ownProps) => {
   }
 }
 
-const mapDispatchToProps = (dispatch, ownProps) => {
-  return {
-    changeScore: (id, word, def, current, val) => {
-      dispatch(changeWordScore(id, word, def, current, val));
-    },
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(ShuffleScreen);
+export default connect(mapStateToProps)(ShuffleScreen);

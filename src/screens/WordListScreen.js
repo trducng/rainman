@@ -40,37 +40,33 @@ import SearchBox from '../components/SearchBox';
 
 import { searchWord } from '../api/WordListActions';
 import { setCurrentWord } from '../api/WordActions';
+import { binarySearchArray } from '../api/utils';
+
 import { ID, WORD, DEFINITION } from '../constants/DB';
 
 
 type Props = {
-  wordList: Array<{
-    idx: number, word: string, def: string, n: boolean, v: boolean,
-    adj: boolean, adv: boolean, score: number
-  }>,
-  allWords: Array<{
-    idx: number, word: string, def: string, n: boolean, v: boolean,
-    adj: boolean, adv: boolean, score: number
-  }>,
+  ids: Array<number>,
+  filteredIds: Array<number>,
+  words: Object,
   navigation: Object,
   setWord: Function
 }
 
 
 export const filterWordList = (
- wordList: Array<{
-  idx: number, word: string, def: string, n: boolean, v: boolean,
-  adj: boolean, adv: boolean, score: number}>,
- searchTerm: string) => {
+ words: Object, ids: Array<number>, searchTerm: string) => {
 
   if (searchTerm === '') {
-    return wordList;
+    return ids;
   }
 
   var s = searchTerm.toLowerCase();
-  return wordList.filter(wordObj => {
-    return (wordObj[WORD].toLowerCase().indexOf(s)
-          + wordObj[DEFINITION].toLowerCase().indexOf(s)) > -2;
+  return ids.filter(id => {
+    return (
+        words[id][WORD].toLowerCase().indexOf(s)
+      + words[id][DEFINITION].toLowerCase().indexOf(s)
+    ) > -2;
   });
 }
 
@@ -90,18 +86,27 @@ class WordListScreen extends React.Component<Props> {
   }
 
   render() {
+    var { words, ids } = this.props;
+
+    if (ids.length === 0) {
+      return (
+        <View style={screenGeneral}>
+          <Text>Your deck is empty, please add some words!</Text>
+        </View>
+      );
+    }
+
     return (
       <View style={screenGeneral}>
         <FlatList
           style={{flex: 1}}
-          data={this.props.wordList}
-          keyExtractor={(item, index) => item[ID]}
+          data={this.props.filteredIds}
+          keyExtractor={(item, index) => item}
           renderItem={({item, index}) => (
             <WordListItem
-              word={item[WORD]} def={item[DEFINITION]}
+              word={words[item][WORD]} def={words[item][DEFINITION]}
               onPress={() => {
-                let idx = this.props.allWords.findIndex(i => item[WORD] === i[WORD]);
-                this.props.setWord(idx);
+                this.props.setWord(binarySearchArray(ids, item));
                 this.props.navigation.navigate('Detail')}}
             />
           )}
@@ -114,8 +119,11 @@ class WordListScreen extends React.Component<Props> {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    wordList: filterWordList(state.wordData.ALL_WORDS, state.searchTerm),
-    allWords: state.wordData.ALL_WORDS
+    words: state.wordData.WORDS,
+    filteredIds: filterWordList(
+      state.wordData.WORDS, state.wordData.ALL_IDS, state.searchTerm
+    ),
+    ids: state.wordData.ALL_IDS
   }
 };
 

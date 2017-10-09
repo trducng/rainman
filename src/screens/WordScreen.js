@@ -41,17 +41,17 @@ import DynamicViewPager from '../components/DynamicViewPager';
 import { ID, WORD, DEFINITION } from '../constants/DB';
 import { VERBOSE } from '../constants/Meta';
 
+import { getItem } from '../api/AsyncDB';
 import { mod } from '../api/utils';
 import { setCurrentWord } from '../api/WordActions';
+
 
 
 type Props = {
   navigation: Object,
   currentWord: number,
-  allWords: Array<{
-    idx: number, word: string, def: string, n: boolean, v: boolean,
-    adj: boolean, adv: boolean, score: number
-  }>,
+  words: Array<{ id: number, word: string, def: string }>,
+  ids: Array<number>,
   setWord: Function
 }
 
@@ -60,7 +60,7 @@ class WordScreen extends React.Component<Props> {
 
   static navigationOptions = ({ navigation, screenProps }) => {
     let { params } = navigation.state;
-    let { allWords, currentWord, onDeleteWord } = screenProps;
+    let { words, ids, currentWord, onDeleteWord } = screenProps;
 
     return {
       title: 'Word Detail',
@@ -73,7 +73,7 @@ class WordScreen extends React.Component<Props> {
           }
           Alert.alert(
             `Confirm Delete`,
-            `Are you sure to delete the word '${allWords[currentWord][WORD]}'?`,
+            `Are you sure to delete the word '${words[ids[currentWord]][WORD]}'?`,
             [
               {text: 'Cancel'},
               {text: 'Delete', onPress: () => {
@@ -81,7 +81,7 @@ class WordScreen extends React.Component<Props> {
                   console.log('WordScreen: delete word');
                 }
                 navigation.goBack();
-                onDeleteWord(allWords[currentWord][WORD]);
+                onDeleteWord(ids[currentWord], words);
               }}
             ],
             { cancelable: false }
@@ -91,7 +91,10 @@ class WordScreen extends React.Component<Props> {
           if (VERBOSE >= 5) {
             console.log('WordScreen: edit index: ' + currentWord);
           }
-          navigation.navigate('Edit', {word: allWords[currentWord]});
+          getItem(words[ids[currentWord]][WORD], (error, result) => {
+            var wordObj = JSON.parse(result);
+            navigation.navigate('Edit', {word: wordObj});
+          });
         }} />
       ),
     }
@@ -132,6 +135,10 @@ class WordScreen extends React.Component<Props> {
   }
 
   render() {
+    console.log('words:');
+    console.log(this.props.words);
+    console.log('ids: ');
+    console.log(this.props.ids);
     return (
       <DynamicViewPager
         onSwipedRight={this._onSwipedRight}
@@ -149,19 +156,17 @@ class WordScreen extends React.Component<Props> {
       console.log('WordScreen: get left page');
     }
 
-    if (this.props.allWords.length === 0) {
+    var { words, ids, currentWord } = this.props;
+    if (ids.length === 0) {
       return (
         <View style={[screenGeneral, style.main]}>
           <Text style={style.word}>This deck is empty!</Text>
           <Text style={style.def}>There are currently no words, please add some!</Text>
         </View>
-      )
+      );
     }
 
-    var word = this.props.allWords[
-      mod(this.props.currentWord - 1, this.props.allWords.length)
-    ];
-
+    var word = words[ids[mod(currentWord-1, ids.length)]];
     return (
       <View style={[screenGeneral, style.main]} >
         <Text style={style.word}>{word[WORD]}</Text>
@@ -175,7 +180,8 @@ class WordScreen extends React.Component<Props> {
       console.log('WordScreen: get right page');
     }
 
-    if (this.props.allWords.length === 0) {
+    var { words, ids, currentWord } = this.props;
+    if (ids.length === 0) {
       return (
         <View style={[screenGeneral, style.main]}>
           <Text style={style.word}>This deck is empty!</Text>
@@ -184,9 +190,7 @@ class WordScreen extends React.Component<Props> {
       )
     }
 
-    var word = this.props.allWords[mod(this.props.currentWord + 1,
-                                       this.props.allWords.length)];
-
+    var word = words[ids[mod(currentWord+1, ids.length)]];
     return (
       <View style={[screenGeneral, style.main]} >
         <Text style={style.word}>{word[WORD]}</Text>
@@ -200,11 +204,12 @@ class WordScreen extends React.Component<Props> {
       console.log('Get Main Page');
       console.log('Current word');
       console.log(this.props.currentWord);
-      console.log('allWords');
-      console.log(this.props.allWords);
+      console.log('all ids');
+      console.log(this.props.ids);
     }
 
-    if (this.props.allWords.length === 0) {
+    var { words, ids, currentWord } = this.props;
+    if (ids.length === 0) {
       return (
         <View style={[screenGeneral, style.main]}>
           <Text style={style.word}>This deck is empty!</Text>
@@ -213,8 +218,7 @@ class WordScreen extends React.Component<Props> {
       )
     }
 
-    var word = this.props.allWords[this.props.currentWord];
-
+    var word = words[ids[currentWord]];
     return (
       <View style={[screenGeneral, style.main]} >
         <Text style={style.word}>{word[WORD]}</Text>
@@ -224,14 +228,12 @@ class WordScreen extends React.Component<Props> {
   }
 
   _onSwipedRight = () => {
-    this.props.setWord(mod(this.props.currentWord + 1,
-                           this.props.allWords.length));
+    this.props.setWord(mod(this.props.currentWord + 1, this.props.ids.length));
 
   }
 
   _onSwipedLeft = () => {
-    this.props.setWord(mod(this.props.currentWord - 1,
-                           this.props.allWords.length));
+    this.props.setWord(mod(this.props.currentWord - 1, this.props.ids.length));
   }
 
   _onSwipedFail = () => {}
@@ -241,7 +243,8 @@ class WordScreen extends React.Component<Props> {
 const mapStateToProps = (state, ownProps) => {
   return {
     currentWord: state.wordData.CURRENT_WORD,
-    allWords: state.wordData.ALL_WORDS
+    words: state.wordData.WORDS,
+    ids: state.wordData.ALL_IDS,
   }
 }
 

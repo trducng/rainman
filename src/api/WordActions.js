@@ -27,30 +27,6 @@
  * @flow
  */
 
-export const setCurrentWord = (index: number) => {
-  return {
-    type: 'SET_CURRENT_WORD',
-    index,
-  }
-}
-
-export const editWord = (
- id: number, word: string, def: string, n: boolean, v: boolean,
- adj: boolean, adv:boolean, oldWord: string, wordNotExisted: boolean ) => {
-  return {
-    type: 'EDIT_WORD',
-    id,
-    word,
-    def,
-    n,
-    v,
-    adj,
-    adv,
-    oldWord,
-    wordNotExisted
-  }
-}
-
 export const addWord = (
  id: number, word: string, def: string, n: boolean, v: boolean,
  adj: boolean, adv: boolean) => {
@@ -63,25 +39,36 @@ export const addWord = (
     v,
     adj,
     adv
-  }
-}
+  };
+};
 
-export const deleteWord = (word: string) => {
-  return {
-    type: 'DELETE_WORD',
-    word
-  }
-}
 
-export const changeWordScore = (
-  id: number, word: string, def: string,
-  current: number, val: number) => {
+export const editWord = (
+ id: number, word: string, def: string, n: boolean, v: boolean,
+ adj: boolean, adv:boolean, replacedIdx: number ) => {
   return {
-    type: 'CHANGE_WORD_SCORE',
+    type: 'EDIT_WORD',
     id,
     word,
     def,
-    current,
-    val,
-  }
-}
+    n,
+    v,
+    adj,
+    adv,
+    replacedIdx
+  };
+};
+
+export const deleteWord = (id: number) => {
+  return {
+    type: 'DELETE_WORD',
+    id
+  };
+};
+
+export const setCurrentWord = (index: number) => {
+  return {
+    type: 'SET_CURRENT_WORD',
+    index,
+  };
+};

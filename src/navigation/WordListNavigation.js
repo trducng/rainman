@@ -40,15 +40,15 @@ import { deleteItem } from '../api/AsyncDB';
 import { searchWord } from '../api/WordListActions';
 import { deleteWord, setCurrentWord } from '../api/WordActions';
 
+import { ID, WORD } from '../constants/DB';
+
 type Props = {
   dispatch: Function,
   nav: Object,
   searchTerm: string,
   currentWord: number,
-  allWords: Array<{
-    idx: number, word: string, def: string, n: boolean, v: boolean,
-    adj: boolean, adv: boolean, score: number
-  }>
+  words: Array<{id: number, word: string, def: string}>,
+  ids: Array<number>
 }
 
 
@@ -75,11 +75,12 @@ class WordListTempNavigator extends React.Component<Props> {
         screenProps={{
           searchTerm: this.props.searchTerm,
           onSearch: (term) => this.props.dispatch(searchWord(term)),
+          words: this.props.words,
+          ids: this.props.ids,
           currentWord: this.props.currentWord,
-          allWords: this.props.allWords,
-          onDeleteWord: (word) => {
-            deleteItem(word, () => {
-              this.props.dispatch(deleteWord(word));
+          onDeleteWord: (id, words) => {
+            deleteItem(words[id][WORD], () => {
+              this.props.dispatch(deleteWord(id));
             });
           }
         }}
@@ -96,7 +97,8 @@ const mapStateToProps = state => ({
 
   // pass to WordScreen's navigationOptions
   currentWord: state.wordData.CURRENT_WORD,
-  allWords: state.wordData.ALL_WORDS,
+  words: state.wordData.WORDS,
+  ids: state.wordData.ALL_IDS
 });
 
 

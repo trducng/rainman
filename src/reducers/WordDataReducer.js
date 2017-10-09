@@ -27,228 +27,252 @@
  * @flow
  */
 
-import { ID, WORD, DEFINITION,
-         NOUN, VERB, ADJECTIVE, ADVERB, SCORE } from '../constants/DB';
-import { DEFAULT_SCORE, VERBOSE } from '../constants/Meta';
+import { ID, WORD, DEFINITION, NOUN, VERB,
+        ADJECTIVE, ADVERB, SCORE, LAST_OPENED } from '../constants/DB';
+import { DEFAULT_SCORE, VERBOSE, INSTALLED_DAY } from '../constants/Meta';
+import { binarySearchArray } from '../api/utils';
 
 
 export const initialState = {
+  WORDS: {},
+  ALL_IDS: [],
 
-  // has structure of: [
-  //  {id, word...}, {id, word...},...
-  // ]
-  ALL_WORDS: [],
+  SORTED_SCORES: [],
 
-  // has structure of: {
-  //    score1: [[id, word, def], [id, word, def], [id, word, def]...],
-  //    score2: [...],
-  //    ...
-  // }
-  SORTED_SCORES: {},
-  CURRENT_WORD: 0
+  NOUNS: [],
+  VERBS: [],
+  ADJECTIVES: [],
+  ADVERBS: [],
+
+  CURRENT_WORD: -1
 }
 
-export const wordData = (state: Object = initialState, action: Object) => {
 
+const switchWordKind = (array: Array<number>, id: number,
+ val: boolean): Array<number> => {
+  if (val) {
+    if (binarySearchArray(array, id) === -1) {
+      var idx = binarySearchArray(array, id, true);
+      return [...array.slice(0, idx), id, ...array.slice(idx)];
+    } else {
+      return array;
+    }
+
+  } else {
+    if (binarySearchArray(array, id) === -1) {
+      return array;
+    } else {
+      var idx = binarySearchArray(array, id);
+      return [...array.slice(0, idx), ...array.slice(idx+1)];
+    }
+  }
+}
+
+
+const editWordNonExisting = (state: Object, action: Object): Object => {
+
+  return {
+    WORDS: {
+      ...state.WORDS,
+      [action.id]: {
+        word: action.word,
+        def: action.def
+      }
+    },
+    ALL_IDS: state.ALL_IDS,
+    SORTED_SCORES: state.SORTED_SCORES,
+
+    NOUNS: switchWordKind(state.NOUNS, action.id, action.n),
+    VERBS: switchWordKind(state.VERBS, action.id, action.v),
+    ADJECTIVES: switchWordKind(state.ADJECTIVES, action.id, action.adj),
+    ADVERBS: switchWordKind(state.ADVERBS, action.id, action.adv),
+
+    CURRENT_WORD: state.CURRENT_WORD
+  }
+}
+
+
+const editWordExisting = (state: Object, action: Object): Object => {
+
+  // Remove all traces of the replaced word
+  var id = state.ALL_IDS[action.replacedIdx];
+  var sortedScoresIdx = binarySearchArray(state.SORTED_SCORES, id);
+
+  var nIdx = binarySearchArray(state.NOUNS, id);
+  var vIdx = binarySearchArray(state.VERBS, id);
+  var adjIdx = binarySearchArray(state.ADJECTIVES, id);
+  var advIdx = binarySearchArray(state.ADVERBS, id);
+
+  var n=state.NOUNS, v=state.VERBS, adj=state.ADJECTIVES, adv=state.ADVERBS;
+
+  if (nIdx !== -1) {
+    n = [...n.slice(0, nIdx), ...n.slice(nIdx+1)];
+  }
+  if (vIdx !== -1) {
+    v = [...v.slice(0, vIdx), ...v.slice(vIdx+1)];
+  }
+  if (adjIdx !== -1) {
+    adj = [...adj.slice(0, adjIdx), ...adj.slice(adjIdx+1)];
+  }
+  if (advIdx !== -1) {
+    adv = [...adv.slice(0, advIdx), ...adv.slice(advIdx+1)];
+  }
+
+  return {
+    WORDS: {
+      ...state.WORDS,
+      [action.id]: {
+        word: action.word,
+        def: action.def
+      }
+    },
+    ALL_IDS: [
+      ...state.ALL_IDS.slice(0, action.replacedIdx),
+      ...state.ALL_IDS.slice(action.replacedIdx+1)
+    ],
+    SORTED_SCORES: [
+      ...state.SORTED_SCORES.slice(0, sortedScoresIdx),
+      ...state.SORTED_SCORES.slice(sortedScoresIdx+1)
+    ],
+
+    NOUNS: switchWordKind(n, action.id, action.n),
+    VERBS: switchWordKind(v, action.id, action.v),
+    ADJECTIVES: switchWordKind(adj, action.id, action.adj),
+    ADVERBS: switchWordKind(adv, action.id, action.adv),
+
+    CURRENT_WORD: Math.min(
+      state.CURRENT_WORD,
+      Math.max(state.ALL_IDS.length-2, 0)
+    )
+  }
+}
+
+
+export const wordData = (state: Object = initialState, action: Object): Object => {
   switch (action.type) {
 
-    case 'GET_ALL_WORDS':
-      var allWords = action.words.map(item => JSON.parse(item[1]));
-      allWords.sort((a, b) => a[ID] - b[ID]);
+    case 'GET_ALL_WORDS': {
+      var words = {}, allIds = [];
+      var sortedScores = [];
+      var n = [], v = [], adj = [], adv = [];
 
-      var sortedScores = {};
-      for (var i=0; i<allWords.length; i++) {
-        var wordObj = allWords[i];
-        try {
-          sortedScores[wordObj[SCORE]].push([
-            wordObj[ID], wordObj[WORD], wordObj[DEFINITION]
-          ]);
-        } catch (error) {
-          if (error instanceof TypeError) {
-            sortedScores[wordObj[SCORE]] = [[
-              wordObj[ID], wordObj[WORD], wordObj[DEFINITION]
-            ]];
-          } else {
-            throw error;
-          }
-        }
-      }
+      for (var i=0, l=action.words.length; i<l; i++) {
+        var wordObj = JSON.parse(action.words[i][1]);
 
-      return {
-        ALL_WORDS: allWords,
-        SORTED_SCORES: sortedScores,
-        CURRENT_WORD: state.CURRENT_WORD
-      }
+        words[wordObj[ID]] = {
+          word: wordObj[WORD],
+          def: wordObj[DEFINITION]
+        };
+        allIds.push(wordObj[ID]);
 
-
-    case 'EDIT_WORD':
-      if (VERBOSE >= 5) {
-        console.log(`WordDataReducer: EDIT_WORD - ${action[WORD]}: `
-          + `wordNotExisted (${action.wordNotExisted})`);
-      }
-
-      // There are 3 different cases:
-      //    - The [WORD] is not editted
-      //    - The [WORD] is editted to a non-existing new [WORD]
-      //    - The [WORD] is editted to a new [WORD] that already exists
-
-      var allWords = [];
-      var sortedScores = {};
-      var currentWord = 0;
-
-      for (var i=0, l=state.ALL_WORDS.length; i<l; i++) {
-        var wordObj = state.ALL_WORDS[i];
-
-        if (action[ID] === wordObj[ID]) {
-          let word = {};
-          word[ID] = wordObj[ID]; word[SCORE] = wordObj[SCORE];
-          word[WORD] = action[WORD]; word[DEFINITION] = action[DEFINITION];
-          word[NOUN] = action[NOUN]; word[VERB] = action[VERB];
-          word[ADJECTIVE] = action[ADJECTIVE]; word[ADVERB] = action[ADVERB];
-
-          wordObj = word;
-          currentWord = allWords.length;
-        } else if (action[WORD] === wordObj[WORD]) {
-          continue;
-        }
-        allWords.push(wordObj);
-
-        try {
-          sortedScores[wordObj[SCORE]].push([
-            wordObj[ID], wordObj[WORD], wordObj[DEFINITION]
-          ]);
-        } catch (error) {
-          if (error instanceof TypeError) {
-            sortedScores[wordObj[SCORE]] = [[
-              wordObj[ID], wordObj[WORD], wordObj[DEFINITION]
-            ]];
-          } else {
-            throw error;
-          }
-        }
-      }
-
-      return {
-        ALL_WORDS: allWords,
-        SORTED_SCORES: sortedScores,
-        CURRENT_WORD: currentWord
-        //     CURRENT_WORD: Math.min(
-        //       state.CURRENT_WORD,
-        //       Math.max(allWords.length-1, 0)
-        //     )
-      }
-
-
-    case 'ADD_WORD':
-      let word = {};
-      word[ID] = action.id; word[WORD] = action.word;
-      word[DEFINITION] = action.def; word[NOUN] = action.n;
-      word[VERB] = action.v; word[ADJECTIVE] = action.adj;
-      word[ADVERB]= action.adv; word[SCORE] = DEFAULT_SCORE;
-
-      var sortedScores = {...state.SORTED_SCORES}
-      try {
-        sortedScores[DEFAULT_SCORE].push([
-          word[ID], word[WORD], word[DEFINITION]
+        sortedScores.push([
+          wordObj[ID],
+          wordObj[LAST_OPENED] * wordObj[SCORE] * Math.sqrt(wordObj[SCORE])
         ]);
-      } catch (error) {
-        if (error instanceof TypeError) {
-          sortedScores[DEFAULT_SCORE] = [[
-            word[ID], word[WORD], word[DEFINITION]
-          ]];
-        } else {
-          throw error;
+
+        if (wordObj[NOUN]) {
+          n.push(wordObj[ID]);
+        }
+        if (wordObj[VERB]) {
+          v.push(wordObj[ID]);
+        }
+        if (wordObj[ADJECTIVE]) {
+          adj.push(wordObj[ID]);
+        }
+        if (wordObj[ADVERB]) {
+          adv.push(wordObj[ID]);
         }
       }
 
+      allIds.sort((a, b) => a - b);
+
+      sortedScores.sort((a, b) => a[1] - b[1]);
+      sortedScores = sortedScores.map((item) => item[0]);
+
+      n.sort((a, b) => a - b);
+      v.sort((a, b) => a - b);
+      adj.sort((a, b) => a - b);
+      adv.sort((a, b) => a - b);
+
       return {
-        ALL_WORDS: [...state.ALL_WORDS, word],
+        WORDS: words,
+        ALL_IDS: allIds,
         SORTED_SCORES: sortedScores,
+        NOUNS: n,
+        VERBS: v,
+        ADJECTIVES: adj,
+        ADVERBS: adv,
+        CURRENT_WORD: state.CURRENT_WORD
+      };
+    }
+
+    case 'ADD_WORD': {
+
+      return {
+        WORDS: {
+          ...state.WORDS,
+          [action.id]: {
+            word: action.word,
+            def: action.def
+          }
+        },
+        ALL_IDS: [...state.ALL_IDS, action.id],
+        SORTED_SCORES: [action.id, ...state.SORTED_SCORES.slice(0)],
+        NOUNS: action.n ? [...state.NOUNS, action.id] : state.NOUNS,
+        VERBS: action.v ? [...state.VERBS, action.id] : state.VERBS,
+        ADJECTIVES: action.adj ? [...state.ADJECTIVES, action.id] : state.ADJECTIVES,
+        ADVERBS: action.adv ? [...state.ADVERBS, action.id] : state.ADVERBS,
         CURRENT_WORD: state.CURRENT_WORD
       }
+    }
 
+    case 'EDIT_WORD': {
 
-    case 'CHANGE_WORD_SCORE':
-      var sortedScores = {};
-      for (var prop in state.SORTED_SCORES) {
-        if (!state.SORTED_SCORES.hasOwnProperty(prop)) {
-          continue;
-        }
-
-        var array = [];
-
-        if (prop == action.current) {
-          for (var i=0, l = state.SORTED_SCORES[prop].length; i<l; i++) {
-            var obj = state.SORTED_SCORES[prop][i];
-            if (obj[0] !== action.id) {
-              array.push(state.SORTED_SCORES[prop][i]);
-            }
-          }
-        }
-        else if (prop == action.current + action.val) {
-          array = [...state.SORTED_SCORES[prop], [action.id, action.word, action.def]];
-        } else {
-          array = state.SORTED_SCORES[prop];
-        }
-
-        if (array.length > 0) {
-          sortedScores[prop] = array;
-        }
+      if (action.replacedIdx === -1) {
+        return editWordNonExisting(state, action);
+      } else {
+        return editWordExisting(state, action);
       }
+
+    }
+
+    case 'DELETE_WORD': {
+      var idx = binarySearchArray(state.ALL_IDS, action.id);
+      var sortedScoresIdx = state.SORTED_SCORES.indexOf(action.id);
 
       return {
-        ALL_WORDS: state.ALL_WORDS,
-        SORTED_SCORES: sortedScores,
-        CURRENT_WORD: state.CURRENT_WORD
-      }
+        WORDS: state.WORDS,
+        ALL_IDS: [...state.ALL_IDS.slice(0, idx), ...state.ALL_IDS.slice(idx+1)],
+        SORTED_SCORES: [
+          ...state.SORTED_SCORES.slice(0, sortedScoresIdx),
+          ...state.SORTED_SCORES.slice(sortedScoresIdx+1)
+        ],
+        NOUNS: switchWordKind(state.NOUNS, action.id, false),
+        VERBS: switchWordKind(state.VERBS, action.id, false),
+        ADJECTIVES: switchWordKind(state.ADJECTIVES, action.id, false),
+        ADVERBS: switchWordKind(state.ADVERBS, action.id, false),
+        CURRENT_WORD: Math.min(
+          state.CURRENT_WORD,
+          Math.max(state.ALL_IDS.length-2, 0)
+        )
+      };
+    }
 
-
-    case 'DELETE_WORD':
-      if (VERBOSE >= 5) {
-        console.log(`WordDataReducer: DELETE_WORD for ${action.word}`);
-      }
-      var allWords = [];
-      var sortedScores = {};
-
-      for (var i=0, l=state.ALL_WORDS.length; i<l; i++) {
-        var wordObj = state.ALL_WORDS[i];
-        if (wordObj[WORD] === action[WORD]) {
-          continue;
-        }
-        allWords.push(wordObj);
-
-        try {
-          sortedScores[wordObj[SCORE]].push([
-            wordObj[ID], wordObj[WORD], wordObj[DEFINITION]
-          ]);
-        }
-        catch (error) {
-          if (error instanceof TypeError) {
-            sortedScores[wordObj[SCORE]] = [[
-              wordObj[ID], wordObj[WORD], wordObj[DEFINITION]
-            ]];
-          } else {
-            throw error;
-          }
-        }
-      }
-
+    case 'SET_CURRENT_WORD': {
       return {
-        ALL_WORDS: allWords,
-        SORTED_SCORES: sortedScores,
-        CURRENT_WORD: Math.max(state.CURRENT_WORD - 1, 0)
-      }
-
-
-    case 'SET_CURRENT_WORD':
-      return {
-        ALL_WORDS: state.ALL_WORDS,
+        WORDS: state.WORDS,
+        ALL_IDS: state.ALL_IDS,
         SORTED_SCORES: state.SORTED_SCORES,
+        NOUNS: state.NOUNS,
+        VERBS: state.VERBS,
+        ADJECTIVES: state.ADJECTIVES,
+        ADVERBS: state.ADVERBS,
         CURRENT_WORD: action.index
       }
+    }
 
-
-    default:
+    default: {
       return state;
+    }
   }
-};
+}
