@@ -155,7 +155,7 @@ export const wordData = (state: Object = initialState, action: Object): Object =
       var words = {}, allIds = [];
       var sortedScores = [];
       var n = [], v = [], adj = [], adv = [];
-
+      
       for (var i=0, l=action.words.length; i<l; i++) {
         var wordObj = JSON.parse(action.words[i][1]);
 

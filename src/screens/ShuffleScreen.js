@@ -37,16 +37,21 @@ import style from '../styles/screens/ShuffleScreen';
 
 import DynamicViewPager from '../components/DynamicViewPager';
 
-import { ID, WORD, DEFINITION } from '../constants/DB';
+import { getItem, mergeItem } from '../api/AsyncDB';
+
+import { ID, WORD, DEFINITION, SCORE } from '../constants/DB';
 import { VERBOSE } from '../constants/Meta';
 
 
 type Props = {
-  sortedScores: Object,
+  words: Object,
+  sortedScores: Array<number>,
 };
 
 type State = {
-  show: boolean
+  showed: boolean,
+  currentWord: number,
+  nextWord: number
 }
 
 
@@ -58,10 +63,16 @@ class ShuffleScreen extends React.Component<Props, State> {
     headerStyle: appBarStyle,
   }
 
+  percentile: Array<number> = [
+    0, 2.5, 4.87, 6.82, 8.22, 9.12, 9.57, 9.795, 9.9075, 9.96375, 10
+  ];
+
   constructor(props: Object) {
     super(props);
     this.state = {
-      show: false
+      showed: false,
+      currentWord: this.props.sortedScores[this._getRandomWordIndex()],
+      nextWord: this.props.sortedScores[this._getRandomWordIndex()]
     }
   }
 
@@ -79,67 +90,132 @@ class ShuffleScreen extends React.Component<Props, State> {
   }
 
   _getLeftPage = () => {
+    if (this.props.sortedScores.length === 0) {
+      return this._blankPage();
+    }
+
+    var word = this.props.words[this.state.nextWord];
     return (
       <View style={[screenGeneral, style.main]}>
-        <Text style={style.word}>The next word</Text>
+        <Text style={style.word}>{ word[WORD] }</Text>
       </View>
     );
   }
 
   _getRightPage = () => {
+    if (this.props.sortedScores.length === 0) {
+      return this._blankPage();
+    }
+
+    var word = this.props.words[this.state.nextWord];
     return (
       <View style={[screenGeneral, style.main]}>
-        <Text style={style.word}>The next word</Text>
+        <Text style={style.word}>{ word[WORD] }</Text>
       </View>
     );
   }
 
   _getMainPage = () => {
-    console.log('Show: ' + this.state.show.toString());
-    if (!this.state.show) {
+    if (this.props.sortedScores.length === 0) {
+      return this._blankPage();
+    }
+
+    var word = this.props.words[this.state.currentWord];
+    if (!this.state.showed) {
       return (
         <TouchableWithoutFeedback
           onPress={this._show}
           style={screenGeneral}
         >
           <View style={style.main}>
-            <Text style={style.word}>The current word</Text>
+            <Text style={style.word}>{ word[WORD] }</Text>
           </View>
         </TouchableWithoutFeedback>
       );
     } else {
       return (
         <View style={[screenGeneral, style.main]}>
-          <Text style={style.word}>The current word</Text>
-          <Text style={style.def}>Tadaaaaa it shows</Text>
+          <Text style={style.word}>{ word[WORD] }</Text>
+          <Text style={style.def}>{ word[DEFINITION] }</Text>
         </View>
       );
     }
   }
 
-  _show = () => {
-    this.setState((prevState) => {
-      return {show: true}
-    });
-  }
-
   _onSwipedLeft = () => {
-    this.setState((prevState) => {
-      return {show: false}
+    if (this.props.sortedScores.length === 0) return;
+    var word = this.props.words[this.state.currentWord][WORD];
+    getItem(word, (error, result) => {
+      var wordObj = JSON.parse(result);
+      mergeItem(word, {
+        [SCORE]: wordObj[SCORE] + 1
+      });
     });
+    this._onSwiped();
   }
 
   _onSwipedRight = () => {
-    this.setState((prevState) => {
-      return {show: false}
+    if (this.props.sortedScores.length === 0) return;
+    var word = this.props.words[this.state.currentWord][WORD];
+    getItem(word, (error, result) => {
+      var wordObj = JSON.parse(result);
+      mergeItem(word, {
+        [SCORE]: wordObj[SCORE] <= 1 ? 1 : wordObj[SCORE] - 1
+      });
     });
+    this._onSwiped();
   }
 
   _onSwipedFail = () => {}
+
+  _blankPage = () => {
+    return (
+      <View style={[screenGeneral, style.main]}>
+        <Text style={style.word}>This deck is empty!</Text>
+        <Text style={style.def}>There are currently no words, please add some!</Text>
+      </View>
+    );
+  }
+
+  _getRandomWordIndex = () => {
+    var length = this.props.sortedScores.length;
+    if (length >= 100) {
+      return Math.floor(Math.random() * (length - 0) + 0);
+    } else {
+      let rand = Math.floor(Math.random() * 10);
+      let lower = Math.floor((length/10) * this.percentile[rand]);
+      let upper = Math.ceil((length/10) * this.percentile[rand+1]);
+      return Math.floor(Math.random() * (upper - lower) + lower);
+    }
+  }
+
+  _onSwiped = () => {
+    var idx = this._getRandomWordIndex();
+    if (this.props.sortedScores.length > 5) {
+      while (this.props.sortedScores[idx] === this.state.nextWord) {
+        idx = this._getRandomWordIndex();
+      }
+    }
+
+    this.setState((prevState) => {
+      return {
+        showed: false,
+        currentWord: prevState.nextWord,
+        nextWord: this.props.sortedScores[idx]
+      };
+    });
+  }
+
+  _show = () => {
+    this.setState((prevState) => {
+      return {showed: true}
+    });
+  }
 }
 
 const mapStateToProps = (state, ownProps) => {
   return {
+    words: state.wordData.WORDS,
     sortedScores: state.wordData.SORTED_SCORES
   }
 }

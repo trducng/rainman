@@ -135,10 +135,6 @@ class WordScreen extends React.Component<Props> {
   }
 
   render() {
-    console.log('words:');
-    console.log(this.props.words);
-    console.log('ids: ');
-    console.log(this.props.ids);
     return (
       <DynamicViewPager
         onSwipedRight={this._onSwipedRight}

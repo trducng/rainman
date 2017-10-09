@@ -199,7 +199,7 @@ class DynamicViewPager extends React.Component<Props, State> {
         { toValue: -2 * CONSTANTS.window.width, duration: 250 }
       ).start((event) => {
         if (event.finished) {
-          if (VERBOSE >= 4) {
+          if (VERBOSE >= 5) {
             console.log("onSwipedRight");
           }
           this.props.onSwipedRight();
@@ -212,7 +212,7 @@ class DynamicViewPager extends React.Component<Props, State> {
         { toValue: 0, duration: 250 }
       ).start((event) => {
         if (event.finished) {
-          if (VERBOSE >= 4) {
+          if (VERBOSE >= 5) {
             console.log("onSwipedLeft");
           }
           this.props.onSwipedLeft();
@@ -225,7 +225,7 @@ class DynamicViewPager extends React.Component<Props, State> {
        {toValue: -CONSTANTS.window.width, duration: 200 }
       ).start((event) => {
         if (event.finished) {
-          if (VERBOSE >= 4) {
+          if (VERBOSE >= 5) {
             console.log('onSwipedFail');
             console.log('vx: ' + vx);
           }
