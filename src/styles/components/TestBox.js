@@ -40,19 +40,25 @@ export default StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 20,
   },
-  choice: {
+  choiceWrapper: {
     paddingVertical: 10,
     paddingHorizontal: 20,
-    fontSize: 16,
   },
-  correct: {
-    color: 'white',
-    fontWeight: 'bold',
+  choiceWrapperCorrect: {
     backgroundColor: '#016936',
   },
-  incorrect: {
+  choiceWrapperIncorrect: {
+    backgroundColor: '#DB2828',
+  },
+  choiceText: {
+    fontSize: 16,
+  },
+  choiceTextCorrect: {
     color: 'white',
     fontWeight: 'bold',
-    backgroundColor: '#DB2828',
+  },
+  choiceTextIncorrect: {
+    color: 'white',
+    fontWeight: 'bold',
   }
 });

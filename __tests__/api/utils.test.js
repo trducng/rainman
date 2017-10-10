@@ -27,9 +27,9 @@
  * @flow
  */
 
-import { mod, binarySearchArray } from '../../src/api/utils';
+import { mod, binarySearchArray, Queue } from '../../src/api/utils';
 
-describe('testing `mod` operation', () => {
+describe('testing `mod`...', () => {
   test('`mod` does not return correct value for 5 mod 10', () => {
     expect(mod(5, 10)).toBe(5);
   });
@@ -66,4 +66,41 @@ describe('testing `binarySearchArray`...', () => {
     expect(binarySearchArray(testArray, 3, true)).toBe(2);
     expect(binarySearchArray(testArray, 127, true)).toBe(7);
   });
+});
+
+test('testing `Queue`...', () => {
+  var queue = new Queue(5);
+  expect(queue.isEmpty()).toBe(true);
+  expect(queue.getLength()).toBe(5);
+  queue.push(10);
+  queue.push(15);
+  queue.push(20);
+  expect(queue.contains(10)).toBe(true);
+  expect(queue.contains(12)).toBe(false);
+  expect(queue.pop()).toBe(10);
+  expect(queue.pop()).toBe(15);
+
+  queue.push(25);
+  queue.push(30);
+  queue.push(35);
+  queue.push(40);
+  expect(queue.isFull()).toBe(true);
+  expect(queue.peekOldest()).toBe(20);
+  expect(queue.peekNewest()).toBe(40);
+
+  queue.push(45);
+  queue.push(50);
+  expect(queue.isFull()).toBe(true);
+  expect(queue.peekOldest()).toBe(30);
+  expect(queue.asArray()).toEqual([35, 40, 45, 50, 30]);
+  expect(queue.immutePush(55).peekOldest()).toBe(35);
+
+  queue.pop();
+  queue.pop();
+  expect(queue.contains(35)).toBe(false);
+  queue.pop();
+  expect(queue.peekOldest()).toBe(45);
+  queue.pop();
+  queue.pop();
+  expect(queue.isEmpty()).toBe(true);
 });

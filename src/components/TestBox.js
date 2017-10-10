@@ -28,22 +28,116 @@
  */
 
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, TouchableWithoutFeedback } from 'react-native';
 
 import style from '../styles/components/TestBox';
 
 
-class TestBox extends React.Component {
+type Props = {
+  question: string,
+  correct: string,
+  incorrect: Array<string>,
+  onUpdate: Function,
+}
+
+type State = {
+  correctChoice: number,
+  userChoice: number,
+  selectable: boolean,
+}
+
+class TestBox extends React.Component<Props, State> {
+
+  constructor(props: Object) {
+    super(props);
+
+    this.state = {
+      correctChoice: this._getRandomIndex(),
+      userChoice: 0,
+      selectable: true,
+    };
+  }
+
+  componentWillReceiveProps(nextProps: Object) {
+    if (nextProps.question !== this.props.question) {
+      this.setState({
+        correctChoice: this._getRandomIndex(),
+        userChoice: 0,
+        selectable: true
+      });
+    }
+  }
+
   render() {
     return (
       <View style={style.main}>
-        <Text style={style.question}>a learned person, especially a distinguished scientist?</Text>
-        <Text style={[style.choice]}>Martinet</Text>
-        <Text style={[style.choice]}>Savant</Text>
-        <Text style={[style.choice, style.incorrect]}>Impudence</Text>
-        <Text style={[style.choice]}>Philistine</Text>
+        <Text style={style.question}>{ this.props.question }?</Text>
+        { this.getChoices() }
       </View>
     );
+  }
+
+  getChoices = () => {
+    var { correct, incorrect } = this.props;
+    var items = [];
+    var key = 1, incorrectIdx = 0;
+
+    while (key <= incorrect.length+1) {
+      let selected = key === this.state.userChoice;
+      let correctChoice = key === this.state.correctChoice;
+      let text = correctChoice ? correct : incorrect[incorrectIdx++];
+
+      items.push(this._getChoice(key, selected, correctChoice, text));
+      key++;
+    }
+
+    return items;
+  }
+
+  _getChoice = (key: number, selected: boolean, correct: boolean, text: string) => {
+    if (!selected) {
+      return this._getChoiceComponent(
+        key, text, correct, selected, [style.choiceWrapper], [style.choiceText]
+      );
+    }
+
+    let choiceWrapper = correct
+      ? [style.choiceWrapper, style.choiceWrapperCorrect]
+      : [style.choiceWrapper, style.choiceWrapperIncorrect];
+    let textWrapper = correct
+      ? [style.choiceText, style.choiceTextCorrect]
+      : [style.choiceText, style.choiceTextIncorrect];
+
+    return this._getChoiceComponent(
+      key, text, correct, selected, choiceWrapper, textWrapper
+    );
+
+  }
+
+  _getChoiceComponent = ( key: number, text: string, correct: boolean,
+   selected: boolean, wrapperStyle: Array<Object>, textStyle: Array<Object>) => {
+
+    return (
+      <TouchableWithoutFeedback key={key.toString()}
+       onPress={() => {
+         if (!this.state.selectable) return;
+         if (correct) {
+           this.setState({ userChoice: key, selectable: false });
+           setTimeout(this.props.onUpdate, 1000);
+         } else {
+           this.setState({ userChoice: key });
+         }
+       }}>
+        <View style={wrapperStyle}>
+          <Text style={textStyle}>{ text }</Text>
+        </View>
+      </TouchableWithoutFeedback>
+    );
+
+  }
+
+  _getRandomIndex = () => {
+    return Math.floor(Math.random() * (this.props.incorrect.length+1) + 1);
   }
 }
 

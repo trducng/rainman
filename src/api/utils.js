@@ -69,3 +69,146 @@ export const binarySearchArray = (
 
    return -1;
 };
+
+
+/**
+ * Select a random number from lower (inclusive) to upper (inclusive)
+ */
+export const randInt = (lower: number, upper: number) => {
+  return lower + Math.floor(Math.random() * (upper + 1 - lower));
+}
+
+
+/**
+ * Select `amount` of random elements from `array`
+ */
+export const choice = (array: Array<number>, amount: number): Array<number> => {
+  var idx = -1, length = array.length;
+
+  amount = amount <= length ? amount : length;
+  var result = [...array];
+
+  while (++idx < amount) {
+    var rand = randInt(idx, length-1);
+    var value = result[rand];
+
+    result[rand] = result[idx];
+    result[idx] = value;
+  }
+
+  result.length = amount;
+  return result;
+}
+
+
+/**
+ * Simple queue
+ */
+export class Queue {
+  array: Array<any>;
+  length: number;
+  newPointer: number;
+  oldPointer: number;
+
+  static copy(old: Queue): Queue {
+    var obj = new Queue(old.getLength());
+    obj._setState(
+      old.asArray(), old.getLength(), old.getNewPointer(), old.getOldPointer()
+    );
+    return obj;
+  }
+
+  constructor(length: number) {
+    this.array = [];
+    this.length = length;
+    this.newPointer = 0;
+    this.oldPointer = -1;
+  }
+
+  isEmpty() {
+    return this.oldPointer === -1;
+  }
+
+  isFull() {
+    return this.newPointer === this.oldPointer;
+  }
+
+  asArray() {
+    return this.array.slice(0, this.length);
+  }
+
+  contains(item: any) {
+    if (this.isEmpty()) {
+      return false;
+    }
+
+    if (this.newPointer === this.oldPointer) {
+      return this.array.indexOf(item) !== -1;
+    } else if (this.newPointer > this.oldPointer) {
+      return this.array.slice(this.oldPointer, this.newPointer).indexOf(item) !== -1;
+    } else {
+      return [
+        ...this.array.slice(this.oldPointer),
+        ...this.array.slice(0, this.newPointer)
+      ].indexOf(item) !== -1;
+    }
+  }
+
+  push(item: any) {
+    this.array[this.newPointer] = item;
+    if (this.isEmpty() || this.isFull()) {
+      this.oldPointer = mod(this.oldPointer + 1, this.length);
+    }
+    this.newPointer = mod(this.newPointer + 1, this.length);
+    return item;
+  }
+
+  pop() {
+    if (this.isEmpty()) {
+      return;
+    }
+    var item = this.array[this.oldPointer];
+    this.oldPointer = mod(this.oldPointer + 1, this.length);
+    if (this.oldPointer === this.newPointer) {
+      this.oldPointer = -1;
+      this.newPointer = 0;
+    }
+    return item;
+  }
+
+  getLength(): number {
+    return this.length;
+  }
+
+  getNewPointer(): number {
+    return this.newPointer;
+  }
+
+  getOldPointer(): number {
+    return this.oldPointer;
+  }
+
+  _setState(array: Array<any>, length: number,
+   newPointer: number, oldPointer: number) {
+    this.array = array,
+    this.length = length;
+    this.newPointer = newPointer;
+    this.oldPointer = oldPointer;
+  }
+
+  immutePush(item: any): Queue {
+    var obj = Queue.copy(this);
+    obj.push(item);
+    return obj;
+  }
+
+  peekOldest(): any {
+    if (this.isEmpty()) return;
+    return this.array[this.oldPointer];
+  }
+
+  peekNewest(): any {
+    if (this.isEmpty()) return;
+    return this.array[mod(this.newPointer-1, this.length)];
+  }
+}
