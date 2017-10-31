@@ -42,7 +42,6 @@ export const addWord = (
   };
 };
 
-
 export const editWord = (
  id: number, word: string, def: string, n: boolean, v: boolean,
  adj: boolean, adv:boolean, replacedIdx: number ) => {
@@ -72,3 +71,10 @@ export const setCurrentWord = (index: number) => {
     index,
   };
 };
+
+export const setShuffleFirstWord = (id: number) => {
+  return {
+    type: 'SET_SHUFFLE_FIRST_WORD',
+    id
+  };
+}

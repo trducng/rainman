@@ -48,6 +48,7 @@ import { VERBOSE } from '../constants/Meta';
 type Props = {
   words: Object,
   sortedScores: Array<number>,
+  shuffleFirstWord: number,
 };
 
 type State = {
@@ -59,27 +60,37 @@ type State = {
 
 class ShuffleScreen extends React.Component<Props, State> {
 
-  static navigationOptions = {
-    title: 'Shuffle',
-    headerTintColor: 'white',
-    headerStyle: appBarStyle,
-    header: null
-  }
-
   percentile: Array<number> = [
     0, 2.5, 4.87, 6.82, 8.22, 9.12, 9.57, 9.795, 9.9075, 9.96375, 10
   ];
 
   constructor(props: Object) {
     super(props);
-    var { currentWord } = this.props.navigation.state;
+
+    var { shuffleFirstWord } = this.props;
 
     this.state = {
       showed: false,
-      currentWord: currentWord
-        ? currentWord
+      currentWord: Number.isInteger(shuffleFirstWord) && shuffleFirstWord >= 1
+        ? this.props.shuffleFirstWord
         : this.props.sortedScores[this._getRandomWordIndex()],
       nextWord: this.props.sortedScores[this._getRandomWordIndex()]
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (
+     (Number.isInteger(nextProps.shuffleFirstWord)) &&
+     (nextProps.shuffleFirstWord != this.props.shuffleFirstWord) &&
+     (nextProps.shuffleFirstWord > 0)
+    ) {
+      this.setState((prevState) => {
+        return {
+          showed: false,
+          currentWord: nextProps.shuffleFirstWord,
+          nextWord: nextProps.sortedScores[this._getRandomWordIndex()]
+        };
+      });
     }
   }
 
@@ -232,6 +243,7 @@ class ShuffleScreen extends React.Component<Props, State> {
 
 const mapStateToProps = (state, ownProps) => {
   return {
+    shuffleFirstWord: state.shuffleFirstWord,
     words: state.wordData.WORDS,
     sortedScores: state.wordData.SORTED_SCORES
   }

@@ -38,8 +38,10 @@ import { addNavigationHelpers, TabNavigator,
   TabBarBottom, StackNavigator } from 'react-navigation';
 import { connect } from 'react-redux';
 
+import { setShuffleFirstWord } from '../api/WordActions';
 import requestNotificationsPermissions from '../api/requestNotificationsPermissions';
 import registerWordReminderNotification from '../api/registerWordReminderNotification';
+
 
 import Colors from '../constants/Colors';
 import { WORD, DEFINITION, ID } from '../constants/DB';
@@ -125,6 +127,11 @@ export const MainTabNavigator = TabNavigator(
 class RootNavigator extends React.Component<Props> {
 
   _notificationSubscription: EventSubscription;
+  _navigation: Object
+
+  componentWillMount() {
+    console.log('RootNavigator: componentWillMount');
+  }
 
   componentDidMount() {
     if (Platform.OS === 'ios') {
@@ -142,12 +149,14 @@ class RootNavigator extends React.Component<Props> {
   }
 
   render() {
+    this._navigation = addNavigationHelpers({
+      dispatch: this.props.dispatch,
+      state: this.props.nav
+    });
+
     return (
       <MainTabNavigator
-        navigation={addNavigationHelpers({
-          dispatch: this.props.dispatch,
-          state: this.props.nav
-        })}
+        navigation={this._navigation}
       />
     );
   }
@@ -203,6 +212,7 @@ class RootNavigator extends React.Component<Props> {
         {
           [WORD]: this.props.words[wordId][WORD],
           [DEFINITION]: this.props.words[wordId][DEFINITION],
+          [ID]: wordId,
           day: schedules[i].getDate(),
           hour: schedules[i].getHours(),
         },
@@ -211,12 +221,20 @@ class RootNavigator extends React.Component<Props> {
     }
 
     // Watch for incoming notifications
-    this._notificationSubscription = Notifications.addListener(({ origin, data }) => {
-      console.log(
-        `Local notification ${origin} with data: ${JSON.stringify(data)}`
-      );
+    this._notificationSubscription = Notifications.addListener(
+      this._handleNotification
+    );
+  }
 
-    });
+  _handleNotification = ({origin, data}) => {
+    console.log(
+      `Local notification ${origin} with data: ${JSON.stringify(data)}`
+    );
+
+    if (origin === 'selected') {
+      this.props.dispatch(setShuffleFirstWord(data[ID]));
+      this._navigation.navigate('Shuffle');
+    }
   }
 }
 

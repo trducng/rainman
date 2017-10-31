@@ -1,5 +1,6 @@
 # Roadmap
-- Notification
+- Setting: to toggle notification on/off
+- Sharing word ability
 - Refactor the code
 - Add a lot of words to test performance
 - App's icon
@@ -11,7 +12,6 @@
 - Reposition the buttons in the app bar
 - In AddScreen, after a word is added, the definition box is focused, not the word. Should be the opposite
 - After sometime, remove all traces of old state.currentWord
-- After sometime, remove all traces of DummyNavigators
 
 
 ## Medium priority
@@ -24,6 +24,42 @@
 ## Low priority
 - Make the status bar's search input an expandable button (likely need some Animation).
 - [List] Provide popup menu for each list item that allows quick access to Editing and Deleting.
+
+
+## State description
+The internal state of this program looks as follow (with default value):
+{% highlight javascript %}
+var state = {
+  wordData: {
+    WORDS: {},            // Objects
+    ALL_IDS: [],          // Array of numbers
+    SORTED_SCORES: [],    // Array of numbers
+    NOUNS: [],            // Array of numbers
+    VERBS: [],            // Array of numbers
+    ADJECTIVES: [],       // Array of numbers
+    ADVERBS: [],          // Array of numbers
+    CURRENT_WORD: -1,     // number
+  },
+  searchTerm: '',         // string
+  shuffleFirstWord: -1,   // number
+  nav: {},                // Object
+  navWordList: {},        // Object
+}
+{% endhighlight %}
+
+The role of each component in that state is summarized as follows:
+- `wordData`: the main state of the application, contains all words and classifies them into smaller sub-states to make the app run more efficiently.
+ + `WORDS`: Object, with keys are word id, and values are also objects that contain word id, term, def.
+ + `ALL_IDS`: Arrays of number, sorted in increasing order, each number is a word id.
+ + `SORTED_SCORES`: Arrays of number, each number is a word id but they are sorted in increasing order of word score. The higher the score, the more likely the word is not learned.
+ + `NOUNS`: Arrays of numbers, sorted in increasing order, each number is id of a word that is a noun.
+ + `VERBS`, `ADJECTIVES`, `ADVERBS`: same as above, but for verbs, adjectives and adverbs (respectively).
+ + `CURRENT_WORD`: The current word to show in `WordScreen`. The number should correspond to the *index* in `ALL_IDS` (not directly to the word's id), which will refer to the word's id.
+- `searchTerm`: the current search term that will be used to filter word listing in `WordListScreen`.
+- `shuffleFirstWord`: contains the id of the first world for `ShuffleScreen`. The purpose of this component is solely to set the first word of `ShuffleScreen` when users click on notification. Since this app highly depends on state change to update and re-render screen, the word id in notification cannot be passed as a common navigation arguments, but instead should trigger a state change, so that `ShuffleScreen` can be re-rendered to show word in the notification. Since word id should be an integer larger than 0, any `shuffleFirstWord` value smaller than 1 will not trigger `ShuffleScreen` re-rendering.
+- `nav`: the react-navigation's state of `RootNavigator`.
+- `navWordList`: the react-navigation's state of `WordListNavigator`.
+
 
 ## Learned
 - SORTED_SCORES should not be an array of ALL_WORDS' indices. Since in a session, the length of ALL_WORDS can change (because words can be either removed or added), the indices in SORTED_SCORES will not accurately point to the corresponding word in ALL_WORDS.

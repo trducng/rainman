@@ -25,25 +25,19 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @flow
- * This file contains many dummy navigators, intended to make use of react-
- * navigation's status bar of Stack navigator (to avoid potential implementation
- * errors and inconsistencies)
  */
 
-import { combineReducers } from 'redux';
+var initialState = -1;
 
-import { nav, navWordList } from './NavigationReducers';
-import { wordData } from './WordDataReducer';
-import { searchTerm } from './SearchReducer';
-import { shuffleFirstWord } from './ShuffleFirstWordReducer';
+export const shuffleFirstWord = (
+ state: number = initialState, action: Object
+) => {
+  switch (action.type) {
 
+    case 'SET_SHUFFLE_FIRST_WORD':
+      return action.id;
 
-const AppReducer = combineReducers({
-  wordData,
-  searchTerm,
-  shuffleFirstWord,
-  nav,
-  navWordList,
-});
-
-export default AppReducer;
+    default:
+      return state;
+  }
+}
