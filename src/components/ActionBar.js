@@ -27,20 +27,27 @@
  * @flow
  */
 
-import { StyleSheet } from 'react-native';
-import CONSTANTS from '../../constants/Layout';
+import React from 'react';
+import { Platform, Text, View } from 'react-native';
 
-export default StyleSheet.create({
-  viewWrapper: {
-    flex: 1,
-  },
-  main: {
-    width: 3 * CONSTANTS.window.width,
-    flex: 1,
-    flexDirection: 'row',
-  },
-  pageWrapper: {
-    width: CONSTANTS.window.width,
-    flex: 1,
-  },
-});
+import style from '../styles/components/ActionBar';
+
+type Props = {
+  title: string
+}
+
+class ActionBar extends React.Component<Props> {
+  render() {
+    return (
+      <View style={style.container}>
+        <View style={style.actionBar}>
+          <View style={style.title}>
+            <Text style={style.titleText}>{this.props.title}</Text>
+          </View>
+        </View>
+      </View>
+    )
+  }
+}
+
+export default ActionBar;

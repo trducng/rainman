@@ -27,19 +27,22 @@
  * @flow
  */
 
-import { Notifications } from 'expo';
+import { Notifications, Permissions } from 'expo';
 import { Ionicons } from '@expo/vector-icons';
 
 import { EventSubscription } from 'fbemitter';
 
 import React from 'react';
 import { Platform } from 'react-native';
-import { addNavigationHelpers, TabNavigator, TabBarBottom, StackNavigator } from 'react-navigation';
+import { addNavigationHelpers, TabNavigator,
+  TabBarBottom, StackNavigator } from 'react-navigation';
 import { connect } from 'react-redux';
 
-import registerForPushNotificationsAsync from '../api/registerForPushNotificationsAsync';
+import requestNotificationsPermissions from '../api/requestNotificationsPermissions';
+import registerWordReminderNotification from '../api/registerWordReminderNotification';
 
 import Colors from '../constants/Colors';
+import { WORD, DEFINITION, ID } from '../constants/DB';
 
 import AddScreen from '../screens/AddScreen';
 import ShuffleScreen from '../screens/ShuffleScreen';
@@ -52,7 +55,9 @@ import { AddNavigator, ShuffleNavigator, QuizNavigator } from './DummyNavigators
 
 type Props = {
   dispatch: Function,
-  nav: Object
+  nav: Object,
+  words: Object,
+  sortedScores: Array<number>,
 }
 
 
@@ -62,13 +67,13 @@ export const MainTabNavigator = TabNavigator(
       screen: WordListStackNavigator,
     },
     Add: {
-      screen: AddNavigator,
+      screen: AddScreen,
     },
     Shuffle: {
-      screen: ShuffleNavigator,
+      screen: ShuffleScreen,
     },
     Quiz: {
-      screen: QuizNavigator,
+      screen: QuizScreen,
     },
   },
   {
@@ -123,10 +128,17 @@ class RootNavigator extends React.Component<Props> {
   _notificationSubscription: EventSubscription;
 
   componentDidMount() {
-    this._notificationSubscription = this._registerForPushNotifications();
+    if (Platform.OS === 'ios') {
+      requestNotificationsPermissions();
+    }
+
+    this._scheduleWordReminder();
   }
 
   componentWillUnmount() {
+    // TODO: the removal of notification subscription during exit might prevent
+    // the app from handling the notification after it exits
+    console.log('RootNavigator: componentWillUnmount');
     this._notificationSubscription && this._notificationSubscription.remove();
   }
 
@@ -141,26 +153,77 @@ class RootNavigator extends React.Component<Props> {
     );
   }
 
-  _registerForPushNotifications() {
-    // Send our push token over to our backend so we can receive notifications
-    // You can comment the following line out if you want to stop receiving
-    // a notification every time you open the app. Check out the source
-    // for this function in api/registerForPushNotificationsAsync.js
-    registerForPushNotificationsAsync();
+  /**
+   * Get the schedule for the next three notifications. There are 3 time slots:
+   * 9AM, 4PM and 10PM.
+   */
+  _prepareSchedule = (): Array<Date> => {
+    const createDate = (date: number, hour: number): Date => {
+      let d = new Date();
+      d.setHours(hour);
+      d.setDate(date);
+      return d;
+    };
+    const notiHours = [9, 16, 20];
 
-    // Watch for incoming notifications
-    this._notificationSubscription = Notifications.addListener(
-      this._handleNotification
-    );
+    var date = new Date();
+    var schedule = [], idx = 0, sameDay = true;
+
+    while (schedule.length < notiHours.length) {
+      if (date.getHours() < notiHours[idx] || sameDay === false) {
+        schedule.push(createDate(
+          sameDay ? date.getDate() : date.getDate() + 1,
+          notiHours[idx]
+        ));
+      }
+
+      if (idx === notiHours.length - 1) {
+        sameDay = false;
+      }
+
+      idx = (idx + 1) % notiHours.length;
+    }
+
+    return schedule;
   }
 
-  _handleNotification = ({ origin, data }) => {
-    console.log(
-      `Push notification ${origin} with data: ${JSON.stringify(data)}`
-    );
-  };
+  async _scheduleWordReminder() {
+    await Notifications.cancelAllScheduledNotificationsAsync();
+
+    var numberOfWords = this.props.sortedScores.length;
+    var numberOfRemindersPerDay = Math.min(3, numberOfWords);
+
+    // get the schedule for each word
+    var schedules = this._prepareSchedule();
+
+    for (var i=0; i<numberOfRemindersPerDay; i++) {
+      var wordId = this.props.sortedScores[numberOfWords-i-1];
+      registerWordReminderNotification(
+        'Remember this word?',
+        this.props.words[wordId][WORD],
+        {
+          [WORD]: this.props.words[wordId][WORD],
+          [DEFINITION]: this.props.words[wordId][DEFINITION],
+          day: schedules[i].getDate(),
+          hour: schedules[i].getHours(),
+        },
+        schedules[i]
+      );
+    }
+
+    // Watch for incoming notifications
+    this._notificationSubscription = Notifications.addListener(({ origin, data }) => {
+      console.log(
+        `Push notification ${origin} with data: ${JSON.stringify(data)}`
+      );
+    });
+  }
 }
 
-const mapStateToProps = state => ({ nav: state.nav })
+const mapStateToProps = state => ({
+  nav: state.nav,
+  words: state.wordData.WORDS,
+  sortedScores: state.wordData.SORTED_SCORES,
+});
 
 export default connect(mapStateToProps)(RootNavigator);

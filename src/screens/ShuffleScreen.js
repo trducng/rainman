@@ -28,14 +28,16 @@
  */
 
 import React from 'react';
-import { View, Text, TouchableWithoutFeedback } from 'react-native';
+import { View, StatusBar, Text, TouchableWithoutFeedback } from 'react-native';
 import { connect } from 'react-redux';
 
 import { appBarStyle } from '../styles';
 import { screenGeneral } from '../styles/screens';
 import style from '../styles/screens/ShuffleScreen';
 
+import ActionBar from '../components/ActionBar';
 import DynamicViewPager from '../components/DynamicViewPager';
+import LAYOUT_CONSTANTS from '../constants/Layout';
 
 import { getItem, mergeItem } from '../api/AsyncDB';
 
@@ -61,6 +63,7 @@ class ShuffleScreen extends React.Component<Props, State> {
     title: 'Shuffle',
     headerTintColor: 'white',
     headerStyle: appBarStyle,
+    header: null
   }
 
   percentile: Array<number> = [
@@ -69,23 +72,31 @@ class ShuffleScreen extends React.Component<Props, State> {
 
   constructor(props: Object) {
     super(props);
+    var { currentWord } = this.props.navigation.state;
+
     this.state = {
       showed: false,
-      currentWord: this.props.sortedScores[this._getRandomWordIndex()],
+      currentWord: currentWord
+        ? currentWord
+        : this.props.sortedScores[this._getRandomWordIndex()],
       nextWord: this.props.sortedScores[this._getRandomWordIndex()]
     }
   }
 
   render() {
     return (
-      <DynamicViewPager
-        getLeftPage={this._getLeftPage}
-        getRightPage={this._getRightPage}
-        getMainPage={this._getMainPage}
-        onSwipedLeft={this._onSwipedLeft}
-        onSwipedRight={this._onSwipedRight}
-        onSwipedFail={this._onSwipedFail}
-      />
+      <View style={{flex: 1, overflow: 'hidden'}} removeClippedSubviews={true}>
+        <ActionBar title='Shuffle' />
+        <DynamicViewPager
+          getLeftPage={this._getLeftPage}
+          getRightPage={this._getRightPage}
+          getMainPage={this._getMainPage}
+          onSwipedLeft={this._onSwipedLeft}
+          onSwipedRight={this._onSwipedRight}
+          onSwipedFail={this._onSwipedFail}
+        />
+      </View>
+
     );
   }
 
@@ -94,12 +105,18 @@ class ShuffleScreen extends React.Component<Props, State> {
       return this._blankPage();
     }
 
-    var word = this.props.words[this.state.nextWord];
-    return (
-      <View style={[screenGeneral, style.main]}>
-        <Text style={style.word}>{ word[WORD] }</Text>
-      </View>
-    );
+    try {
+      var word = this.props.words[this.state.nextWord];
+      return (
+        <View style={[screenGeneral, style.main]}>
+          <Text style={style.word}>{ word[WORD] }</Text>
+        </View>
+      );
+    } catch(e) {
+      console.log(e);
+      throw e;
+    }
+
   }
 
   _getRightPage = () => {
@@ -179,7 +196,7 @@ class ShuffleScreen extends React.Component<Props, State> {
 
   _getRandomWordIndex = () => {
     var length = this.props.sortedScores.length;
-    if (length >= 100) {
+    if (length <= 100) {
       return Math.floor(Math.random() * (length - 0) + 0);
     } else {
       let rand = Math.floor(Math.random() * 10);

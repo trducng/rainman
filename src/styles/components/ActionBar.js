@@ -27,20 +27,63 @@
  * @flow
  */
 
-import { StyleSheet } from 'react-native';
-import CONSTANTS from '../../constants/Layout';
+import { Platform, StyleSheet } from 'react-native';
+import { Constants } from 'expo';
+
+import COLORS_CONSTANT from '../../constants/Colors';
+
+const APPBAR_HEIGHT = Platform.OS === 'ios' ? 44 : 56;
+const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 20 : Constants.statusBarHeight;
+const TITLE_OFFSET = Platform.OS === 'ios' ? 70 : 56;
+
+let container;
+let titleText;
+if (Platform.OS === 'ios') {
+  container = {
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: 'rgba(0, 0, 0, .3)',
+  };
+  titleText = {
+    fontSize: 17,
+    fontWeight: '600',
+    textAlign: 'center',
+  }
+} else {
+  container = {
+    shadowColor: 'black',
+    shadowOpacity: 0.1,
+    shadowRadius: StyleSheet.hairlineWidth,
+    shadowOffset: {
+      height: StyleSheet.hairlineWidth,
+    },
+    elevation: 4,
+  };
+  titleText = {
+    fontSize: 20,
+    fontWeight: '500',
+    textAlign: 'left',
+  }
+}
 
 export default StyleSheet.create({
-  viewWrapper: {
-    flex: 1,
+  container: {
+    height: APPBAR_HEIGHT + STATUSBAR_HEIGHT,
+    paddingTop: STATUSBAR_HEIGHT,
+    backgroundColor: COLORS_CONSTANT.tintColor,
+    ...container
   },
-  main: {
-    width: 3 * CONSTANTS.window.width,
+  actionBar: {
     flex: 1,
-    flexDirection: 'row',
+    flexDirection: 'row'
   },
-  pageWrapper: {
-    width: CONSTANTS.window.width,
+  title: {
     flex: 1,
+    justifyContent: 'center',
+    alignItems: Platform.OS === 'ios' ? 'center' : 'flex-start',
   },
+  titleText: {
+    color: 'white',
+    marginHorizontal: 16,
+    ...titleText
+  }
 });

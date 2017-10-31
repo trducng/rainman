@@ -34,6 +34,7 @@ import { connect } from 'react-redux';
 import { appBarStyle } from '../styles/';
 import { screenGeneral } from '../styles/screens';
 
+import ActionBar from '../components/ActionBar';
 import StatusBarButtonHolder from '../components/StatusBarButtonHolder';
 import InputTextWithLabel from '../components/InputTextWithLabel';
 import ListSelectable from '../components/ListSelectable';
@@ -67,14 +68,6 @@ type State = {
 
 class AddScreen extends React.Component<Props, State> {
 
-  static navigationOptions = ({navigation}) => {
-    return {
-      title: 'Add Word',
-      headerTintColor: 'white',
-      headerStyle: appBarStyle
-    }
-  }
-
   constructor(props: Object) {
     super(props);
     this.state = {
@@ -104,16 +97,20 @@ class AddScreen extends React.Component<Props, State> {
     ];
 
     return (
-      <View style={screenGeneral}>
-        <InputTextWithLabel
-          multiline={false} label={'Word'} value={this.state.word}
-          onChangeText={(text) => this.setState({word: text})} />
-        <InputTextWithLabel
-          multiline={true} label={'Definition'} value={this.state.def}
-          onChangeText={(text) => this.setState({def: text})}/>
-        <ListSelectable items={vocabTypes} />
-        <NormalButton value='Add' onPress={this._onAdd}/>
+      <View style={{flex: 1}}>
+        <ActionBar title='Add' />
+        <View style={screenGeneral}>
+          <InputTextWithLabel
+            multiline={false} label={'Word'} value={this.state.word}
+            onChangeText={(text) => this.setState({word: text})} />
+          <InputTextWithLabel
+            multiline={true} label={'Definition'} value={this.state.def}
+            onChangeText={(text) => this.setState({def: text})}/>
+          <ListSelectable items={vocabTypes} />
+          <NormalButton value='Add' onPress={this._onAdd}/>
+        </View>
       </View>
+
     );
   }
 
@@ -155,7 +152,7 @@ class AddScreen extends React.Component<Props, State> {
     obj[NOUN] = this.state.n; obj[VERB] = this.state.v;
     obj[ADJECTIVE] = this.state.adj; obj[ADVERB] = this.state.adv;
     obj[SCORE] = DEFAULT_SCORE;
-    obj[LAST_OPENED] = Date.now() / DAYS_IN_MILISECS | 0 - INSTALLED_DAY;
+    obj[LAST_OPENED] = Math.round(Date.now() / DAYS_IN_MILISECS) - INSTALLED_DAY;
     if (this.props.ids.length > 0) {
       obj[ID] = this.props.ids[this.props.ids.length-1] + 1;
     } else {

@@ -27,20 +27,37 @@
  * @flow
  */
 
-import { StyleSheet } from 'react-native';
-import CONSTANTS from '../../constants/Layout';
+import { Notifications } from 'expo';
 
-export default StyleSheet.create({
-  viewWrapper: {
-    flex: 1,
-  },
-  main: {
-    width: 3 * CONSTANTS.window.width,
-    flex: 1,
-    flexDirection: 'row',
-  },
-  pageWrapper: {
-    width: CONSTANTS.window.width,
-    flex: 1,
-  },
-});
+function registerWordReminderNotification(
+ title: string, body: string, msObject: Object, time: Date
+): Notifications {
+
+  const localNotification = {
+    title: title,
+    body: body,
+    data: msObject,
+    android: {
+      sound: true,
+    },
+    ios: {
+      sound: true,
+      priority: 'min',
+    },
+  };
+
+  const schedulingOptions = {
+    time: time,
+  }
+
+  console.log('Title: ' + title);
+  console.log('Time: ' + time.toString());
+
+  return Notifications.scheduleLocalNotificationAsync(
+    localNotification,
+    schedulingOptions
+  );
+
+}
+
+export default registerWordReminderNotification;

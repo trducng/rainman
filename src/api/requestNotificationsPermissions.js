@@ -27,20 +27,13 @@
  * @flow
  */
 
-import { StyleSheet } from 'react-native';
-import CONSTANTS from '../../constants/Layout';
+import { Permissions } from 'expo';
 
-export default StyleSheet.create({
-  viewWrapper: {
-    flex: 1,
-  },
-  main: {
-    width: 3 * CONSTANTS.window.width,
-    flex: 1,
-    flexDirection: 'row',
-  },
-  pageWrapper: {
-    width: CONSTANTS.window.width,
-    flex: 1,
-  },
-});
+const requestNotificationsPermissions = async () => {
+  const { status } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+  if (status !== 'granted') {
+    Permissions.askAsync(Permissions.NOTIFICATIONS);
+  }
+}
+
+export default requestNotificationsPermissions;

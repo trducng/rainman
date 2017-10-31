@@ -1,12 +1,18 @@
 # Roadmap
-- Make add screen
+- Notification
+- Refactor the code
+- Add a lot of words to test performance
+- App's icon
 - Finalize the test suite
+- Publish
+- LAST_OPENED should be updated in WordScreen, ShuffleScreen
 
 # Minor fixes
-- WordDataReducer: DELETE_WORD -> SORTED_SCORES is an array of numbers, not objects
 - Reposition the buttons in the app bar
 - In AddScreen, after a word is added, the definition box is focused, not the word. Should be the opposite
 - After sometime, remove all traces of old state.currentWord
+- After sometime, remove all traces of DummyNavigators
+
 
 ## Medium priority
 - Add filter for each word

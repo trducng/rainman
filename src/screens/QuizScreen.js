@@ -37,6 +37,7 @@ import style from '../styles/screens/QuizScreen';
 
 import { Queue, randInt, choice } from '../api/utils';
 
+import ActionBar from '../components/ActionBar';
 import StatusBarButtonHolder from '../components/StatusBarButtonHolder';
 import TestBox from '../components/TestBox';
 
@@ -65,12 +66,6 @@ type State = {
 
 class QuizScreen extends React.Component<Props, State> {
 
-  static navigationOptions = {
-    title: 'Quiz',
-    headerTintColor: 'white',
-    headerStyle: appBarStyle
-  };
-
   constructor(props) {
     super(props);
 
@@ -93,8 +88,10 @@ class QuizScreen extends React.Component<Props, State> {
   }
 
   render() {
+    var quiz;
+
     if (this.props.ids.length < 2) {
-      return (
+      quiz = (
         <View style={[screenGeneral, style.main]}>
           <Text style={style.def}>
             The current amount of number is indequate to quiz
@@ -103,40 +100,53 @@ class QuizScreen extends React.Component<Props, State> {
         </View>
       );
     }
+    else {
+      quiz = (
+        <View style={[screenGeneral, style.main]}>
+          <TestBox
+           correct={this.state.correct}
+           incorrect={this.state.incorrect}
+           question={this.state.question}
+           onUpdate={this.prepareQA} />
+        </View>
+      );
+    }
 
     return (
-      <View style={[screenGeneral, style.main]}>
-        <TestBox
-         correct={this.state.correct}
-         incorrect={this.state.incorrect}
-         question={this.state.question}
-         onUpdate={this.prepareQA} />
+      <View style={{flex: 1}}>
+        <ActionBar title="Quiz" />
+        { quiz }
       </View>
-    );
+    )
   }
 
- prepareQA = () => {
-   var wordPool = this._getWordPool();
-   var question = this._checkValidChoices(wordPool);
+  prepareQA = () => {
 
-   question = question !== -1
-    ? wordPool.splice(question, 1)[0]
-    : [
-        ...wordPool.slice(0, wordPool.indexOf(this.state.avoid.peekNewest())),
-        ...wordPool.slice(wordPool.indexOf(this.state.avoid.peekNewest())+1)
-      ].splice(randInt(0, 2), 1, this.state.avoid.peekNewest())[0];
+    if (this.props.ids.length === 0) {
+      return;
+    }
 
-   var order = Math.random() > 0.5 ? [WORD, DEFINITION] : [DEFINITION, WORD];
+    var wordPool = this._getWordPool();
+    var question = this._checkValidChoices(wordPool);
 
-   this.setState(prevState => {
-     return {
-       question: this.props.words[question][order[0]],
-       correct: this.props.words[question][order[1]],
-       incorrect: wordPool.map(item => this.props.words[item][order[1]]),
-       avoid: prevState.avoid.immutePush(question)
-     }
-   })
- }
+    question = question !== -1
+     ? wordPool.splice(question, 1)[0]
+     : [
+         ...wordPool.slice(0, wordPool.indexOf(this.state.avoid.peekNewest())),
+         ...wordPool.slice(wordPool.indexOf(this.state.avoid.peekNewest())+1)
+       ].splice(randInt(0, 2), 1, this.state.avoid.peekNewest())[0];
+
+    var order = Math.random() > 0.5 ? [WORD, DEFINITION] : [DEFINITION, WORD];
+
+    this.setState(prevState => {
+      return {
+        question: this.props.words[question][order[0]],
+        correct: this.props.words[question][order[1]],
+        incorrect: wordPool.map(item => this.props.words[item][order[1]]),
+        avoid: prevState.avoid.immutePush(question)
+      };
+    });
+  }
 
   /**
    * Get a collection of word indices that will be used as questions and
