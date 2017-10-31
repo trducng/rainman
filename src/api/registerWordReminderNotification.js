@@ -50,9 +50,6 @@ function registerWordReminderNotification(
     time: time,
   }
 
-  console.log('Title: ' + title);
-  console.log('Time: ' + time.toString());
-
   return Notifications.scheduleLocalNotificationAsync(
     localNotification,
     schedulingOptions

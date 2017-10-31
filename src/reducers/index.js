@@ -33,7 +33,6 @@
 import { combineReducers } from 'redux';
 
 import { nav, navWordList } from './NavigationReducers';
-import { navAdd, navWord, navQuiz } from './DummyReducers';
 import { wordData } from './WordDataReducer';
 import { searchTerm } from './SearchReducer';
 
@@ -43,9 +42,6 @@ const AppReducer = combineReducers({
   searchTerm,
   nav,
   navWordList,
-  navAdd,
-  navWord,
-  navQuiz,
 });
 
 export default AppReducer;

@@ -50,7 +50,6 @@ import QuizScreen from '../screens/QuizScreen';
 import StackScreen from '../screens/StackScreen';
 
 import WordListStackNavigator from './WordListNavigation';
-import { AddNavigator, ShuffleNavigator, QuizNavigator } from './DummyNavigators';
 
 
 type Props = {
@@ -214,8 +213,9 @@ class RootNavigator extends React.Component<Props> {
     // Watch for incoming notifications
     this._notificationSubscription = Notifications.addListener(({ origin, data }) => {
       console.log(
-        `Push notification ${origin} with data: ${JSON.stringify(data)}`
+        `Local notification ${origin} with data: ${JSON.stringify(data)}`
       );
+
     });
   }
 }
