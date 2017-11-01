@@ -1,12 +1,12 @@
 # Roadmap
 - Setting: to toggle notification on/off
-- Sharing word ability
 - Refactor the code
 - Add a lot of words to test performance
 - App's icon
 - Finalize the test suite
 - Publish
 - LAST_OPENED should be updated in WordScreen, ShuffleScreen
+- Showing the total amount of words
 
 # Minor fixes
 - Reposition the buttons in the app bar

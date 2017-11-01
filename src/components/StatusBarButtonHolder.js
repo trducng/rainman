@@ -37,7 +37,9 @@ import style from '../styles/components/StatusBarButtonHolder';
 
 type Props = {
   onEdit?: Function,
-  onDelete?: Function
+  onDelete?: Function,
+  onShare?: Function,
+  onOpenSetting?: Function,
 }
 
 
@@ -45,22 +47,40 @@ export default class StatusBarButtonHolder extends React.Component<Props> {
   render() {
     var buttons = [];
 
+    if (typeof this.props.onShare !== 'undefined') {
+      let shareIcon = Platform.OS === 'ios' ? 'ios-share-outline' : 'md-share';
+      buttons.push(
+        <TouchableHighlight key='share' onPress={this.props.onShare}>
+          <Ionicons name={shareIcon} size={25} color={'white'} style={style.icon} />
+        </TouchableHighlight>
+      )
+    }
+
     if (typeof this.props.onEdit !== 'undefined') {
-      let editItem = Platform.OS === 'ios' ? 'ios-create-outline' : 'ios-create';
+      let editIcon = Platform.OS === 'ios' ? 'ios-create-outline' : 'ios-create';
       buttons.push(
         <TouchableHighlight key='edit' onPress={this.props.onEdit}>
-          <Ionicons name={editItem} size={25} color={'white'} style={style.icon} />
+          <Ionicons name={editIcon} size={25} color={'white'} style={style.icon} />
         </TouchableHighlight>
       );
     }
 
     if (typeof this.props.onDelete !== 'undefined') {
-      let removeItem = Platform.OS === 'ios' ? 'ios-trash-outline' : 'md-trash';
+      let removeIcon = Platform.OS === 'ios' ? 'ios-trash-outline' : 'md-trash';
       buttons.push(
         <TouchableHighlight key='remove' onPress={this.props.onDelete}>
-          <Ionicons name={removeItem} size={25} color={'white'} style={style.icon} />
+          <Ionicons name={removeIcon} size={25} color={'white'} style={style.icon} />
         </TouchableHighlight>
       );
+    }
+
+    if (typeof this.props.onOpenSetting !== 'undefined') {
+      let settingIcon = Platform.OS === 'ios' ? 'ios-settings-outline' : 'md-settings';
+      buttons.push(
+        <TouchableHighlight key='settings' onPress={this.props.onOpenSetting}>
+          <Ionicons name={settingIcon} size={25} color={'white'} style={style.icon} />
+        </TouchableHighlight>
+      )
     }
 
     return (

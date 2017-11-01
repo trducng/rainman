@@ -29,7 +29,7 @@
 
 import Expo from 'expo';
 import React from 'react';
-import { View, StyleSheet, FlatList, Text } from 'react-native';
+import { View, StyleSheet, FlatList, Share, Text } from 'react-native';
 import { connect } from 'react-redux';
 
 import { appBarStyle } from '../styles';
@@ -37,9 +37,11 @@ import { screenGeneral } from '../styles/screens';
 
 import WordListItem from '../components/WordListItem';
 import SearchBox from '../components/SearchBox';
+import StatusBarButtonHolder from '../components/StatusBarButtonHolder';
 
 import { searchWord } from '../api/WordListActions';
 import { setCurrentWord } from '../api/WordActions';
+import shareWords from '../api/shareWords';
 import { binarySearchArray } from '../api/utils';
 
 import { ID, WORD, DEFINITION } from '../constants/DB';
@@ -74,14 +76,17 @@ export const filterWordList = (
 class WordListScreen extends React.Component<Props> {
 
   static navigationOptions({ navigation, screenProps }) {
+    var { words, ids } = screenProps;
+
     return {
       title: 'Word List',
       headerTintColor: 'white',
       headerStyle: appBarStyle,
-      headerRight: (<SearchBox
-        onChangeText={screenProps.onSearch}
-        value={screenProps.searchTerm}/>
-      ),
+      // headerRight: (<SearchBox
+      //   onChangeText={screenProps.onSearch}
+      //   value={screenProps.searchTerm}/>
+      // ),
+      headerRight: <StatusBarButtonHolder onShare={shareWords}/>
     }
   }
 
@@ -90,7 +95,7 @@ class WordListScreen extends React.Component<Props> {
 
     if (ids.length === 0) {
       return (
-        <View style={screenGeneral}>
+        <View style={[screenGeneral]}>
           <Text>Your deck is empty, please add some words!</Text>
         </View>
       );

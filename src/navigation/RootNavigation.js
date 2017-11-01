@@ -129,10 +129,6 @@ class RootNavigator extends React.Component<Props> {
   _notificationSubscription: EventSubscription;
   _navigation: Object
 
-  componentWillMount() {
-    console.log('RootNavigator: componentWillMount');
-  }
-
   componentDidMount() {
     if (Platform.OS === 'ios') {
       requestNotificationsPermissions();
