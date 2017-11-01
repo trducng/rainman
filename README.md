@@ -1,4 +1,5 @@
 # Roadmap
+- iOS-compatible
 - Setting: to toggle notification on/off
 - Refactor the code
 - Add a lot of words to test performance

@@ -30,14 +30,12 @@
 import React from 'react';
 import { addNavigationHelpers, StackNavigator } from 'react-navigation';
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
 
 import WordListScreen from '../screens/WordListScreen';
 import EditScreen from '../screens/EditScreen';
 import WordScreen from '../screens/WordScreen';
 
 import { deleteItem } from '../api/AsyncDB';
-import { searchWord } from '../api/WordListActions';
 import { deleteWord, setCurrentWord } from '../api/WordActions';
 
 import { ID, WORD } from '../constants/DB';
@@ -45,7 +43,6 @@ import { ID, WORD } from '../constants/DB';
 type Props = {
   dispatch: Function,
   nav: Object,
-  searchTerm: string,
   currentWord: number,
   words: Array<{id: number, word: string, def: string}>,
   ids: Array<number>
@@ -73,8 +70,6 @@ class WordListTempNavigator extends React.Component<Props> {
           state: this.props.nav
         })}
         screenProps={{
-          searchTerm: this.props.searchTerm,
-          onSearch: (term) => this.props.dispatch(searchWord(term)),
           words: this.props.words,
           ids: this.props.ids,
           currentWord: this.props.currentWord,
@@ -91,9 +86,6 @@ class WordListTempNavigator extends React.Component<Props> {
 
 const mapStateToProps = state => ({
   nav: state.navWordList,
-
-  // pass to WordListScreen's navigationOptions
-  searchTerm: state.searchTerm,
 
   // pass to WordScreen's navigationOptions
   currentWord: state.wordData.CURRENT_WORD,

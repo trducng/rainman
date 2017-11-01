@@ -32,7 +32,6 @@ import { StyleSheet } from 'react-native';
 export default StyleSheet.create({
   wrapper: {
     minWidth: 250,
-    paddingRight: 16,
     paddingVertical: 10,
   },
   main: {
@@ -41,7 +40,7 @@ export default StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     borderBottomWidth: 1,
-    borderBottomColor: 'white',
+    borderBottomColor: 'black',
     // backgroundColor: '#0c2e46',
   },
   icon: {
@@ -49,7 +48,7 @@ export default StyleSheet.create({
   },
   text: {
     flexGrow: 1,
-    color: 'white',
+    color: 'black',
     fontSize: 16,
     height: 40,
     lineHeight: 20,

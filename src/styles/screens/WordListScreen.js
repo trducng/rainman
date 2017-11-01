@@ -27,40 +27,16 @@
  * @flow
  */
 
-import React from 'react';
-import { Platform, TextInput, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 
-import { Ionicons } from '@expo/vector-icons';
-
-import style from '../styles/components/SearchBox';
-
-
-type Props = {
-  onChangeText: Function,
-  value: string
-}
-
-
-export class SearchBox extends React.Component<Props> {
-  render() {
-    let iconName = Platform.OS === 'ios' ? 'ios-search' : 'md-search';
-
-    return (
-      <View style={style.wrapper}>
-        <View style={style.main}>
-          <Ionicons name={iconName} size={20} color={'black'} style={style.icon}/>
-          <TextInput
-            autoCorrect={false} style={style.text}
-            placeholder={"Search"} placeholderTextColor={'black'}
-            returnKeyType={'search'} selectTextOnFocus={true}
-            underlineColorAndroid={'transparent'} returnKeyType={'next'}
-            onChangeText={this.props.onChangeText}
-            value={this.props.value}
-          />
-        </View>
-      </View>
-    );
+export default StyleSheet.create({
+  header: {
+    flex: 1,
+    flexDirection: 'column',
+  },
+  headerText: {
+    fontSize: 30,
+    marginTop: 10,
+    textAlign: 'center',
   }
-}
-
-export default SearchBox;
+});

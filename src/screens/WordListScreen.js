@@ -34,6 +34,7 @@ import { connect } from 'react-redux';
 
 import { appBarStyle } from '../styles';
 import { screenGeneral } from '../styles/screens';
+import style from '../styles/screens/WordListScreen';
 
 import WordListItem from '../components/WordListItem';
 import SearchBox from '../components/SearchBox';
@@ -52,7 +53,10 @@ type Props = {
   filteredIds: Array<number>,
   words: Object,
   navigation: Object,
-  setWord: Function
+  searchTerm: string,
+
+  setWord: Function,
+  onSearch: Function,
 }
 
 
@@ -82,10 +86,6 @@ class WordListScreen extends React.Component<Props> {
       title: 'Word List',
       headerTintColor: 'white',
       headerStyle: appBarStyle,
-      // headerRight: (<SearchBox
-      //   onChangeText={screenProps.onSearch}
-      //   value={screenProps.searchTerm}/>
-      // ),
       headerRight: <StatusBarButtonHolder onShare={shareWords}/>
     }
   }
@@ -115,6 +115,21 @@ class WordListScreen extends React.Component<Props> {
                 this.props.navigation.navigate('Detail')}}
             />
           )}
+          ListHeaderComponent={this._renderHeader}
+        />
+      </View>
+    );
+  }
+
+  _renderHeader = () => {
+    return (
+      <View style={style.header}>
+        <Text style={style.headerText}>
+          {this.props.ids.length} {this.props.ids.length === 1 ? 'word' : 'words'}
+        </Text>
+        <SearchBox
+         onChangeText={this.props.onSearch}
+         value={this.props.searchTerm}
         />
       </View>
     );
@@ -128,13 +143,15 @@ const mapStateToProps = (state, ownProps) => {
     filteredIds: filterWordList(
       state.wordData.WORDS, state.wordData.ALL_IDS, state.searchTerm
     ),
-    ids: state.wordData.ALL_IDS
+    ids: state.wordData.ALL_IDS,
+    searchTerm: state.searchTerm
   }
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    setWord: (idx) => dispatch(setCurrentWord(idx))
+    setWord: (idx) => dispatch(setCurrentWord(idx)),
+    onSearch: (term) => dispatch(searchWord(term)),
   }
 }
 

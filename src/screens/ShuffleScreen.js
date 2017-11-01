@@ -79,19 +79,28 @@ class ShuffleScreen extends React.Component<Props, State> {
   }
 
   componentWillReceiveProps(nextProps) {
+
+    var currentWord;
+
+    // user clicking notification case
     if (
      (Number.isInteger(nextProps.shuffleFirstWord)) &&
      (nextProps.shuffleFirstWord != this.props.shuffleFirstWord) &&
      (nextProps.shuffleFirstWord > 0)
     ) {
-      this.setState((prevState) => {
-        return {
-          showed: false,
-          currentWord: nextProps.shuffleFirstWord,
-          nextWord: nextProps.sortedScores[this._getRandomWordIndex()]
-        };
-      });
+      currentWord = nextProps.shuffleFirstWord;
+    } else {
+      currentWord = nextProps.sortedScores[this._getRandomWordIndex()];
     }
+
+    this.setState((prevState) => {
+      return {
+        showed: false,
+        currentWord: currentWord,
+        nextWord: nextProps.sortedScores[this._getRandomWordIndex()]
+      };
+    });
+    
   }
 
   render() {
