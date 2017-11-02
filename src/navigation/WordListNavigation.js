@@ -34,6 +34,7 @@ import { connect } from 'react-redux';
 import WordListScreen from '../screens/WordListScreen';
 import EditScreen from '../screens/EditScreen';
 import WordScreen from '../screens/WordScreen';
+import SettingsScreen from '../screens/SettingsScreen';
 
 import { deleteItem } from '../api/AsyncDB';
 import { deleteWord, setCurrentWord } from '../api/WordActions';
@@ -53,6 +54,7 @@ export const WordListNavigator = StackNavigator({
   WordList: { screen: WordListScreen },
   Edit: { screen: EditScreen },
   Detail: { screen: WordScreen },
+  Settings: { screen: SettingsScreen },
 });
 
 /**

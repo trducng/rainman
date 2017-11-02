@@ -33,7 +33,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { EventSubscription } from 'fbemitter';
 
 import React from 'react';
-import { Platform } from 'react-native';
+import { AsyncStorage, Platform } from 'react-native';
 import { addNavigationHelpers, TabNavigator,
   TabBarBottom, StackNavigator } from 'react-navigation';
 import { connect } from 'react-redux';
@@ -45,6 +45,7 @@ import registerWordReminderNotification from '../api/registerWordReminderNotific
 
 import Colors from '../constants/Colors';
 import { WORD, DEFINITION, ID } from '../constants/DB';
+import { SETTINGS, NOTIFICATION } from '../constants/Settings';
 
 import AddScreen from '../screens/AddScreen';
 import ShuffleScreen from '../screens/ShuffleScreen';
@@ -192,6 +193,11 @@ class RootNavigator extends React.Component<Props> {
   }
 
   async _scheduleWordReminder() {
+    var allowed = await AsyncStorage.getItem(SETTINGS);
+    if (allowed !== null && !JSON.parse(allowed)[NOTIFICATION]) {
+      return;
+    }
+
     await Notifications.cancelAllScheduledNotificationsAsync();
 
     var numberOfWords = this.props.sortedScores.length;

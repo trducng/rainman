@@ -27,49 +27,37 @@
  * @flow
  */
 
-import { AsyncStorage } from 'react-native';
+import React from 'react';
+import { View, Switch, Text } from 'react-native';
 
-import { VERBOSE } from '../constants/Meta';
-import { SETTINGS } from '../constants/Settings';
+import styles from '../styles/components/SettingItem';
 
+type Props = {
+  title: string,
+  value: boolean,
+  onValueChange: Function,
+  description?: string
+}
 
-export const retrieveAll = (callback: Function) => {
-  AsyncStorage.getAllKeys((err, keys) => {
-    keys = keys.filter((k) => {
-      return k !== SETTINGS;
-    });
-    AsyncStorage.multiGet(keys, callback);
-  });
-};
-
-export const setItem = (k: string, v: Object) => {
-  AsyncStorage.setItem(k, JSON.stringify(v), (err) => {
-    if (VERBOSE >= 5) {
-      console.log(`AsyncDB: setItem - ${k}`);
-    }
-  });
-};
-
-export const getItem = (k: string, f: Function) => {
-  AsyncStorage.getItem(k, f);
-};
-
-export const deleteItem = (k: string, callback?: Function) => {
-  if (typeof callback === 'undefined') {
-    AsyncStorage.removeItem(k);
-  } else {
-    AsyncStorage.removeItem(k, callback);
+class SettingItem extends React.Component<Props> {
+  constructor(props: Object) {
+    super(props);
   }
-};
 
-export const multiRemove = (k: Array<string>, callback?: Function) => {
-  if (typeof callback === 'undefined') {
-    AsyncStorage.multiRemove(k);
-  } else {
-    AsyncStorage.multiRemove(k, callback);
+  render() {
+    return (
+      <View style={styles.wrapper}>
+        <View style={styles.contentWrapper}>
+          <Text style={styles.title}>{this.props.title}</Text>
+          <Switch
+            value={this.props.value}
+            onValueChange={this.props.onValueChange}
+          />
+        </View>
+        <Text style={styles.description}>{this.props.description}</Text>
+      </View>
+    )
   }
-};
+}
 
-export const mergeItem = (k: string, v: Object) => {
-  AsyncStorage.mergeItem(k, JSON.stringify(v));
-};
+export default SettingItem;

@@ -86,7 +86,10 @@ class WordListScreen extends React.Component<Props> {
       title: 'Word List',
       headerTintColor: 'white',
       headerStyle: appBarStyle,
-      headerRight: <StatusBarButtonHolder onShare={shareWords}/>
+      headerRight: (<StatusBarButtonHolder
+       onShare={shareWords}
+       onOpenSetting={() => navigation.navigate('Settings')}
+      />),
     }
   }
 

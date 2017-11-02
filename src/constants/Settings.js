@@ -27,49 +27,31 @@
  * @flow
  */
 
-import { AsyncStorage } from 'react-native';
+import { Notifications } from 'expo';
 
-import { VERBOSE } from '../constants/Meta';
-import { SETTINGS } from '../constants/Settings';
+export const SETTINGS = '||settings||';
+export const NOTIFICATION = 'Notification';
 
+export const DEFAULT_SETTINGS = {
+  [NOTIFICATION]: false
+}
 
-export const retrieveAll = (callback: Function) => {
-  AsyncStorage.getAllKeys((err, keys) => {
-    keys = keys.filter((k) => {
-      return k !== SETTINGS;
-    });
-    AsyncStorage.multiGet(keys, callback);
-  });
-};
+export const DESCRIPTION_COLLECTION = {
+  [NOTIFICATION]: ('If not receiving word reminders when this option is ' +
+                   'turned on, please check the operating system\'s ' +
+                   'notification.'),
+}
 
-export const setItem = (k: string, v: Object) => {
-  AsyncStorage.setItem(k, JSON.stringify(v), (err) => {
-    if (VERBOSE >= 5) {
-      console.log(`AsyncDB: setItem - ${k}`);
+export const TITLE_COLLECTION = {
+  [NOTIFICATION]: 'Remind words during the day'
+}
+
+export const FUNCTION_COLLECTION = {
+  [NOTIFICATION]: async (value: boolean) => {
+    if (!value) {
+      Notifications.cancelAllScheduledNotificationsAsync();
     }
-  });
-};
-
-export const getItem = (k: string, f: Function) => {
-  AsyncStorage.getItem(k, f);
-};
-
-export const deleteItem = (k: string, callback?: Function) => {
-  if (typeof callback === 'undefined') {
-    AsyncStorage.removeItem(k);
-  } else {
-    AsyncStorage.removeItem(k, callback);
   }
-};
+}
 
-export const multiRemove = (k: Array<string>, callback?: Function) => {
-  if (typeof callback === 'undefined') {
-    AsyncStorage.multiRemove(k);
-  } else {
-    AsyncStorage.multiRemove(k, callback);
-  }
-};
-
-export const mergeItem = (k: string, v: Object) => {
-  AsyncStorage.mergeItem(k, JSON.stringify(v));
-};
+export const SETTING_ITEMS = [NOTIFICATION];
